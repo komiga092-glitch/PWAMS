@@ -46,7 +46,9 @@ func main() {
 
 	log.Println("Database migration completed successfully")
 
-	if err := router.Run(address); err != nil {
-		log.Fatalf("server error: %v", err)
+	if err := database.SeedDefaultRoles(db); err != nil {
+		log.Fatalf("default role seeding error: %v", err)
 	}
+
+	log.Println("Default roles seeded successfully")
 }
