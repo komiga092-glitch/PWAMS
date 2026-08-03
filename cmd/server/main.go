@@ -40,7 +40,13 @@ func main() {
 
 	log.Printf("PWAMS server running at http://localhost%s", address)
 
+	if err := database.Migrate(db); err != nil {
+		log.Fatalf("database migration error: %v", err)
+	}
+
+	log.Println("Database migration completed successfully")
+
 	if err := router.Run(address); err != nil {
-		log.Fatalf("server failed: %v", err)
+		log.Fatalf("server error: %v", err)
 	}
 }

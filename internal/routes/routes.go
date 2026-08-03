@@ -12,7 +12,7 @@ func Setup(router *gin.Engine) {
 
 		c.JSON(http.StatusOK, gin.H{
 			"application": "PWAMS",
-			"message": "PWAMS API Running",
+			"message":     "PWAMS API Running",
 		})
 
 	})
