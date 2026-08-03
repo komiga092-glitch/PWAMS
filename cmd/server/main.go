@@ -2,12 +2,12 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/config"
 	"github.com/komiga092-glitch/pwams/internal/database"
+	"github.com/komiga092-glitch/pwams/internal/routes"
 )
 
 func main() {
@@ -34,19 +34,7 @@ func main() {
 
 	router := gin.Default()
 
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"application": "PWAMS",
-			"message":     "PWAMS web server is running successfully",
-		})
-	})
-
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status":   "healthy",
-			"database": "connected",
-		})
-	})
+	routes.Setup(router)
 
 	address := ":" + cfg.AppPort
 
