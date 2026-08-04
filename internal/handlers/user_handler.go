@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
@@ -20,6 +21,7 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 	}
 }
 
+// Create creates a new system user.
 func (h *UserHandler) Create(c *gin.Context) {
 	var request models.CreateUserRequest
 
@@ -70,6 +72,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 	})
 }
 
+// List returns users with search, role filter and pagination.
 func (h *UserHandler) List(c *gin.Context) {
 	var query models.UserListQuery
 
@@ -124,6 +127,51 @@ func (h *UserHandler) List(c *gin.Context) {
 			"page_size":   pageSize,
 			"total_items": total,
 			"total_pages": totalPages,
+		},
+	})
+}
+
+// GetByID returns one user by UUID.
+func (h *UserHandler) GetByID(c *gin.Context) {
+	userID := c.Param("id")
+
+	user, err := h.userService.GetUserByID(userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidUserID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid user ID",
+			})
+
+		case errors.Is(err, repository.ErrUserNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "User not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve user",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "User retrieved successfully",
+		"user": gin.H{
+			"id":            user.ID,
+			"username":      user.Username,
+			"email":         user.Email,
+			"role":          user.Role.Name,
+			"status":        user.Status,
+			"last_login_at": user.LastLoginAt,
+			"created_at":    user.CreatedAt,
+			"updated_at":    user.UpdatedAt,
 		},
 	})
 }

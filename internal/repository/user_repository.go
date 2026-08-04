@@ -143,3 +143,22 @@ func (r *UserRepository) List(
 
 	return users, total, nil
 }
+
+func (r *UserRepository) FindByID(id string) (*models.User, error) {
+	var user models.User
+
+	err := r.db.
+		Preload("Role").
+		First(&user, "id = ?", id).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrUserNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find user by id: %w", err)
+	}
+
+	return &user, nil
+}

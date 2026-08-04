@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/utils"
@@ -104,4 +106,21 @@ func (s *UserService) ListUsers(
 	}
 
 	return users, total, page, pageSize, nil
+}
+
+var ErrInvalidUserID = errors.New("invalid user id")
+
+func (s *UserService) GetUserByID(id string) (*models.User, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidUserID
+	}
+
+	user, err := s.userRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

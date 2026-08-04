@@ -26,4 +26,5 @@ func RegisterUserRoutes(
 
 	users.POST("", userHandler.Create)
 	users.GET("", userHandler.List)
+	users.GET("/:id", userHandler.GetByID)
 }
