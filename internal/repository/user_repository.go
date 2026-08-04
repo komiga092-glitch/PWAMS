@@ -241,3 +241,11 @@ func (r *UserRepository) UpdatePassword(
 
 	return nil
 }
+
+func (r *UserRepository) SoftDelete(user *models.User) error {
+	if err := r.db.Delete(user).Error; err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return nil
+}

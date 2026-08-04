@@ -18,19 +18,25 @@ var (
 )
 
 var ErrInvalidUserStatus = errors.New("selected user status is invalid")
+var ErrCannotDeleteSelf = errors.New(
+	"you cannot delete your own account",
+)
 
 type UserService struct {
-	userRepo *repository.UserRepository
-	roleRepo *repository.RoleRepository
+	userRepo    *repository.UserRepository
+	roleRepo    *repository.RoleRepository
+	sessionRepo *repository.SessionRepository
 }
 
 func NewUserService(
 	userRepo *repository.UserRepository,
 	roleRepo *repository.RoleRepository,
+	sessionRepo *repository.SessionRepository,
 ) *UserService {
 	return &UserService{
-		userRepo: userRepo,
-		roleRepo: roleRepo,
+		userRepo:    userRepo,
+		roleRepo:    roleRepo,
+		sessionRepo: sessionRepo,
 	}
 }
 
@@ -253,6 +259,37 @@ func (s *UserService) ResetPassword(
 		id,
 		passwordHash,
 	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) DeleteUser(
+	targetUserID string,
+	currentUserID string,
+) error {
+	targetUserID = strings.TrimSpace(targetUserID)
+	currentUserID = strings.TrimSpace(currentUserID)
+
+	if _, err := uuid.Parse(targetUserID); err != nil {
+		return ErrInvalidUserID
+	}
+
+	if targetUserID == currentUserID {
+		return ErrCannotDeleteSelf
+	}
+
+	user, err := s.userRepo.FindByID(targetUserID)
+	if err != nil {
+		return err
+	}
+
+	if err := s.sessionRepo.RevokeAllByUserID(targetUserID); err != nil {
+		return err
+	}
+
+	if err := s.userRepo.SoftDelete(user); err != nil {
 		return err
 	}
 

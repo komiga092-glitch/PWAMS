@@ -55,8 +55,11 @@ func main() {
 	// Services
 	authService := services.NewAuthService(userRepo)
 	sessionService := services.NewSessionService(sessionRepo)
-	userService := services.NewUserService(userRepo, roleRepository)
-
+	userService := services.NewUserService(
+		userRepo,
+		roleRepository,
+		sessionRepo,
+	)
 	// Cookie configuration
 	secureCookie := cfg.AppEnv == "production"
 

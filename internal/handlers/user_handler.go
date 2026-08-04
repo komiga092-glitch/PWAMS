@@ -378,3 +378,65 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		"message": "User password reset successfully",
 	})
 }
+
+func (h *UserHandler) Delete(c *gin.Context) {
+	targetUserID := c.Param("id")
+
+	currentUserValue, exists := c.Get("current_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": "Authentication required",
+		})
+		return
+	}
+
+	currentUser, ok := currentUserValue.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Invalid authentication context",
+		})
+		return
+	}
+
+	err := h.userService.DeleteUser(
+		targetUserID,
+		currentUser.ID.String(),
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidUserID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid user ID",
+			})
+
+		case errors.Is(err, services.ErrCannotDeleteSelf):
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, repository.ErrUserNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "User not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete user",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "User deleted successfully",
+	})
+}

@@ -30,4 +30,10 @@ func RegisterUserRoutes(
 	users.PUT("/:id", userHandler.Update)
 	users.PATCH("/:id/status", userHandler.UpdateStatus)
 	users.PATCH("/:id/password", userHandler.ResetPassword)
+
+	users.DELETE(
+		"/:id",
+		middleware.RequireRole(models.RoleSuperAdmin),
+		userHandler.Delete,
+	)
 }
