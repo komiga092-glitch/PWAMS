@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"gorm.io/gorm"
 )
@@ -45,4 +47,50 @@ func (r *UserRepository) FindByLogin(login string) (*models.User, error) {
 	}
 
 	return &user, nil
+
+}
+
+func (r *UserRepository) UpdateLastLogin(userID uuid.UUID) error {
+	now := time.Now().UTC()
+
+	if err := r.db.
+		Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("last_login_at", now).
+		Error; err != nil {
+		return fmt.Errorf("failed to update last login: %w", err)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) ExistsByUsernameOrEmail(
+	username string,
+	email string,
+) (bool, error) {
+	var count int64
+
+	err := r.db.
+		Model(&models.User{}).
+		Where(
+			"LOWER(username) = LOWER(?) OR LOWER(email) = LOWER(?)",
+			username,
+			email,
+		).
+		Count(&count).
+		Error
+
+	if err != nil {
+		return false, fmt.Errorf("failed to check existing user: %w", err)
+	}
+
+	return count > 0, nil
+}
+
+func (r *UserRepository) Create(user *models.User) error {
+	if err := r.db.Create(user).Error; err != nil {
+		return fmt.Errorf("failed to create user: %w", err)
+	}
+
+	return nil
 }
