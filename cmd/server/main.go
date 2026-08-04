@@ -51,4 +51,10 @@ func main() {
 	}
 
 	log.Println("Default roles seeded successfully")
+
+	if err := database.SeedSuperAdmin(db, cfg); err != nil {
+		log.Fatalf("super admin seeding error: %v", err)
+	}
+
+	log.Println("Super Admin account seeded successfully")
 }

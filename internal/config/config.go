@@ -18,6 +18,10 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	DBSSLMode  string
+
+	SuperAdminUsername string
+	SuperAdminEmail    string
+	SuperAdminPassword string
 }
 
 func Load() (*Config, error) {
@@ -33,13 +37,23 @@ func Load() (*Config, error) {
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
 		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
+
+		SuperAdminUsername: os.Getenv("SUPER_ADMIN_USERNAME"),
+		SuperAdminEmail:    os.Getenv("SUPER_ADMIN_EMAIL"),
+		SuperAdminPassword: os.Getenv("SUPER_ADMIN_PASSWORD"),
 	}
 
 	if cfg.DBUser == "" || cfg.DBPassword == "" || cfg.DBName == "" {
 		return nil, fmt.Errorf("required database configuration is missing")
 	}
+	if cfg.SuperAdminUsername == "" ||
+		cfg.SuperAdminEmail == "" ||
+		cfg.SuperAdminPassword == "" {
+		return nil, fmt.Errorf("super admin configuration is missing")
+	}
 
 	return cfg, nil
+
 }
 
 func getEnv(key, fallback string) string {
