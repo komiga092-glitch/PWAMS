@@ -7,6 +7,7 @@ import (
 
 	"github.com/komiga092-glitch/pwams/internal/config"
 	"github.com/komiga092-glitch/pwams/internal/database"
+	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/routes"
 )
 
@@ -57,4 +58,6 @@ func main() {
 	}
 
 	log.Println("Super Admin account seeded successfully")
+
+	
 }
