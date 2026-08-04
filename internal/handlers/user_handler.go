@@ -69,3 +69,61 @@ func (h *UserHandler) Create(c *gin.Context) {
 		},
 	})
 }
+
+func (h *UserHandler) List(c *gin.Context) {
+	var query models.UserListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid query parameters",
+		})
+		return
+	}
+
+	users, total, page, pageSize, err :=
+		h.userService.ListUsers(query)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to retrieve users",
+		})
+		return
+	}
+
+	userItems := make([]gin.H, 0, len(users))
+
+	for _, user := range users {
+		userItems = append(userItems, gin.H{
+			"id":            user.ID,
+			"username":      user.Username,
+			"email":         user.Email,
+			"role":          user.Role.Name,
+			"status":        user.Status,
+			"last_login_at": user.LastLoginAt,
+			"created_at":    user.CreatedAt,
+			"updated_at":    user.UpdatedAt,
+		})
+	}
+
+	totalPages := 0
+
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) / int64(pageSize),
+		)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Users retrieved successfully",
+		"data":    userItems,
+		"pagination": gin.H{
+			"page":        page,
+			"page_size":   pageSize,
+			"total_items": total,
+			"total_pages": totalPages,
+		},
+	})
+}

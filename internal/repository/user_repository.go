@@ -94,3 +94,52 @@ func (r *UserRepository) Create(user *models.User) error {
 
 	return nil
 }
+
+func (r *UserRepository) List(
+	search string,
+	role string,
+	page int,
+	pageSize int,
+) ([]models.User, int64, error) {
+	var users []models.User
+	var total int64
+
+	query := r.db.
+		Model(&models.User{}).
+		Joins("JOIN roles ON roles.id = users.role_id")
+
+	if search != "" {
+		searchValue := "%" + strings.ToLower(strings.TrimSpace(search)) + "%"
+
+		query = query.Where(
+			"LOWER(users.username) LIKE ? OR LOWER(users.email) LIKE ?",
+			searchValue,
+			searchValue,
+		)
+	}
+
+	if role != "" {
+		query = query.Where(
+			"LOWER(roles.name) = LOWER(?)",
+			strings.TrimSpace(role),
+		)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to count users: %w", err)
+	}
+
+	offset := (page - 1) * pageSize
+
+	if err := query.
+		Preload("Role").
+		Order("users.created_at DESC").
+		Limit(pageSize).
+		Offset(offset).
+		Find(&users).
+		Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to list users: %w", err)
+	}
+
+	return users, total, nil
+}

@@ -75,3 +75,33 @@ func (s *UserService) CreateUser(
 
 	return user, nil
 }
+
+func (s *UserService) ListUsers(
+	query models.UserListQuery,
+) ([]models.User, int64, int, int, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	users, total, err := s.userRepo.List(
+		query.Search,
+		query.Role,
+		page,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return users, total, page, pageSize, nil
+}

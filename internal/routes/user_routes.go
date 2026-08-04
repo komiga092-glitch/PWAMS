@@ -25,4 +25,5 @@ func RegisterUserRoutes(
 	)
 
 	users.POST("", userHandler.Create)
+	users.GET("", userHandler.List)
 }
