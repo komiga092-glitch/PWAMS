@@ -324,3 +324,57 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 		"message": "User status updated successfully",
 	})
 }
+
+func (h *UserHandler) ResetPassword(c *gin.Context) {
+	userID := c.Param("id")
+
+	var request models.ResetUserPasswordRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "A valid new password is required",
+		})
+		return
+	}
+
+	err := h.userService.ResetPassword(
+		userID,
+		request.NewPassword,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidUserID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid user ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidPassword):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, repository.ErrUserNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "User not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to reset user password",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "User password reset successfully",
+	})
+}

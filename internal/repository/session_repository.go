@@ -70,3 +70,25 @@ func (r *SessionRepository) RevokeByTokenHash(tokenHash string) error {
 
 	return nil
 }
+
+func (r *SessionRepository) RevokeAllByUserID(
+	userID string,
+) error {
+	now := time.Now().UTC()
+
+	if err := r.db.
+		Model(&models.Session{}).
+		Where(
+			"user_id = ? AND revoked_at IS NULL",
+			userID,
+		).
+		Update("revoked_at", now).
+		Error; err != nil {
+		return fmt.Errorf(
+			"failed to revoke user sessions: %w",
+			err,
+		)
+	}
+
+	return nil
+}

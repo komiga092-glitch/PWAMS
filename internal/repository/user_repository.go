@@ -218,3 +218,26 @@ func (r *UserRepository) UpdateStatus(
 
 	return nil
 }
+
+func (r *UserRepository) UpdatePassword(
+	userID string,
+	passwordHash string,
+) error {
+	result := r.db.
+		Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("password_hash", passwordHash)
+
+	if result.Error != nil {
+		return fmt.Errorf(
+			"failed to update user password: %w",
+			result.Error,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrUserNotFound
+	}
+
+	return nil
+}

@@ -29,4 +29,5 @@ func RegisterUserRoutes(
 	users.POST("", userHandler.Create)
 	users.PUT("/:id", userHandler.Update)
 	users.PATCH("/:id/status", userHandler.UpdateStatus)
+	users.PATCH("/:id/password", userHandler.ResetPassword)
 }

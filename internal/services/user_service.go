@@ -111,6 +111,9 @@ func (s *UserService) ListUsers(
 }
 
 var ErrInvalidUserID = errors.New("invalid user id")
+var ErrInvalidPassword = errors.New(
+	"password must contain at least 8 characters",
+)
 
 func (s *UserService) GetUserByID(id string) (*models.User, error) {
 	id = strings.TrimSpace(id)
@@ -215,6 +218,41 @@ func (s *UserService) UpdateUserStatus(
 	}
 
 	if err := s.userRepo.UpdateStatus(id, status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) ResetPassword(
+	id string,
+	newPassword string,
+) error {
+	id = strings.TrimSpace(id)
+	newPassword = strings.TrimSpace(newPassword)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidUserID
+	}
+
+	if len(newPassword) < 8 {
+		return ErrInvalidPassword
+	}
+
+	_, err := s.userRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	passwordHash, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return fmt.Errorf("failed to hash new password: %w", err)
+	}
+
+	if err := s.userRepo.UpdatePassword(
+		id,
+		passwordHash,
+	); err != nil {
 		return err
 	}
 
