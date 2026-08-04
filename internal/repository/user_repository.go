@@ -162,3 +162,59 @@ func (r *UserRepository) FindByID(id string) (*models.User, error) {
 
 	return &user, nil
 }
+
+func (r *UserRepository) ExistsByUsernameOrEmailExceptID(
+	username string,
+	email string,
+	userID string,
+) (bool, error) {
+	var count int64
+
+	err := r.db.
+		Model(&models.User{}).
+		Where(
+			"id <> ? AND (LOWER(username) = LOWER(?) OR LOWER(email) = LOWER(?))",
+			userID,
+			username,
+			email,
+		).
+		Count(&count).
+		Error
+
+	if err != nil {
+		return false, fmt.Errorf(
+			"failed to check duplicate username or email: %w",
+			err,
+		)
+	}
+
+	return count > 0, nil
+}
+
+func (r *UserRepository) Update(user *models.User) error {
+	if err := r.db.Save(user).Error; err != nil {
+		return fmt.Errorf("failed to update user: %w", err)
+	}
+
+	return nil
+}
+
+func (r *UserRepository) UpdateStatus(
+	userID string,
+	status string,
+) error {
+	result := r.db.
+		Model(&models.User{}).
+		Where("id = ?", userID).
+		Update("status", status)
+
+	if result.Error != nil {
+		return fmt.Errorf("failed to update user status: %w", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrUserNotFound
+	}
+
+	return nil
+}

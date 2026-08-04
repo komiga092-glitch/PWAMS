@@ -175,3 +175,152 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 		},
 	})
 }
+
+func (h *UserHandler) Update(c *gin.Context) {
+	userID := c.Param("id")
+
+	var request models.UpdateUserRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid user information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	currentUserValue, exists := c.Get("current_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": "Authentication required",
+		})
+		return
+	}
+
+	currentUser, ok := currentUserValue.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Invalid authentication context",
+		})
+		return
+	}
+
+	if currentUser.Role.Name != models.RoleSuperAdmin &&
+		request.Role == models.RoleSuperAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"message": "Only Super Admin can assign the Super Admin role",
+		})
+		return
+	}
+
+	user, err := h.userService.UpdateUser(userID, request)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidUserID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid user ID",
+			})
+
+		case errors.Is(err, repository.ErrUserNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "User not found",
+			})
+
+		case errors.Is(err, services.ErrUserAlreadyExists):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidRole):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidUserStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update user",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "User updated successfully",
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+			"email":    user.Email,
+			"role":     user.Role.Name,
+			"status":   user.Status,
+		},
+	})
+}
+func (h *UserHandler) UpdateStatus(c *gin.Context) {
+	userID := c.Param("id")
+
+	var request models.UpdateUserStatusRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Status is required",
+		})
+		return
+	}
+
+	err := h.userService.UpdateUserStatus(
+		userID,
+		request.Status,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidUserID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid user ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidUserStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, repository.ErrUserNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "User not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update user status",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "User status updated successfully",
+	})
+}
