@@ -20,6 +20,8 @@ var (
 		"invalid student date of birth",
 	)
 	ErrInvalidStudentID = errors.New("invalid student id")
+
+	ErrInvalidStudentStatus = errors.New("selected student status is invalid")
 )
 
 type StudentService struct {
@@ -159,6 +161,106 @@ func (s *StudentService) GetStudentByID(
 	if err != nil {
 		return nil, err
 	}
+
+	return student, nil
+}
+
+func isValidStudentStatus(status string) bool {
+	switch status {
+	case models.StudentStatusActive,
+		models.StudentStatusInactive,
+		models.StudentStatusPending:
+		return true
+
+	default:
+		return false
+	}
+}
+
+func (s *StudentService) UpdateStudent(
+	id string,
+	request models.UpdateStudentRequest,
+) (*models.Student, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidStudentID
+	}
+
+	student, err := s.studentRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	personID := strings.TrimSpace(request.PersonID)
+
+	parsedPersonID, err := uuid.Parse(personID)
+	if err != nil {
+		return nil, ErrInvalidPersonID
+	}
+
+	if _, err := s.personRepo.FindByID(personID); err != nil {
+		return nil, err
+	}
+
+	studentCode := strings.ToUpper(
+		strings.TrimSpace(request.StudentCode),
+	)
+
+	exists, err := s.studentRepo.ExistsByStudentCodeExceptID(
+		studentCode,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if exists {
+		return nil, ErrStudentAlreadyExists
+	}
+
+	status := strings.TrimSpace(request.Status)
+
+	if !isValidStudentStatus(status) {
+		return nil, ErrInvalidStudentStatus
+	}
+
+	var dateOfBirth *time.Time
+
+	if strings.TrimSpace(request.DateOfBirth) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			request.DateOfBirth,
+		)
+		if err != nil {
+			return nil, ErrInvalidStudentDateOfBirth
+		}
+
+		if parsedDate.After(time.Now()) {
+			return nil, ErrInvalidStudentDateOfBirth
+		}
+
+		dateOfBirth = &parsedDate
+	}
+
+	student.PersonID = parsedPersonID
+	student.FullName = strings.TrimSpace(request.FullName)
+	student.SchoolName = strings.TrimSpace(request.SchoolName)
+	student.Grade = strings.TrimSpace(request.Grade)
+	student.StudentCode = studentCode
+	student.DateOfBirth = dateOfBirth
+	student.Gender = strings.TrimSpace(request.Gender)
+	student.GuardianName = strings.TrimSpace(request.GuardianName)
+	student.GuardianPhone = strings.TrimSpace(request.GuardianPhone)
+	student.AcademicYear = request.AcademicYear
+	student.Remarks = strings.TrimSpace(request.Remarks)
+	student.Status = status
+
+	if err := s.studentRepo.Update(student); err != nil {
+		return nil, err
+	}
+
+	student.Person.ID = parsedPersonID
 
 	return student, nil
 }

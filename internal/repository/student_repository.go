@@ -162,3 +162,43 @@ func (r *StudentRepository) FindByID(id string) (*models.Student, error) {
 
 	return &student, nil
 }
+
+func (r *StudentRepository) ExistsByStudentCodeExceptID(
+	studentCode string,
+	studentID string,
+) (bool, error) {
+	if strings.TrimSpace(studentCode) == "" {
+		return false, nil
+	}
+
+	var count int64
+
+	value := strings.ToUpper(strings.TrimSpace(studentCode))
+
+	err := r.db.
+		Model(&models.Student{}).
+		Where(
+			"id <> ? AND UPPER(student_code) = ?",
+			studentID,
+			value,
+		).
+		Count(&count).
+		Error
+
+	if err != nil {
+		return false, fmt.Errorf(
+			"failed to check duplicate student code: %w",
+			err,
+		)
+	}
+
+	return count > 0, nil
+}
+
+func (r *StudentRepository) Update(student *models.Student) error {
+	if err := r.db.Save(student).Error; err != nil {
+		return fmt.Errorf("failed to update student: %w", err)
+	}
+
+	return nil
+}

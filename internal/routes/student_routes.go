@@ -27,4 +27,5 @@ func RegisterStudentRoutes(
 	students.GET("", studentHandler.List)
 	students.GET("/:id", studentHandler.GetByID)
 	students.POST("", studentHandler.Create)
+	students.PUT("/:id", studentHandler.Update)
 }

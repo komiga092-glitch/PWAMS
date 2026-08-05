@@ -245,3 +245,98 @@ func (h *StudentHandler) GetByID(c *gin.Context) {
 		},
 	})
 }
+
+func (h *StudentHandler) Update(c *gin.Context) {
+	studentID := c.Param("id")
+
+	var request models.UpdateStudentRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid student information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	student, err := h.studentService.UpdateStudent(
+		studentID,
+		request,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidStudentID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid student ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrStudentNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Student not found",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
+			})
+
+		case errors.Is(err, services.ErrStudentAlreadyExists):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidStudentDateOfBirth):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidStudentStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update student",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Student updated successfully",
+		"student": gin.H{
+			"id":             student.ID,
+			"person_id":      student.PersonID,
+			"full_name":      student.FullName,
+			"school_name":    student.SchoolName,
+			"grade":          student.Grade,
+			"student_code":   student.StudentCode,
+			"date_of_birth":  student.DateOfBirth,
+			"gender":         student.Gender,
+			"guardian_name":  student.GuardianName,
+			"guardian_phone": student.GuardianPhone,
+			"academic_year":  student.AcademicYear,
+			"remarks":        student.Remarks,
+			"status":         student.Status,
+			"updated_at":     student.UpdatedAt,
+		},
+	})
+}
