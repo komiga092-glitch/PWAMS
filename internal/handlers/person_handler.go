@@ -347,3 +347,36 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 		"message": "Person status updated successfully",
 	})
 }
+func (h *PersonHandler) Delete(c *gin.Context) {
+	personID := c.Param("id")
+
+	err := h.personService.DeletePerson(personID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete person",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Person deleted successfully",
+	})
+}

@@ -182,3 +182,11 @@ func (r *PersonRepository) UpdateStatus(
 
 	return nil
 }
+
+func (r *PersonRepository) SoftDelete(person *models.Person) error {
+	if err := r.db.Delete(person).Error; err != nil {
+		return fmt.Errorf("failed to delete person: %w", err)
+	}
+
+	return nil
+}

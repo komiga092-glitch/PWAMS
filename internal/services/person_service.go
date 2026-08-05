@@ -243,3 +243,22 @@ func (s *PersonService) UpdatePersonStatus(
 
 	return nil
 }
+
+func (s *PersonService) DeletePerson(id string) error {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidPersonID
+	}
+
+	person, err := s.personRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.personRepo.SoftDelete(person); err != nil {
+		return err
+	}
+
+	return nil
+}

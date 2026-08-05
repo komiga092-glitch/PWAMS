@@ -30,4 +30,12 @@ func RegisterPersonRoutes(
 	persons.POST("", personHandler.Create)
 	persons.PUT("/:id", personHandler.Update)
 	persons.PATCH("/:id/status", personHandler.UpdateStatus)
+	persons.DELETE(
+		"/:id",
+		middleware.RequireAnyRole(
+			models.RoleSuperAdmin,
+			models.RoleAdmin,
+		),
+		personHandler.Delete,
+	)
 }
