@@ -50,3 +50,7 @@ func (person *Person) BeforeCreate(_ *gorm.DB) error {
 
 	return nil
 }
+
+func (Person) TableName() string {
+	return "persons"
+}
