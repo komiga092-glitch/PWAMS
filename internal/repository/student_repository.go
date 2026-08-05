@@ -142,3 +142,23 @@ func (r *StudentRepository) List(
 
 	return students, total, nil
 }
+
+func (r *StudentRepository) FindByID(id string) (*models.Student, error) {
+	var student models.Student
+
+	err := r.db.
+		Preload("Person").
+		Preload("CreatedBy").
+		First(&student, "id = ?", id).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrStudentNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find student by id: %w", err)
+	}
+
+	return &student, nil
+}

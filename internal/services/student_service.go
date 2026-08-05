@@ -19,6 +19,7 @@ var (
 	ErrInvalidStudentDateOfBirth = errors.New(
 		"invalid student date of birth",
 	)
+	ErrInvalidStudentID = errors.New("invalid student id")
 )
 
 type StudentService struct {
@@ -143,4 +144,21 @@ func (s *StudentService) ListStudents(
 	}
 
 	return students, total, page, pageSize, nil
+}
+
+func (s *StudentService) GetStudentByID(
+	id string,
+) (*models.Student, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidStudentID
+	}
+
+	student, err := s.studentRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return student, nil
 }

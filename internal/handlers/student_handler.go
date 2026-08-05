@@ -190,3 +190,58 @@ func (h *StudentHandler) List(c *gin.Context) {
 		},
 	})
 }
+
+func (h *StudentHandler) GetByID(c *gin.Context) {
+	studentID := c.Param("id")
+
+	student, err := h.studentService.GetStudentByID(studentID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidStudentID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid student ID",
+			})
+
+		case errors.Is(err, repository.ErrStudentNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Student not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve student",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Student retrieved successfully",
+		"student": gin.H{
+			"id":             student.ID,
+			"person_id":      student.PersonID,
+			"person_name":    student.Person.FullName,
+			"person_nic":     student.Person.NICPassport,
+			"full_name":      student.FullName,
+			"school_name":    student.SchoolName,
+			"grade":          student.Grade,
+			"student_code":   student.StudentCode,
+			"date_of_birth":  student.DateOfBirth,
+			"gender":         student.Gender,
+			"guardian_name":  student.GuardianName,
+			"guardian_phone": student.GuardianPhone,
+			"academic_year":  student.AcademicYear,
+			"remarks":        student.Remarks,
+			"status":         student.Status,
+			"created_by_id":  student.CreatedByID,
+			"created_by":     student.CreatedBy.Username,
+			"created_at":     student.CreatedAt,
+			"updated_at":     student.UpdatedAt,
+		},
+	})
+}
