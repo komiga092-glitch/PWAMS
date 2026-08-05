@@ -212,3 +212,84 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 		},
 	})
 }
+
+func (h *PersonHandler) Update(c *gin.Context) {
+	personID := c.Param("id")
+
+	var request models.UpdatePersonRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid person information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	person, err := h.personService.UpdatePerson(
+		personID,
+		request,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
+			})
+
+		case errors.Is(err, services.ErrPersonAlreadyExists):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidDateOfBirth):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidPersonStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update person",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Person updated successfully",
+		"person": gin.H{
+			"id":             person.ID,
+			"full_name":      person.FullName,
+			"nic_passport":   person.NICPassport,
+			"date_of_birth":  person.DateOfBirth,
+			"gender":         person.Gender,
+			"phone":          person.Phone,
+			"email":          person.Email,
+			"address":        person.Address,
+			"occupation":     person.Occupation,
+			"monthly_income": person.MonthlyIncome,
+			"status":         person.Status,
+			"updated_at":     person.UpdatedAt,
+		},
+	})
+}

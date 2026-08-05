@@ -124,3 +124,38 @@ func (r *PersonRepository) FindByID(id string) (*models.Person, error) {
 
 	return &person, nil
 }
+
+func (r *PersonRepository) ExistsByNICPassportExceptID(
+	nicPassport string,
+	personID string,
+) (bool, error) {
+	var count int64
+
+	value := strings.ToLower(strings.TrimSpace(nicPassport))
+
+	err := r.db.
+		Model(&models.Person{}).
+		Where(
+			"id <> ? AND LOWER(nic_passport) = ?",
+			personID,
+			value,
+		).
+		Count(&count).
+		Error
+
+	if err != nil {
+		return false, fmt.Errorf(
+			"failed to check duplicate NIC or passport: %w",
+			err,
+		)
+	}
+
+	return count > 0, nil
+}
+func (r *PersonRepository) Update(person *models.Person) error {
+	if err := r.db.Save(person).Error; err != nil {
+		return fmt.Errorf("failed to update person: %w", err)
+	}
+
+	return nil
+}

@@ -20,6 +20,10 @@ var (
 )
 var ErrInvalidPersonID = errors.New("invalid person id")
 
+var ErrInvalidPersonStatus = errors.New(
+	"selected person status is invalid",
+)
+
 type PersonService struct {
 	personRepo *repository.PersonRepository
 }
@@ -128,6 +132,90 @@ func (s *PersonService) GetPersonByID(id string) (*models.Person, error) {
 
 	person, err := s.personRepo.FindByID(id)
 	if err != nil {
+		return nil, err
+	}
+
+	return person, nil
+}
+
+func isValidPersonStatus(status string) bool {
+	switch status {
+	case models.PersonStatusActive,
+		models.PersonStatusInactive,
+		models.PersonStatusPending:
+		return true
+
+	default:
+		return false
+	}
+}
+func (s *PersonService) UpdatePerson(
+	id string,
+	request models.UpdatePersonRequest,
+) (*models.Person, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidPersonID
+	}
+
+	person, err := s.personRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	fullName := strings.TrimSpace(request.FullName)
+	nicPassport := strings.ToUpper(
+		strings.TrimSpace(request.NICPassport),
+	)
+	status := strings.TrimSpace(request.Status)
+
+	if !isValidPersonStatus(status) {
+		return nil, ErrInvalidPersonStatus
+	}
+
+	exists, err := s.personRepo.ExistsByNICPassportExceptID(
+		nicPassport,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if exists {
+		return nil, ErrPersonAlreadyExists
+	}
+
+	var dateOfBirth *time.Time
+
+	if strings.TrimSpace(request.DateOfBirth) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			request.DateOfBirth,
+		)
+		if err != nil {
+			return nil, ErrInvalidDateOfBirth
+		}
+
+		if parsedDate.After(time.Now()) {
+			return nil, ErrInvalidDateOfBirth
+		}
+
+		dateOfBirth = &parsedDate
+	}
+
+	person.FullName = fullName
+	person.NICPassport = nicPassport
+	person.DateOfBirth = dateOfBirth
+	person.Gender = strings.TrimSpace(request.Gender)
+	person.Phone = strings.TrimSpace(request.Phone)
+	person.Email = strings.ToLower(strings.TrimSpace(request.Email))
+	person.Address = strings.TrimSpace(request.Address)
+	person.Occupation = strings.TrimSpace(request.Occupation)
+	person.MonthlyIncome = request.MonthlyIncome
+	person.Status = status
+
+	if err := s.personRepo.Update(person); err != nil {
 		return nil, err
 	}
 
