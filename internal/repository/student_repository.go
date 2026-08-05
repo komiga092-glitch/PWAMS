@@ -57,3 +57,88 @@ func (r *StudentRepository) Create(student *models.Student) error {
 
 	return nil
 }
+
+func (r *StudentRepository) List(
+	search string,
+	school string,
+	grade string,
+	status string,
+	personID string,
+	page int,
+	pageSize int,
+) ([]models.Student, int64, error) {
+	var students []models.Student
+	var total int64
+
+	query := r.db.Model(&models.Student{})
+
+	if search != "" {
+		searchValue := "%" +
+			strings.ToLower(strings.TrimSpace(search)) +
+			"%"
+
+		query = query.Where(
+			`LOWER(full_name) LIKE ?
+			OR LOWER(student_code) LIKE ?
+			OR LOWER(guardian_name) LIKE ?
+			OR LOWER(guardian_phone) LIKE ?`,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+		)
+	}
+
+	if school != "" {
+		query = query.Where(
+			"LOWER(school_name) LIKE ?",
+			"%"+strings.ToLower(strings.TrimSpace(school))+"%",
+		)
+	}
+
+	if grade != "" {
+		query = query.Where(
+			"LOWER(grade) = LOWER(?)",
+			strings.TrimSpace(grade),
+		)
+	}
+
+	if status != "" {
+		query = query.Where(
+			"LOWER(status) = LOWER(?)",
+			strings.TrimSpace(status),
+		)
+	}
+
+	if personID != "" {
+		query = query.Where(
+			"person_id = ?",
+			strings.TrimSpace(personID),
+		)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, fmt.Errorf(
+			"failed to count students: %w",
+			err,
+		)
+	}
+
+	offset := (page - 1) * pageSize
+
+	if err := query.
+		Preload("Person").
+		Preload("CreatedBy").
+		Order("created_at DESC").
+		Limit(pageSize).
+		Offset(offset).
+		Find(&students).
+		Error; err != nil {
+		return nil, 0, fmt.Errorf(
+			"failed to list students: %w",
+			err,
+		)
+	}
+
+	return students, total, nil
+}

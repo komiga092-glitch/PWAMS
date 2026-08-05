@@ -24,6 +24,6 @@ func RegisterStudentRoutes(
 			models.RoleStaff,
 		),
 	)
-
+	students.GET("", studentHandler.List)
 	students.POST("", studentHandler.Create)
 }

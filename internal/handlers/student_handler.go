@@ -115,3 +115,78 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		},
 	})
 }
+
+func (h *StudentHandler) List(c *gin.Context) {
+	var query models.StudentListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid query parameters",
+		})
+		return
+	}
+
+	students, total, page, pageSize, err :=
+		h.studentService.ListStudents(query)
+
+	if err != nil {
+		if errors.Is(err, services.ErrInvalidPersonID) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to retrieve students",
+		})
+		return
+	}
+
+	items := make([]gin.H, 0, len(students))
+
+	for _, student := range students {
+		items = append(items, gin.H{
+			"id":             student.ID,
+			"person_id":      student.PersonID,
+			"person_name":    student.Person.FullName,
+			"full_name":      student.FullName,
+			"school_name":    student.SchoolName,
+			"grade":          student.Grade,
+			"student_code":   student.StudentCode,
+			"date_of_birth":  student.DateOfBirth,
+			"gender":         student.Gender,
+			"guardian_name":  student.GuardianName,
+			"guardian_phone": student.GuardianPhone,
+			"academic_year":  student.AcademicYear,
+			"remarks":        student.Remarks,
+			"status":         student.Status,
+			"created_by":     student.CreatedBy.Username,
+			"created_at":     student.CreatedAt,
+			"updated_at":     student.UpdatedAt,
+		})
+	}
+
+	totalPages := 0
+
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) / int64(pageSize),
+		)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Students retrieved successfully",
+		"data":    items,
+		"pagination": gin.H{
+			"page":        page,
+			"page_size":   pageSize,
+			"total_items": total,
+			"total_pages": totalPages,
+		},
+	})
+}

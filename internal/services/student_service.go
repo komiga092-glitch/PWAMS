@@ -105,3 +105,42 @@ func (s *StudentService) CreateStudent(
 
 	return student, nil
 }
+
+func (s *StudentService) ListStudents(
+	query models.StudentListQuery,
+) ([]models.Student, int64, int, int, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	if strings.TrimSpace(query.PersonID) != "" {
+		if _, err := uuid.Parse(query.PersonID); err != nil {
+			return nil, 0, page, pageSize, ErrInvalidPersonID
+		}
+	}
+
+	students, total, err := s.studentRepo.List(
+		query.Search,
+		query.School,
+		query.Grade,
+		query.Status,
+		query.PersonID,
+		page,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return students, total, page, pageSize, nil
+}
