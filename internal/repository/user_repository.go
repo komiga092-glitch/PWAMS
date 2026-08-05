@@ -249,3 +249,73 @@ func (r *UserRepository) SoftDelete(user *models.User) error {
 
 	return nil
 }
+
+func (r *UserRepository) CountAll() (int64, error) {
+	var count int64
+
+	if err := r.db.
+		Model(&models.User{}).
+		Count(&count).
+		Error; err != nil {
+		return 0, fmt.Errorf("failed to count users: %w", err)
+	}
+
+	return count, nil
+}
+
+func (r *UserRepository) CountByStatus(status string) (int64, error) {
+	var count int64
+
+	if err := r.db.
+		Model(&models.User{}).
+		Where("status = ?", status).
+		Count(&count).
+		Error; err != nil {
+		return 0, fmt.Errorf(
+			"failed to count users by status: %w",
+			err,
+		)
+	}
+
+	return count, nil
+}
+
+type RoleUserCount struct {
+	RoleName string
+	Count    int64
+}
+
+func (r *UserRepository) CountByRole() (
+	map[string]int64,
+	error,
+) {
+	var results []RoleUserCount
+
+	err := r.db.
+		Table("users").
+		Select(
+			"roles.name AS role_name, COUNT(users.id) AS count",
+		).
+		Joins(
+			"JOIN roles ON roles.id = users.role_id",
+		).
+		Where("users.deleted_at IS NULL").
+		Group("roles.name").
+		Scan(&results).
+		Error
+
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to count users by role: %w",
+			err,
+		)
+	}
+
+	counts := make(map[string]int64)
+
+	for _, result := range results {
+		counts[result.RoleName] = result.Count
+	}
+
+	return counts, nil
+}

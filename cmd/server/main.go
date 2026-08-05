@@ -60,6 +60,10 @@ func main() {
 		roleRepository,
 		sessionRepo,
 	)
+	dashboardService := services.NewDashboardService(
+		userRepo,
+	)
+
 	// Cookie configuration
 	secureCookie := cfg.AppEnv == "production"
 
@@ -71,6 +75,9 @@ func main() {
 	)
 	userHandler := handlers.NewUserHandler(userService)
 
+	dashboardHandler := handlers.NewDashboardHandler(
+		dashboardService,
+	)
 	// Middleware
 	authMiddleware := middleware.NewAuthMiddleware(sessionService)
 
@@ -88,6 +95,11 @@ func main() {
 	routes.RegisterUserRoutes(
 		router,
 		userHandler,
+		authMiddleware,
+	)
+	routes.RegisterDashboardRoutes(
+		router,
+		dashboardHandler,
 		authMiddleware,
 	)
 
