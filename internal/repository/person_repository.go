@@ -53,3 +53,74 @@ func (r *PersonRepository) Create(person *models.Person) error {
 
 	return nil
 }
+
+func (r *PersonRepository) List(
+	search string,
+	status string,
+	page int,
+	pageSize int,
+) ([]models.Person, int64, error) {
+	var persons []models.Person
+	var total int64
+
+	query := r.db.Model(&models.Person{})
+
+	if search != "" {
+		searchValue := "%" + strings.ToLower(strings.TrimSpace(search)) + "%"
+
+		query = query.Where(
+			`LOWER(full_name) LIKE ?
+			OR LOWER(nic_passport) LIKE ?
+			OR LOWER(phone) LIKE ?
+			OR LOWER(email) LIKE ?`,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+		)
+	}
+
+	if status != "" {
+		query = query.Where(
+			"LOWER(status) = LOWER(?)",
+			strings.TrimSpace(status),
+		)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to count persons: %w", err)
+	}
+
+	offset := (page - 1) * pageSize
+
+	if err := query.
+		Preload("CreatedBy").
+		Order("created_at DESC").
+		Limit(pageSize).
+		Offset(offset).
+		Find(&persons).
+		Error; err != nil {
+		return nil, 0, fmt.Errorf("failed to list persons: %w", err)
+	}
+
+	return persons, total, nil
+}
+
+func (r *PersonRepository) FindByID(id string) (*models.Person, error) {
+	var person models.Person
+
+	err := r.db.
+		Preload("CreatedBy").
+		First(&person, "id = ?", id).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrPersonNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find person by id: %w", err)
+	}
+
+	return &person, nil
+}

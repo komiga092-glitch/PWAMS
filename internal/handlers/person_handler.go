@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
@@ -96,6 +97,118 @@ func (h *PersonHandler) Create(c *gin.Context) {
 			"monthly_income": person.MonthlyIncome,
 			"status":         person.Status,
 			"created_by_id":  person.CreatedByID,
+		},
+	})
+}
+
+func (h *PersonHandler) List(c *gin.Context) {
+	var query models.PersonListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid query parameters",
+		})
+		return
+	}
+
+	persons, total, page, pageSize, err :=
+		h.personService.ListPersons(query)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to retrieve persons",
+		})
+		return
+	}
+
+	items := make([]gin.H, 0, len(persons))
+
+	for _, person := range persons {
+		items = append(items, gin.H{
+			"id":             person.ID,
+			"full_name":      person.FullName,
+			"nic_passport":   person.NICPassport,
+			"date_of_birth":  person.DateOfBirth,
+			"gender":         person.Gender,
+			"phone":          person.Phone,
+			"email":          person.Email,
+			"address":        person.Address,
+			"occupation":     person.Occupation,
+			"monthly_income": person.MonthlyIncome,
+			"status":         person.Status,
+			"created_by":     person.CreatedBy.Username,
+			"created_at":     person.CreatedAt,
+		})
+	}
+
+	totalPages := 0
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) / int64(pageSize),
+		)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Persons retrieved successfully",
+		"data":    items,
+		"pagination": gin.H{
+			"page":        page,
+			"page_size":   pageSize,
+			"total_items": total,
+			"total_pages": totalPages,
+		},
+	})
+}
+
+func (h *PersonHandler) GetByID(c *gin.Context) {
+	personID := c.Param("id")
+
+	person, err := h.personService.GetPersonByID(personID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve person",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Person retrieved successfully",
+		"person": gin.H{
+			"id":             person.ID,
+			"full_name":      person.FullName,
+			"nic_passport":   person.NICPassport,
+			"date_of_birth":  person.DateOfBirth,
+			"gender":         person.Gender,
+			"phone":          person.Phone,
+			"email":          person.Email,
+			"address":        person.Address,
+			"occupation":     person.Occupation,
+			"monthly_income": person.MonthlyIncome,
+			"status":         person.Status,
+			"created_by":     person.CreatedBy.Username,
+			"created_at":     person.CreatedAt,
+			"updated_at":     person.UpdatedAt,
 		},
 	})
 }

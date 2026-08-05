@@ -18,6 +18,7 @@ var (
 	)
 	ErrInvalidDateOfBirth = errors.New("invalid date of birth")
 )
+var ErrInvalidPersonID = errors.New("invalid person id")
 
 type PersonService struct {
 	personRepo *repository.PersonRepository
@@ -83,6 +84,51 @@ func (s *PersonService) CreatePerson(
 
 	if err := s.personRepo.Create(person); err != nil {
 		return nil, fmt.Errorf("unable to create person: %w", err)
+	}
+
+	return person, nil
+}
+
+func (s *PersonService) ListPersons(
+	query models.PersonListQuery,
+) ([]models.Person, int64, int, int, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	persons, total, err := s.personRepo.List(
+		query.Search,
+		query.Status,
+		page,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return persons, total, page, pageSize, nil
+}
+
+func (s *PersonService) GetPersonByID(id string) (*models.Person, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidPersonID
+	}
+
+	person, err := s.personRepo.FindByID(id)
+	if err != nil {
+		return nil, err
 	}
 
 	return person, nil
