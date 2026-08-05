@@ -52,6 +52,7 @@ func main() {
 	sessionRepo := repository.NewSessionRepository(db)
 	roleRepository := repository.NewRoleRepository(db)
 	personRepository := repository.NewPersonRepository(db)
+	studentRepository := repository.NewStudentRepository(db)
 
 	// Services
 	authService := services.NewAuthService(userRepo)
@@ -65,6 +66,10 @@ func main() {
 		userRepo,
 	)
 	personService := services.NewPersonService(personRepository)
+	studentService := services.NewStudentService(
+		studentRepository,
+		personRepository,
+	)
 
 	// Cookie configuration
 	secureCookie := cfg.AppEnv == "production"
@@ -82,6 +87,7 @@ func main() {
 	)
 
 	personHandler := handlers.NewPersonHandler(personService)
+	studentHandler := handlers.NewStudentHandler(studentService)
 
 	// Middleware
 	authMiddleware := middleware.NewAuthMiddleware(sessionService)
@@ -110,6 +116,11 @@ func main() {
 	routes.RegisterPersonRoutes(
 		router,
 		personHandler,
+		authMiddleware,
+	)
+	routes.RegisterStudentRoutes(
+		router,
+		studentHandler,
 		authMiddleware,
 	)
 
