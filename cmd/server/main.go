@@ -51,6 +51,7 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	sessionRepo := repository.NewSessionRepository(db)
 	roleRepository := repository.NewRoleRepository(db)
+	personRepository := repository.NewPersonRepository(db)
 
 	// Services
 	authService := services.NewAuthService(userRepo)
@@ -63,6 +64,7 @@ func main() {
 	dashboardService := services.NewDashboardService(
 		userRepo,
 	)
+	personService := services.NewPersonService(personRepository)
 
 	// Cookie configuration
 	secureCookie := cfg.AppEnv == "production"
@@ -78,6 +80,9 @@ func main() {
 	dashboardHandler := handlers.NewDashboardHandler(
 		dashboardService,
 	)
+
+	personHandler := handlers.NewPersonHandler(personService)
+
 	// Middleware
 	authMiddleware := middleware.NewAuthMiddleware(sessionService)
 
@@ -100,6 +105,11 @@ func main() {
 	routes.RegisterDashboardRoutes(
 		router,
 		dashboardHandler,
+		authMiddleware,
+	)
+	routes.RegisterPersonRoutes(
+		router,
+		personHandler,
 		authMiddleware,
 	)
 
