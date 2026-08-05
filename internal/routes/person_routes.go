@@ -29,4 +29,5 @@ func RegisterPersonRoutes(
 	persons.GET("/:id", personHandler.GetByID)
 	persons.POST("", personHandler.Create)
 	persons.PUT("/:id", personHandler.Update)
+	persons.PATCH("/:id/status", personHandler.UpdateStatus)
 }

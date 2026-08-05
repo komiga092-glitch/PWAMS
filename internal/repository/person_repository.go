@@ -159,3 +159,26 @@ func (r *PersonRepository) Update(person *models.Person) error {
 
 	return nil
 }
+
+func (r *PersonRepository) UpdateStatus(
+	personID string,
+	status string,
+) error {
+	result := r.db.
+		Model(&models.Person{}).
+		Where("id = ?", personID).
+		Update("status", status)
+
+	if result.Error != nil {
+		return fmt.Errorf(
+			"failed to update person status: %w",
+			result.Error,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrPersonNotFound
+	}
+
+	return nil
+}

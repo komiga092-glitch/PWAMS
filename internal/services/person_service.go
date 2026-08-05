@@ -221,3 +221,25 @@ func (s *PersonService) UpdatePerson(
 
 	return person, nil
 }
+
+func (s *PersonService) UpdatePersonStatus(
+	id string,
+	status string,
+) error {
+	id = strings.TrimSpace(id)
+	status = strings.TrimSpace(status)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidPersonID
+	}
+
+	if !isValidPersonStatus(status) {
+		return ErrInvalidPersonStatus
+	}
+
+	if err := s.personRepo.UpdateStatus(id, status); err != nil {
+		return err
+	}
+
+	return nil
+}
