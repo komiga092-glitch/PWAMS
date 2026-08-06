@@ -135,3 +135,28 @@ func (r *AidRequestRepository) List(
 
 	return aidRequests, total, nil
 }
+func (r *AidRequestRepository) FindByID(
+	id string,
+) (*models.AidRequest, error) {
+	var aidRequest models.AidRequest
+
+	err := r.db.
+		Preload("Person").
+		Preload("CreatedBy").
+		Preload("ReviewedBy").
+		First(&aidRequest, "id = ?", id).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrAidRequestNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to find aid request by id: %w",
+			err,
+		)
+	}
+
+	return &aidRequest, nil
+}

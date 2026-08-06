@@ -213,3 +213,84 @@ func (h *AidRequestHandler) List(c *gin.Context) {
 		},
 	})
 }
+func (h *AidRequestHandler) GetByID(c *gin.Context) {
+	aidRequestID := c.Param("id")
+
+	aidRequest, err :=
+		h.aidRequestService.GetAidRequestByID(aidRequestID)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidAidRequestID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid aid request ID",
+			})
+
+		case errors.Is(err, repository.ErrAidRequestNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Aid request not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve aid request",
+			})
+		}
+
+		return
+	}
+
+	var reviewedBy any
+
+	if aidRequest.ReviewedBy != nil {
+		reviewedBy = gin.H{
+			"id":       aidRequest.ReviewedBy.ID,
+			"username": aidRequest.ReviewedBy.Username,
+			"email":    aidRequest.ReviewedBy.Email,
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Aid request retrieved successfully",
+		"aid_request": gin.H{
+			"id": aidRequest.ID,
+
+			"person": gin.H{
+				"id":           aidRequest.Person.ID,
+				"full_name":    aidRequest.Person.FullName,
+				"nic_passport": aidRequest.Person.NICPassport,
+				"phone":        aidRequest.Person.Phone,
+				"email":        aidRequest.Person.Email,
+				"address":      aidRequest.Person.Address,
+				"status":       aidRequest.Person.Status,
+			},
+
+			"aid_type":         aidRequest.AidType,
+			"priority":         aidRequest.Priority,
+			"title":            aidRequest.Title,
+			"description":      aidRequest.Description,
+			"requested_amount": aidRequest.RequestedAmount,
+			"approved_amount":  aidRequest.ApprovedAmount,
+			"currency":         aidRequest.Currency,
+			"request_date":     aidRequest.RequestDate,
+			"needed_by":        aidRequest.NeededBy,
+			"status":           aidRequest.Status,
+			"review_notes":     aidRequest.ReviewNotes,
+			"reviewed_by":      reviewedBy,
+			"reviewed_at":      aidRequest.ReviewedAt,
+
+			"created_by": gin.H{
+				"id":       aidRequest.CreatedBy.ID,
+				"username": aidRequest.CreatedBy.Username,
+				"email":    aidRequest.CreatedBy.Email,
+			},
+
+			"created_at": aidRequest.CreatedAt,
+			"updated_at": aidRequest.UpdatedAt,
+		},
+	})
+}

@@ -24,6 +24,7 @@ var (
 	ErrInvalidAidDateRange = errors.New(
 		"invalid aid request date range",
 	)
+	ErrInvalidAidRequestID = errors.New("invalid aid request id")
 )
 
 type AidRequestService struct {
@@ -267,4 +268,20 @@ func (s *AidRequestService) ListAidRequests(
 	}
 
 	return aidRequests, total, page, pageSize, nil
+}
+func (s *AidRequestService) GetAidRequestByID(
+	id string,
+) (*models.AidRequest, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidAidRequestID
+	}
+
+	aidRequest, err := s.aidRequestRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return aidRequest, nil
 }
