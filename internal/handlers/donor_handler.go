@@ -237,3 +237,83 @@ func (h *DonorHandler) GetByID(c *gin.Context) {
 		},
 	})
 }
+
+func (h *DonorHandler) Update(c *gin.Context) {
+	donorID := c.Param("id")
+
+	var request models.UpdateDonorRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid donor information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	donor, err := h.donorService.UpdateDonor(
+		donorID,
+		request,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donor ID",
+			})
+
+		case errors.Is(err, repository.ErrDonorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donor not found",
+			})
+
+		case errors.Is(err, services.ErrInvalidDonorType),
+			errors.Is(err, services.ErrIndividualDonorIdentityRequired),
+			errors.Is(err, services.ErrOrganizationDetailsRequired),
+			errors.Is(err, services.ErrInvalidDonorStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrDonorAlreadyExists):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update donor",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donor updated successfully",
+		"donor": gin.H{
+			"id":                      donor.ID,
+			"name":                    donor.Name,
+			"donor_type":              donor.DonorType,
+			"nic_passport":            donor.NICPassport,
+			"organization_name":       donor.OrganizationName,
+			"registration_number":     donor.RegistrationNumber,
+			"phone":                   donor.Phone,
+			"email":                   donor.Email,
+			"address":                 donor.Address,
+			"contact_person_name":     donor.ContactPersonName,
+			"contact_person_phone":    donor.ContactPersonPhone,
+			"preferred_donation_type": donor.PreferredDonationType,
+			"notes":                   donor.Notes,
+			"status":                  donor.Status,
+			"updated_at":              donor.UpdatedAt,
+		},
+	})
+}

@@ -28,4 +28,6 @@ func RegisterDonorRoutes(
 	donors.GET("", donorHandler.List)
 	donors.GET("/:id", donorHandler.GetByID)
 	donors.POST("", donorHandler.Create)
+	donors.PUT("/:id", donorHandler.Update)
+
 }

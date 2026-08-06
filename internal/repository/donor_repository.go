@@ -157,3 +157,58 @@ func (r *DonorRepository) FindByID(id string) (*models.Donor, error) {
 
 	return &donor, nil
 }
+
+func (r *DonorRepository) ExistsByIdentityExceptID(
+	nicPassport string,
+	registrationNumber string,
+	donorID string,
+) (bool, error) {
+	var count int64
+
+	query := r.db.
+		Model(&models.Donor{}).
+		Where("id <> ?", donorID)
+
+	nicPassport = strings.TrimSpace(nicPassport)
+	registrationNumber = strings.TrimSpace(registrationNumber)
+
+	switch {
+	case nicPassport != "" && registrationNumber != "":
+		query = query.Where(
+			"UPPER(nic_passport) = UPPER(?) OR UPPER(registration_number) = UPPER(?)",
+			nicPassport,
+			registrationNumber,
+		)
+
+	case nicPassport != "":
+		query = query.Where(
+			"UPPER(nic_passport) = UPPER(?)",
+			nicPassport,
+		)
+
+	case registrationNumber != "":
+		query = query.Where(
+			"UPPER(registration_number) = UPPER(?)",
+			registrationNumber,
+		)
+
+	default:
+		return false, nil
+	}
+
+	if err := query.Count(&count).Error; err != nil {
+		return false, fmt.Errorf(
+			"failed to check duplicate donor identity: %w",
+			err,
+		)
+	}
+
+	return count > 0, nil
+}
+func (r *DonorRepository) Update(donor *models.Donor) error {
+	if err := r.db.Save(donor).Error; err != nil {
+		return fmt.Errorf("failed to update donor: %w", err)
+	}
+
+	return nil
+}

@@ -23,6 +23,8 @@ var (
 		"organization name and registration number are required",
 	)
 	ErrInvalidDonorID = errors.New("invalid donor id")
+
+	ErrInvalidDonorStatus = errors.New("selected donor status is invalid")
 )
 
 type DonorService struct {
@@ -141,6 +143,110 @@ func (s *DonorService) GetDonorByID(
 
 	donor, err := s.donorRepo.FindByID(id)
 	if err != nil {
+		return nil, err
+	}
+
+	return donor, nil
+}
+func isValidDonorStatus(status string) bool {
+	switch status {
+	case models.DonorStatusActive,
+		models.DonorStatusInactive,
+		models.DonorStatusPending:
+		return true
+
+	default:
+		return false
+	}
+}
+
+func (s *DonorService) UpdateDonor(
+	id string,
+	request models.UpdateDonorRequest,
+) (*models.Donor, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidDonorID
+	}
+
+	donor, err := s.donorRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	donorType := strings.TrimSpace(request.DonorType)
+	nicPassport := strings.ToUpper(
+		strings.TrimSpace(request.NICPassport),
+	)
+	registrationNumber := strings.ToUpper(
+		strings.TrimSpace(request.RegistrationNumber),
+	)
+	organizationName := strings.TrimSpace(
+		request.OrganizationName,
+	)
+	status := strings.TrimSpace(request.Status)
+
+	switch donorType {
+	case models.DonorTypeIndividual:
+		if nicPassport == "" {
+			return nil, ErrIndividualDonorIdentityRequired
+		}
+
+		organizationName = ""
+		registrationNumber = ""
+
+	case models.DonorTypeOrganization:
+		if organizationName == "" || registrationNumber == "" {
+			return nil, ErrOrganizationDetailsRequired
+		}
+
+		nicPassport = ""
+
+	default:
+		return nil, ErrInvalidDonorType
+	}
+
+	if !isValidDonorStatus(status) {
+		return nil, ErrInvalidDonorStatus
+	}
+
+	exists, err := s.donorRepo.ExistsByIdentityExceptID(
+		nicPassport,
+		registrationNumber,
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if exists {
+		return nil, ErrDonorAlreadyExists
+	}
+
+	donor.Name = strings.TrimSpace(request.Name)
+	donor.DonorType = donorType
+	donor.NICPassport = nicPassport
+	donor.OrganizationName = organizationName
+	donor.RegistrationNumber = registrationNumber
+	donor.Phone = strings.TrimSpace(request.Phone)
+	donor.Email = strings.ToLower(
+		strings.TrimSpace(request.Email),
+	)
+	donor.Address = strings.TrimSpace(request.Address)
+	donor.ContactPersonName = strings.TrimSpace(
+		request.ContactPersonName,
+	)
+	donor.ContactPersonPhone = strings.TrimSpace(
+		request.ContactPersonPhone,
+	)
+	donor.PreferredDonationType = strings.TrimSpace(
+		request.PreferredDonationType,
+	)
+	donor.Notes = strings.TrimSpace(request.Notes)
+	donor.Status = status
+
+	if err := s.donorRepo.Update(donor); err != nil {
 		return nil, err
 	}
 
