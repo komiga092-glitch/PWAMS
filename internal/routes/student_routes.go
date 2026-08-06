@@ -28,4 +28,14 @@ func RegisterStudentRoutes(
 	students.GET("/:id", studentHandler.GetByID)
 	students.POST("", studentHandler.Create)
 	students.PUT("/:id", studentHandler.Update)
+	students.PATCH("/:id/status", studentHandler.UpdateStatus)
+
+	students.DELETE(
+		"/:id",
+		middleware.RequireAnyRole(
+			models.RoleSuperAdmin,
+			models.RoleAdmin,
+		),
+		studentHandler.Delete,
+	)
 }

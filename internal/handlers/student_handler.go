@@ -340,3 +340,91 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		},
 	})
 }
+
+func (h *StudentHandler) UpdateStatus(c *gin.Context) {
+	studentID := c.Param("id")
+
+	var request models.UpdateStudentStatusRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Status is required",
+		})
+		return
+	}
+
+	err := h.studentService.UpdateStudentStatus(
+		studentID,
+		request.Status,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidStudentID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid student ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidStudentStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, repository.ErrStudentNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Student not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update student status",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Student status updated successfully",
+	})
+}
+
+func (h *StudentHandler) Delete(c *gin.Context) {
+	studentID := c.Param("id")
+
+	err := h.studentService.DeleteStudent(studentID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidStudentID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid student ID",
+			})
+
+		case errors.Is(err, repository.ErrStudentNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Student not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete student",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Student deleted successfully",
+	})
+}

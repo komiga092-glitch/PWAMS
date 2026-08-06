@@ -264,3 +264,44 @@ func (s *StudentService) UpdateStudent(
 
 	return student, nil
 }
+
+func (s *StudentService) UpdateStudentStatus(
+	id string,
+	status string,
+) error {
+	id = strings.TrimSpace(id)
+	status = strings.TrimSpace(status)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidStudentID
+	}
+
+	if !isValidStudentStatus(status) {
+		return ErrInvalidStudentStatus
+	}
+
+	if err := s.studentRepo.UpdateStatus(id, status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *StudentService) DeleteStudent(id string) error {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidStudentID
+	}
+
+	student, err := s.studentRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.studentRepo.SoftDelete(student); err != nil {
+		return err
+	}
+
+	return nil
+}

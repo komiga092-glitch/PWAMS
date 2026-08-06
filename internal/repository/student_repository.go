@@ -202,3 +202,36 @@ func (r *StudentRepository) Update(student *models.Student) error {
 
 	return nil
 }
+
+func (r *StudentRepository) UpdateStatus(
+	studentID string,
+	status string,
+) error {
+	result := r.db.
+		Model(&models.Student{}).
+		Where("id = ?", studentID).
+		Update("status", status)
+
+	if result.Error != nil {
+		return fmt.Errorf(
+			"failed to update student status: %w",
+			result.Error,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrStudentNotFound
+	}
+
+	return nil
+}
+
+func (r *StudentRepository) SoftDelete(
+	student *models.Student,
+) error {
+	if err := r.db.Delete(student).Error; err != nil {
+		return fmt.Errorf("failed to delete student: %w", err)
+	}
+
+	return nil
+}
