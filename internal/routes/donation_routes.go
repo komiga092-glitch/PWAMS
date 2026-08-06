@@ -28,4 +28,15 @@ func RegisterDonationRoutes(
 	donations.GET("", donationHandler.List)
 	donations.GET("/:id", donationHandler.GetByID)
 	donations.POST("", donationHandler.Create)
+	donations.PUT("/:id", donationHandler.Update)
+	donations.PATCH("/:id/status", donationHandler.UpdateStatus)
+
+	donations.DELETE(
+		"/:id",
+		middleware.RequireAnyRole(
+			models.RoleSuperAdmin,
+			models.RoleAdmin,
+		),
+		donationHandler.Delete,
+	)
 }

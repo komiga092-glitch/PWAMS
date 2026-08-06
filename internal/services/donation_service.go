@@ -44,6 +44,9 @@ var (
 	)
 	ErrInvalidDonationID = errors.New("invalid donation id")
 )
+var ErrConfirmedDonationCannotDelete = errors.New(
+	"confirmed donations cannot be deleted",
+)
 
 func isValidDonationStatus(status string) bool {
 	switch status {
@@ -347,4 +350,151 @@ func (s *DonationService) GetDonationByID(
 	}
 
 	return donation, nil
+}
+
+func (s *DonationService) UpdateDonation(
+	id string,
+	request models.UpdateDonationRequest,
+) (*models.Donation, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidDonationID
+	}
+
+	donation, err := s.donationRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var personID *uuid.UUID
+
+	if strings.TrimSpace(request.PersonID) != "" {
+		value, err := uuid.Parse(strings.TrimSpace(request.PersonID))
+		if err != nil {
+			return nil, ErrInvalidPersonID
+		}
+
+		if _, err := s.personRepo.FindByID(value.String()); err != nil {
+			return nil, err
+		}
+
+		personID = &value
+	}
+
+	donationType := strings.TrimSpace(request.DonationType)
+	if !isValidDonationType(donationType) {
+		return nil, ErrInvalidDonationType
+	}
+
+	status := strings.TrimSpace(request.Status)
+	if !isValidDonationStatus(status) {
+		return nil, ErrInvalidDonationStatus
+	}
+
+	switch donationType {
+	case models.DonationTypeCash:
+		if request.Amount <= 0 {
+			return nil, ErrCashAmountRequired
+		}
+
+	default:
+		if strings.TrimSpace(request.ItemName) == "" ||
+			request.Quantity <= 0 ||
+			strings.TrimSpace(request.Unit) == "" {
+			return nil, ErrItemDetailsRequired
+		}
+	}
+
+	donationDate := donation.DonationDate
+
+	if strings.TrimSpace(request.DonationDate) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			request.DonationDate,
+		)
+		if err != nil {
+			return nil, ErrInvalidDonationDate
+		}
+
+		if parsedDate.After(time.Now().UTC()) {
+			return nil, ErrInvalidDonationDate
+		}
+
+		donationDate = parsedDate
+	}
+
+	currency := strings.ToUpper(strings.TrimSpace(request.Currency))
+	if currency == "" {
+		currency = "LKR"
+	}
+
+	donation.PersonID = personID
+	donation.DonationType = donationType
+	donation.Amount = request.Amount
+	donation.Currency = currency
+	donation.ItemName = strings.TrimSpace(request.ItemName)
+	donation.Quantity = request.Quantity
+	donation.Unit = strings.TrimSpace(request.Unit)
+	donation.Description = strings.TrimSpace(request.Description)
+	donation.DonationDate = donationDate
+	donation.Status = status
+
+	if donationType == models.DonationTypeCash {
+		donation.ItemName = ""
+		donation.Quantity = 0
+		donation.Unit = ""
+	} else {
+		donation.Amount = 0
+	}
+
+	if err := s.donationRepo.Update(donation); err != nil {
+		return nil, err
+	}
+
+	return donation, nil
+}
+func (s *DonationService) UpdateDonationStatus(
+	id string,
+	status string,
+) error {
+	id = strings.TrimSpace(id)
+	status = strings.TrimSpace(status)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidDonationID
+	}
+
+	if !isValidDonationStatus(status) {
+		return ErrInvalidDonationStatus
+	}
+
+	if err := s.donationRepo.UpdateStatus(id, status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *DonationService) DeleteDonation(id string) error {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidDonationID
+	}
+
+	donation, err := s.donationRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if donation.Status == models.DonationStatusConfirmed {
+		return ErrConfirmedDonationCannotDelete
+	}
+
+	if err := s.donationRepo.SoftDelete(donation); err != nil {
+		return fmt.Errorf("failed to soft delete donation: %w", err)
+	}
+
+	return nil
 }

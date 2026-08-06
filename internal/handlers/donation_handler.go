@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -331,5 +332,187 @@ func (h *DonationHandler) GetByID(c *gin.Context) {
 			"created_at": donation.CreatedAt,
 			"updated_at": donation.UpdatedAt,
 		},
+	})
+}
+
+func (h *DonationHandler) Update(c *gin.Context) {
+	donationID := c.Param("id")
+
+	var request models.UpdateDonationRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid donation information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	donation, err := h.donationService.UpdateDonation(
+		donationID,
+		request,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonationID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donation ID",
+			})
+
+		case errors.Is(err, repository.ErrDonationNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donation not found",
+			})
+
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
+			})
+
+		case errors.Is(err, services.ErrInvalidDonationType),
+			errors.Is(err, services.ErrInvalidDonationStatus),
+			errors.Is(err, services.ErrCashAmountRequired),
+			errors.Is(err, services.ErrItemDetailsRequired),
+			errors.Is(err, services.ErrInvalidDonationDate):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update donation",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donation updated successfully",
+		"donation": gin.H{
+			"id":            donation.ID,
+			"reference_no":  donation.ReferenceNo,
+			"donor_id":      donation.DonorID,
+			"person_id":     donation.PersonID,
+			"donation_type": donation.DonationType,
+			"amount":        donation.Amount,
+			"currency":      donation.Currency,
+			"item_name":     donation.ItemName,
+			"quantity":      donation.Quantity,
+			"unit":          donation.Unit,
+			"description":   donation.Description,
+			"donation_date": donation.DonationDate,
+			"status":        donation.Status,
+			"updated_at":    donation.UpdatedAt,
+		},
+	})
+}
+func (h *DonationHandler) UpdateStatus(c *gin.Context) {
+	donationID := c.Param("id")
+
+	var request models.UpdateDonationStatusRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Status is required",
+		})
+		return
+	}
+
+	err := h.donationService.UpdateDonationStatus(
+		donationID,
+		request.Status,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonationID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donation ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidDonationStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, repository.ErrDonationNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donation not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update donation status",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donation status updated successfully",
+	})
+}
+func (h *DonationHandler) Delete(c *gin.Context) {
+	donationID := c.Param("id")
+
+	err := h.donationService.DeleteDonation(donationID)
+	if err != nil {
+		log.Printf("delete donation error: %T - %v", err, err)
+
+		switch {
+		case errors.Is(err, services.ErrInvalidDonationID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donation ID",
+			})
+
+		case errors.Is(err, repository.ErrDonationNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donation not found",
+			})
+
+		case errors.Is(err, services.ErrConfirmedDonationCannotDelete):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete donation",
+				"error":   err.Error(),
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donation deleted successfully",
 	})
 }

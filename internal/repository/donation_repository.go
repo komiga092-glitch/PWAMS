@@ -186,3 +186,46 @@ func (r *DonationRepository) FindByID(
 
 	return &donation, nil
 }
+
+func (r *DonationRepository) Update(
+	donation *models.Donation,
+) error {
+	if err := r.db.Save(donation).Error; err != nil {
+		return fmt.Errorf("failed to update donation: %w", err)
+	}
+
+	return nil
+}
+
+func (r *DonationRepository) UpdateStatus(
+	donationID string,
+	status string,
+) error {
+	result := r.db.
+		Model(&models.Donation{}).
+		Where("id = ?", donationID).
+		Update("status", status)
+
+	if result.Error != nil {
+		return fmt.Errorf(
+			"failed to update donation status: %w",
+			result.Error,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrDonationNotFound
+	}
+
+	return nil
+}
+
+func (r *DonationRepository) SoftDelete(
+	donation *models.Donation,
+) error {
+	if err := r.db.Delete(donation).Error; err != nil {
+		return fmt.Errorf("failed to delete donation: %w", err)
+	}
+
+	return nil
+}
