@@ -97,3 +97,34 @@ func (s *DonorService) CreateDonor(
 
 	return donor, nil
 }
+
+func (s *DonorService) ListDonors(
+	query models.DonorListQuery,
+) ([]models.Donor, int64, int, int, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	donors, total, err := s.donorRepo.List(
+		query.Search,
+		query.Type,
+		query.Status,
+		page,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return donors, total, page, pageSize, nil
+}

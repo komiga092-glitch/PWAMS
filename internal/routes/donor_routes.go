@@ -25,5 +25,6 @@ func RegisterDonorRoutes(
 		),
 	)
 
+	donors.GET("", donorHandler.List)
 	donors.POST("", donorHandler.Create)
 }

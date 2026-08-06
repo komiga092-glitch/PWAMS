@@ -115,3 +115,70 @@ func (h *DonorHandler) Create(c *gin.Context) {
 		},
 	})
 }
+
+func (h *DonorHandler) List(c *gin.Context) {
+	var query models.DonorListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid query parameters",
+		})
+		return
+	}
+
+	donors, total, page, pageSize, err :=
+		h.donorService.ListDonors(query)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to retrieve donors",
+		})
+		return
+	}
+
+	items := make([]gin.H, 0, len(donors))
+
+	for _, donor := range donors {
+		items = append(items, gin.H{
+			"id":                      donor.ID,
+			"name":                    donor.Name,
+			"donor_type":              donor.DonorType,
+			"nic_passport":            donor.NICPassport,
+			"organization_name":       donor.OrganizationName,
+			"registration_number":     donor.RegistrationNumber,
+			"phone":                   donor.Phone,
+			"email":                   donor.Email,
+			"address":                 donor.Address,
+			"contact_person_name":     donor.ContactPersonName,
+			"contact_person_phone":    donor.ContactPersonPhone,
+			"preferred_donation_type": donor.PreferredDonationType,
+			"notes":                   donor.Notes,
+			"status":                  donor.Status,
+			"created_by":              donor.CreatedBy.Username,
+			"created_at":              donor.CreatedAt,
+			"updated_at":              donor.UpdatedAt,
+		})
+	}
+
+	totalPages := 0
+
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) / int64(pageSize),
+		)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donors retrieved successfully",
+		"data":    items,
+		"pagination": gin.H{
+			"page":        page,
+			"page_size":   pageSize,
+			"total_items": total,
+			"total_pages": totalPages,
+		},
+	})
+}

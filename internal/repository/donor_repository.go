@@ -66,3 +66,75 @@ func (r *DonorRepository) Create(donor *models.Donor) error {
 
 	return nil
 }
+
+func (r *DonorRepository) List(
+	search string,
+	donorType string,
+	status string,
+	page int,
+	pageSize int,
+) ([]models.Donor, int64, error) {
+	var donors []models.Donor
+	var total int64
+
+	query := r.db.Model(&models.Donor{})
+
+	if search != "" {
+		searchValue := "%" +
+			strings.ToLower(strings.TrimSpace(search)) +
+			"%"
+
+		query = query.Where(
+			`LOWER(name) LIKE ?
+			OR LOWER(nic_passport) LIKE ?
+			OR LOWER(organization_name) LIKE ?
+			OR LOWER(registration_number) LIKE ?
+			OR LOWER(phone) LIKE ?
+			OR LOWER(email) LIKE ?`,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+		)
+	}
+
+	if donorType != "" {
+		query = query.Where(
+			"LOWER(donor_type) = LOWER(?)",
+			strings.TrimSpace(donorType),
+		)
+	}
+
+	if status != "" {
+		query = query.Where(
+			"LOWER(status) = LOWER(?)",
+			strings.TrimSpace(status),
+		)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, fmt.Errorf(
+			"failed to count donors: %w",
+			err,
+		)
+	}
+
+	offset := (page - 1) * pageSize
+
+	if err := query.
+		Preload("CreatedBy").
+		Order("created_at DESC").
+		Limit(pageSize).
+		Offset(offset).
+		Find(&donors).
+		Error; err != nil {
+		return nil, 0, fmt.Errorf(
+			"failed to list donors: %w",
+			err,
+		)
+	}
+
+	return donors, total, nil
+}
