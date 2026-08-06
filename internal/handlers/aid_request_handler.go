@@ -111,3 +111,105 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 		},
 	})
 }
+func (h *AidRequestHandler) List(c *gin.Context) {
+	var query models.AidRequestListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid query parameters",
+		})
+		return
+	}
+
+	aidRequests, total, page, pageSize, err :=
+		h.aidRequestService.ListAidRequests(query)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidAidType),
+			errors.Is(err, services.ErrInvalidAidPriority),
+			errors.Is(err, services.ErrInvalidAidStatus),
+			errors.Is(err, services.ErrInvalidAidDateRange):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve aid requests",
+			})
+		}
+
+		return
+	}
+
+	items := make([]gin.H, 0, len(aidRequests))
+
+	for _, aidRequest := range aidRequests {
+		var reviewedBy any
+
+		if aidRequest.ReviewedBy != nil {
+			reviewedBy = gin.H{
+				"id":       aidRequest.ReviewedBy.ID,
+				"username": aidRequest.ReviewedBy.Username,
+			}
+		}
+
+		items = append(items, gin.H{
+			"id": aidRequest.ID,
+
+			"person": gin.H{
+				"id":           aidRequest.Person.ID,
+				"full_name":    aidRequest.Person.FullName,
+				"nic_passport": aidRequest.Person.NICPassport,
+			},
+
+			"aid_type":         aidRequest.AidType,
+			"priority":         aidRequest.Priority,
+			"title":            aidRequest.Title,
+			"description":      aidRequest.Description,
+			"requested_amount": aidRequest.RequestedAmount,
+			"approved_amount":  aidRequest.ApprovedAmount,
+			"currency":         aidRequest.Currency,
+			"request_date":     aidRequest.RequestDate,
+			"needed_by":        aidRequest.NeededBy,
+			"status":           aidRequest.Status,
+			"review_notes":     aidRequest.ReviewNotes,
+			"reviewed_by":      reviewedBy,
+			"reviewed_at":      aidRequest.ReviewedAt,
+			"created_by":       aidRequest.CreatedBy.Username,
+			"created_at":       aidRequest.CreatedAt,
+			"updated_at":       aidRequest.UpdatedAt,
+		})
+	}
+
+	totalPages := 0
+
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) /
+				int64(pageSize),
+		)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Aid requests retrieved successfully",
+		"data":    items,
+		"pagination": gin.H{
+			"page":        page,
+			"page_size":   pageSize,
+			"total_items": total,
+			"total_pages": totalPages,
+		},
+	})
+}

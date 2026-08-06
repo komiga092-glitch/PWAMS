@@ -25,5 +25,6 @@ func RegisterAidRequestRoutes(
 		),
 	)
 
+	aidRequests.GET("", aidRequestHandler.List)
 	aidRequests.POST("", aidRequestHandler.Create)
 }

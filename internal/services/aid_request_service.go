@@ -17,6 +17,13 @@ var (
 	ErrInvalidAidPriority    = errors.New("invalid aid priority")
 	ErrInvalidAidRequestDate = errors.New("invalid aid request date")
 	ErrInvalidNeededByDate   = errors.New("invalid needed-by date")
+	ErrInvalidAidStatus      = errors.New(
+		"invalid aid request status",
+	)
+
+	ErrInvalidAidDateRange = errors.New(
+		"invalid aid request date range",
+	)
 )
 
 type AidRequestService struct {
@@ -150,4 +157,114 @@ func isValidAidPriority(value string) bool {
 	default:
 		return false
 	}
+}
+func isValidAidStatus(value string) bool {
+	switch value {
+	case models.AidStatusPending,
+		models.AidStatusUnderReview,
+		models.AidStatusApproved,
+		models.AidStatusRejected,
+		models.AidStatusCompleted,
+		models.AidStatusCancelled:
+		return true
+
+	default:
+		return false
+	}
+}
+func (s *AidRequestService) ListAidRequests(
+	query models.AidRequestListQuery,
+) ([]models.AidRequest, int64, int, int, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	personID := strings.TrimSpace(query.PersonID)
+
+	if personID != "" {
+		if _, err := uuid.Parse(personID); err != nil {
+			return nil, 0, page, pageSize, ErrInvalidPersonID
+		}
+	}
+
+	aidType := strings.TrimSpace(query.Type)
+
+	if aidType != "" && !isValidAidType(aidType) {
+		return nil, 0, page, pageSize, ErrInvalidAidType
+	}
+
+	priority := strings.TrimSpace(query.Priority)
+
+	if priority != "" && !isValidAidPriority(priority) {
+		return nil, 0, page, pageSize, ErrInvalidAidPriority
+	}
+
+	status := strings.TrimSpace(query.Status)
+
+	if status != "" && !isValidAidStatus(status) {
+		return nil, 0, page, pageSize, ErrInvalidAidStatus
+	}
+
+	var fromDate *time.Time
+	var toDate *time.Time
+
+	if strings.TrimSpace(query.FromDate) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			query.FromDate,
+		)
+		if err != nil {
+			return nil, 0, page, pageSize,
+				ErrInvalidAidDateRange
+		}
+
+		fromDate = &parsedDate
+	}
+
+	if strings.TrimSpace(query.ToDate) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			query.ToDate,
+		)
+		if err != nil {
+			return nil, 0, page, pageSize,
+				ErrInvalidAidDateRange
+		}
+
+		toDate = &parsedDate
+	}
+
+	if fromDate != nil &&
+		toDate != nil &&
+		fromDate.After(*toDate) {
+		return nil, 0, page, pageSize,
+			ErrInvalidAidDateRange
+	}
+
+	aidRequests, total, err := s.aidRequestRepo.List(
+		query.Search,
+		personID,
+		aidType,
+		priority,
+		status,
+		fromDate,
+		toDate,
+		page,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return aidRequests, total, page, pageSize, nil
 }
