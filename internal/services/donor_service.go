@@ -22,6 +22,7 @@ var (
 	ErrOrganizationDetailsRequired = errors.New(
 		"organization name and registration number are required",
 	)
+	ErrInvalidDonorID = errors.New("invalid donor id")
 )
 
 type DonorService struct {
@@ -127,4 +128,21 @@ func (s *DonorService) ListDonors(
 	}
 
 	return donors, total, page, pageSize, nil
+}
+
+func (s *DonorService) GetDonorByID(
+	id string,
+) (*models.Donor, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidDonorID
+	}
+
+	donor, err := s.donorRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return donor, nil
 }

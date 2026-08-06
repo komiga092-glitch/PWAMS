@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
@@ -179,6 +180,60 @@ func (h *DonorHandler) List(c *gin.Context) {
 			"page_size":   pageSize,
 			"total_items": total,
 			"total_pages": totalPages,
+		},
+	})
+}
+
+func (h *DonorHandler) GetByID(c *gin.Context) {
+	donorID := c.Param("id")
+
+	donor, err := h.donorService.GetDonorByID(donorID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donor ID",
+			})
+
+		case errors.Is(err, repository.ErrDonorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donor not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve donor",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donor retrieved successfully",
+		"donor": gin.H{
+			"id":                      donor.ID,
+			"name":                    donor.Name,
+			"donor_type":              donor.DonorType,
+			"nic_passport":            donor.NICPassport,
+			"organization_name":       donor.OrganizationName,
+			"registration_number":     donor.RegistrationNumber,
+			"phone":                   donor.Phone,
+			"email":                   donor.Email,
+			"address":                 donor.Address,
+			"contact_person_name":     donor.ContactPersonName,
+			"contact_person_phone":    donor.ContactPersonPhone,
+			"preferred_donation_type": donor.PreferredDonationType,
+			"notes":                   donor.Notes,
+			"status":                  donor.Status,
+			"created_by_id":           donor.CreatedByID,
+			"created_by":              donor.CreatedBy.Username,
+			"created_at":              donor.CreatedAt,
+			"updated_at":              donor.UpdatedAt,
 		},
 	})
 }

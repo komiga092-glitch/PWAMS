@@ -138,3 +138,22 @@ func (r *DonorRepository) List(
 
 	return donors, total, nil
 }
+
+func (r *DonorRepository) FindByID(id string) (*models.Donor, error) {
+	var donor models.Donor
+
+	err := r.db.
+		Preload("CreatedBy").
+		First(&donor, "id = ?", id).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrDonorNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find donor by id: %w", err)
+	}
+
+	return &donor, nil
+}
