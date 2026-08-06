@@ -384,3 +384,228 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 		},
 	})
 }
+func (h *AidRequestHandler) Review(c *gin.Context) {
+	aidRequestID := c.Param("id")
+
+	var request models.ReviewAidRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid review information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	value, exists := c.Get("current_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": "Authentication required",
+		})
+		return
+	}
+
+	currentUser, ok := value.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Invalid authentication context",
+		})
+		return
+	}
+
+	aidRequest, err :=
+		h.aidRequestService.ReviewAidRequest(
+			aidRequestID,
+			request,
+			currentUser.ID,
+		)
+
+	if err != nil {
+		switch {
+		case errors.Is(
+			err,
+			services.ErrInvalidAidRequestID,
+		):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid aid request ID",
+			})
+
+		case errors.Is(
+			err,
+			repository.ErrAidRequestNotFound,
+		):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Aid request not found",
+			})
+
+		case errors.Is(
+			err,
+			services.ErrInvalidAidStatus,
+		),
+			errors.Is(
+				err,
+				services.ErrInvalidAidStatusTransition,
+			),
+			errors.Is(
+				err,
+				services.ErrApprovedAmountRequired,
+			),
+			errors.Is(
+				err,
+				services.ErrApprovedAmountTooHigh,
+			):
+			c.JSON(
+				http.StatusUnprocessableEntity,
+				gin.H{
+					"success": false,
+					"message": err.Error(),
+				},
+			)
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to review aid request",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Aid request reviewed successfully",
+		"aid_request": gin.H{
+			"id":               aidRequest.ID,
+			"status":           aidRequest.Status,
+			"requested_amount": aidRequest.RequestedAmount,
+			"approved_amount":  aidRequest.ApprovedAmount,
+			"review_notes":     aidRequest.ReviewNotes,
+			"reviewed_by_id":   aidRequest.ReviewedByID,
+			"reviewed_at":      aidRequest.ReviewedAt,
+		},
+	})
+}
+func (h *AidRequestHandler) Cancel(c *gin.Context) {
+	aidRequestID := c.Param("id")
+
+	var request models.CancelAidRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Cancellation reason is required",
+		})
+		return
+	}
+
+	value, exists := c.Get("current_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": "Authentication required",
+		})
+		return
+	}
+
+	currentUser, ok := value.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Invalid authentication context",
+		})
+		return
+	}
+
+	aidRequest, err := h.aidRequestService.CancelAidRequest(
+		aidRequestID,
+		request.Reason,
+		currentUser.ID,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidAidRequestID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid aid request ID",
+			})
+
+		case errors.Is(err, repository.ErrAidRequestNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Aid request not found",
+			})
+
+		case errors.Is(err, services.ErrAidRequestCannotBeCancelled):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to cancel aid request",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Aid request cancelled successfully",
+		"aid_request": gin.H{
+			"id":             aidRequest.ID,
+			"status":         aidRequest.Status,
+			"review_notes":   aidRequest.ReviewNotes,
+			"reviewed_by_id": aidRequest.ReviewedByID,
+			"reviewed_at":    aidRequest.ReviewedAt,
+		},
+	})
+}
+func (h *AidRequestHandler) Delete(c *gin.Context) {
+	aidRequestID := c.Param("id")
+
+	err := h.aidRequestService.DeleteAidRequest(aidRequestID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidAidRequestID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid aid request ID",
+			})
+
+		case errors.Is(err, repository.ErrAidRequestNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Aid request not found",
+			})
+
+		case errors.Is(err, services.ErrAidRequestCannotBeDeleted):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete aid request",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Aid request deleted successfully",
+	})
+}

@@ -172,3 +172,33 @@ func (r *AidRequestRepository) Update(
 
 	return nil
 }
+func (r *AidRequestRepository) UpdateReview(
+	aidRequest *models.AidRequest,
+) error {
+	if err := r.db.Save(aidRequest).Error; err != nil {
+		return fmt.Errorf(
+			"failed to review aid request: %w",
+			err,
+		)
+	}
+
+	return nil
+}
+func (r *AidRequestRepository) SoftDelete(
+	aidRequest *models.AidRequest,
+) error {
+	result := r.db.Delete(aidRequest)
+
+	if result.Error != nil {
+		return fmt.Errorf(
+			"failed to delete aid request: %w",
+			result.Error,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrAidRequestNotFound
+	}
+
+	return nil
+}

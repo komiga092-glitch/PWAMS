@@ -29,6 +29,24 @@ var (
 	ErrAidRequestCannotBeEdited = errors.New(
 		"only pending or under-review aid requests can be edited",
 	)
+	ErrInvalidAidStatusTransition = errors.New(
+		"invalid aid request status transition",
+	)
+
+	ErrApprovedAmountRequired = errors.New(
+		"approved amount must be greater than zero",
+	)
+
+	ErrApprovedAmountTooHigh = errors.New(
+		"approved amount cannot exceed requested amount",
+	)
+	ErrAidRequestCannotBeCancelled = errors.New(
+		"this aid request cannot be cancelled",
+	)
+
+	ErrAidRequestCannotBeDeleted = errors.New(
+		"only rejected or cancelled aid requests can be deleted",
+	)
 )
 
 type AidRequestService struct {
@@ -392,4 +410,155 @@ func (s *AidRequestService) UpdateAidRequest(
 	aidRequest.Person = *person
 
 	return aidRequest, nil
+}
+func isValidAidStatusTransition(
+	currentStatus string,
+	newStatus string,
+) bool {
+	switch currentStatus {
+	case models.AidStatusPending:
+		return newStatus == models.AidStatusUnderReview ||
+			newStatus == models.AidStatusCancelled
+
+	case models.AidStatusUnderReview:
+		return newStatus == models.AidStatusApproved ||
+			newStatus == models.AidStatusRejected ||
+			newStatus == models.AidStatusCancelled
+
+	case models.AidStatusApproved:
+		return newStatus == models.AidStatusCompleted ||
+			newStatus == models.AidStatusCancelled
+
+	default:
+		return false
+	}
+}
+func (s *AidRequestService) ReviewAidRequest(
+	id string,
+	request models.ReviewAidRequest,
+	reviewerID uuid.UUID,
+) (*models.AidRequest, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidAidRequestID
+	}
+
+	aidRequest, err := s.aidRequestRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	newStatus := strings.TrimSpace(request.Status)
+
+	if !isValidAidStatus(newStatus) {
+		return nil, ErrInvalidAidStatus
+	}
+
+	if !isValidAidStatusTransition(
+		aidRequest.Status,
+		newStatus,
+	) {
+		return nil, ErrInvalidAidStatusTransition
+	}
+
+	switch newStatus {
+	case models.AidStatusApproved:
+		if request.ApprovedAmount <= 0 {
+			return nil, ErrApprovedAmountRequired
+		}
+
+		if request.ApprovedAmount >
+			aidRequest.RequestedAmount {
+			return nil, ErrApprovedAmountTooHigh
+		}
+
+		aidRequest.ApprovedAmount =
+			request.ApprovedAmount
+
+	case models.AidStatusRejected,
+		models.AidStatusCancelled:
+		aidRequest.ApprovedAmount = 0
+	}
+
+	now := time.Now().UTC()
+
+	aidRequest.Status = newStatus
+	aidRequest.ReviewNotes = strings.TrimSpace(
+		request.ReviewNotes,
+	)
+	aidRequest.ReviewedByID = &reviewerID
+	aidRequest.ReviewedAt = &now
+
+	if err := s.aidRequestRepo.UpdateReview(
+		aidRequest,
+	); err != nil {
+		return nil, err
+	}
+
+	return aidRequest, nil
+}
+
+func (s *AidRequestService) CancelAidRequest(
+	id string,
+	reason string,
+	reviewerID uuid.UUID,
+) (*models.AidRequest, error) {
+	id = strings.TrimSpace(id)
+	reason = strings.TrimSpace(reason)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidAidRequestID
+	}
+
+	aidRequest, err := s.aidRequestRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	switch aidRequest.Status {
+	case models.AidStatusPending,
+		models.AidStatusUnderReview,
+		models.AidStatusApproved:
+		// Cancellation allowed.
+
+	default:
+		return nil, ErrAidRequestCannotBeCancelled
+	}
+
+	now := time.Now().UTC()
+
+	aidRequest.Status = models.AidStatusCancelled
+	aidRequest.ReviewNotes = reason
+	aidRequest.ReviewedByID = &reviewerID
+	aidRequest.ReviewedAt = &now
+
+	if err := s.aidRequestRepo.UpdateReview(aidRequest); err != nil {
+		return nil, err
+	}
+
+	return aidRequest, nil
+}
+func (s *AidRequestService) DeleteAidRequest(id string) error {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidAidRequestID
+	}
+
+	aidRequest, err := s.aidRequestRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if aidRequest.Status != models.AidStatusRejected &&
+		aidRequest.Status != models.AidStatusCancelled {
+		return ErrAidRequestCannotBeDeleted
+	}
+
+	if err := s.aidRequestRepo.SoftDelete(aidRequest); err != nil {
+		return err
+	}
+
+	return nil
 }
