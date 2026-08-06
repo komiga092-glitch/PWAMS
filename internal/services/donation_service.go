@@ -34,7 +34,27 @@ var (
 	ErrDonorNotActive = errors.New(
 		"donor account is not active",
 	)
+
+	ErrInvalidDonationDateRange = errors.New(
+		"invalid donation date range",
+	)
+
+	ErrInvalidDonationStatus = errors.New(
+		"invalid donation status",
+	)
 )
+
+func isValidDonationStatus(status string) bool {
+	switch status {
+	case models.DonationStatusPending,
+		models.DonationStatusConfirmed,
+		models.DonationStatusCancelled:
+		return true
+
+	default:
+		return false
+	}
+}
 
 type DonationService struct {
 	donationRepo *repository.DonationRepository
@@ -208,4 +228,105 @@ func generateDonationReference() string {
 		time.Now().UTC().Format("20060102"),
 		strings.ToUpper(uuid.NewString()[:6]),
 	)
+}
+
+func (s *DonationService) ListDonations(
+	query models.DonationListQuery,
+) ([]models.Donation, int64, int, int, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	donorID := strings.TrimSpace(query.DonorID)
+
+	if donorID != "" {
+		if _, err := uuid.Parse(donorID); err != nil {
+			return nil, 0, page, pageSize, ErrInvalidDonorID
+		}
+	}
+
+	personID := strings.TrimSpace(query.PersonID)
+
+	if personID != "" {
+		if _, err := uuid.Parse(personID); err != nil {
+			return nil, 0, page, pageSize, ErrInvalidPersonID
+		}
+	}
+
+	donationType := strings.TrimSpace(query.Type)
+
+	if donationType != "" &&
+		!isValidDonationType(donationType) {
+		return nil, 0, page, pageSize, ErrInvalidDonationType
+	}
+
+	status := strings.TrimSpace(query.Status)
+
+	if status != "" &&
+		!isValidDonationStatus(status) {
+		return nil, 0, page, pageSize, ErrInvalidDonationStatus
+	}
+
+	var fromDate *time.Time
+	var toDate *time.Time
+
+	if strings.TrimSpace(query.FromDate) != "" {
+		parsed, err := time.Parse(
+			"2006-01-02",
+			query.FromDate,
+		)
+		if err != nil {
+			return nil, 0, page, pageSize,
+				ErrInvalidDonationDateRange
+		}
+
+		fromDate = &parsed
+	}
+
+	if strings.TrimSpace(query.ToDate) != "" {
+		parsed, err := time.Parse(
+			"2006-01-02",
+			query.ToDate,
+		)
+		if err != nil {
+			return nil, 0, page, pageSize,
+				ErrInvalidDonationDateRange
+		}
+
+		toDate = &parsed
+	}
+
+	if fromDate != nil &&
+		toDate != nil &&
+		fromDate.After(*toDate) {
+		return nil, 0, page, pageSize,
+			ErrInvalidDonationDateRange
+	}
+
+	donations, total, err := s.donationRepo.List(
+		query.Search,
+		donorID,
+		personID,
+		donationType,
+		status,
+		fromDate,
+		toDate,
+		page,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return donations, total, page, pageSize, nil
 }

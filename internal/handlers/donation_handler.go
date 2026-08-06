@@ -136,3 +136,118 @@ func (h *DonationHandler) Create(c *gin.Context) {
 		},
 	})
 }
+
+func (h *DonationHandler) List(c *gin.Context) {
+	var query models.DonationListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid query parameters",
+		})
+		return
+	}
+
+	donations, total, page, pageSize, err :=
+		h.donationService.ListDonations(query)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donor ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidDonationType):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidDonationStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrInvalidDonationDateRange):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve donations",
+			})
+		}
+
+		return
+	}
+
+	items := make([]gin.H, 0, len(donations))
+
+	for _, donation := range donations {
+		var personData any
+
+		if donation.Person != nil {
+			personData = gin.H{
+				"id":           donation.Person.ID,
+				"full_name":    donation.Person.FullName,
+				"nic_passport": donation.Person.NICPassport,
+			}
+		}
+
+		items = append(items, gin.H{
+			"id":           donation.ID,
+			"reference_no": donation.ReferenceNo,
+			"donor": gin.H{
+				"id":         donation.Donor.ID,
+				"name":       donation.Donor.Name,
+				"donor_type": donation.Donor.DonorType,
+			},
+			"person":        personData,
+			"donation_type": donation.DonationType,
+			"amount":        donation.Amount,
+			"currency":      donation.Currency,
+			"item_name":     donation.ItemName,
+			"quantity":      donation.Quantity,
+			"unit":          donation.Unit,
+			"description":   donation.Description,
+			"donation_date": donation.DonationDate,
+			"status":        donation.Status,
+			"created_by":    donation.CreatedBy.Username,
+			"created_at":    donation.CreatedAt,
+			"updated_at":    donation.UpdatedAt,
+		})
+	}
+
+	totalPages := 0
+
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) /
+				int64(pageSize),
+		)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donations retrieved successfully",
+		"data":    items,
+		"pagination": gin.H{
+			"page":        page,
+			"page_size":   pageSize,
+			"total_items": total,
+			"total_pages": totalPages,
+		},
+	})
+}
