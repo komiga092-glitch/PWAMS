@@ -160,3 +160,29 @@ func (r *DonationRepository) List(
 
 	return donations, total, nil
 }
+
+func (r *DonationRepository) FindByID(
+	id string,
+) (*models.Donation, error) {
+	var donation models.Donation
+
+	err := r.db.
+		Preload("Donor").
+		Preload("Person").
+		Preload("CreatedBy").
+		First(&donation, "id = ?", id).
+		Error
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrDonationNotFound
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf(
+			"failed to find donation by id: %w",
+			err,
+		)
+	}
+
+	return &donation, nil
+}

@@ -42,6 +42,7 @@ var (
 	ErrInvalidDonationStatus = errors.New(
 		"invalid donation status",
 	)
+	ErrInvalidDonationID = errors.New("invalid donation id")
 )
 
 func isValidDonationStatus(status string) bool {
@@ -329,4 +330,21 @@ func (s *DonationService) ListDonations(
 	}
 
 	return donations, total, page, pageSize, nil
+}
+
+func (s *DonationService) GetDonationByID(
+	id string,
+) (*models.Donation, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidDonationID
+	}
+
+	donation, err := s.donationRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return donation, nil
 }

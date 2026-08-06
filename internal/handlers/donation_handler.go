@@ -251,3 +251,85 @@ func (h *DonationHandler) List(c *gin.Context) {
 		},
 	})
 }
+
+func (h *DonationHandler) GetByID(c *gin.Context) {
+	donationID := c.Param("id")
+
+	donation, err := h.donationService.GetDonationByID(
+		donationID,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonationID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donation ID",
+			})
+
+		case errors.Is(err, repository.ErrDonationNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donation not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve donation",
+			})
+		}
+
+		return
+	}
+
+	var personData any
+
+	if donation.Person != nil {
+		personData = gin.H{
+			"id":           donation.Person.ID,
+			"full_name":    donation.Person.FullName,
+			"nic_passport": donation.Person.NICPassport,
+			"phone":        donation.Person.Phone,
+			"status":       donation.Person.Status,
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donation retrieved successfully",
+		"donation": gin.H{
+			"id":           donation.ID,
+			"reference_no": donation.ReferenceNo,
+
+			"donor": gin.H{
+				"id":         donation.Donor.ID,
+				"name":       donation.Donor.Name,
+				"donor_type": donation.Donor.DonorType,
+				"phone":      donation.Donor.Phone,
+				"email":      donation.Donor.Email,
+				"status":     donation.Donor.Status,
+			},
+
+			"person":        personData,
+			"donation_type": donation.DonationType,
+			"amount":        donation.Amount,
+			"currency":      donation.Currency,
+			"item_name":     donation.ItemName,
+			"quantity":      donation.Quantity,
+			"unit":          donation.Unit,
+			"description":   donation.Description,
+			"donation_date": donation.DonationDate,
+			"status":        donation.Status,
+
+			"created_by": gin.H{
+				"id":       donation.CreatedBy.ID,
+				"username": donation.CreatedBy.Username,
+				"email":    donation.CreatedBy.Email,
+			},
+
+			"created_at": donation.CreatedAt,
+			"updated_at": donation.UpdatedAt,
+		},
+	})
+}

@@ -26,5 +26,6 @@ func RegisterDonationRoutes(
 	)
 
 	donations.GET("", donationHandler.List)
+	donations.GET("/:id", donationHandler.GetByID)
 	donations.POST("", donationHandler.Create)
 }
