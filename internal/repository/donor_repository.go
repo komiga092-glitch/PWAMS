@@ -212,3 +212,36 @@ func (r *DonorRepository) Update(donor *models.Donor) error {
 
 	return nil
 }
+
+func (r *DonorRepository) UpdateStatus(
+	donorID string,
+	status string,
+) error {
+	result := r.db.
+		Model(&models.Donor{}).
+		Where("id = ?", donorID).
+		Update("status", status)
+
+	if result.Error != nil {
+		return fmt.Errorf(
+			"failed to update donor status: %w",
+			result.Error,
+		)
+	}
+
+	if result.RowsAffected == 0 {
+		return ErrDonorNotFound
+	}
+
+	return nil
+}
+
+func (r *DonorRepository) SoftDelete(
+	donor *models.Donor,
+) error {
+	if err := r.db.Delete(donor).Error; err != nil {
+		return fmt.Errorf("failed to delete donor: %w", err)
+	}
+
+	return nil
+}

@@ -252,3 +252,44 @@ func (s *DonorService) UpdateDonor(
 
 	return donor, nil
 }
+
+func (s *DonorService) UpdateDonorStatus(
+	id string,
+	status string,
+) error {
+	id = strings.TrimSpace(id)
+	status = strings.TrimSpace(status)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidDonorID
+	}
+
+	if !isValidDonorStatus(status) {
+		return ErrInvalidDonorStatus
+	}
+
+	if err := s.donorRepo.UpdateStatus(id, status); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *DonorService) DeleteDonor(id string) error {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return ErrInvalidDonorID
+	}
+
+	donor, err := s.donorRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.donorRepo.SoftDelete(donor); err != nil {
+		return err
+	}
+
+	return nil
+}

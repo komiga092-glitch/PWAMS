@@ -317,3 +317,91 @@ func (h *DonorHandler) Update(c *gin.Context) {
 		},
 	})
 }
+
+func (h *DonorHandler) UpdateStatus(c *gin.Context) {
+	donorID := c.Param("id")
+
+	var request models.UpdateDonorStatusRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Status is required",
+		})
+		return
+	}
+
+	err := h.donorService.UpdateDonorStatus(
+		donorID,
+		request.Status,
+	)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donor ID",
+			})
+
+		case errors.Is(err, services.ErrInvalidDonorStatus):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, repository.ErrDonorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donor not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update donor status",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donor status updated successfully",
+	})
+}
+
+func (h *DonorHandler) Delete(c *gin.Context) {
+	donorID := c.Param("id")
+
+	err := h.donorService.DeleteDonor(donorID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid donor ID",
+			})
+
+		case errors.Is(err, repository.ErrDonorNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Donor not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete donor",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Donor deleted successfully",
+	})
+}
