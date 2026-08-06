@@ -55,6 +55,7 @@ func main() {
 	studentRepository := repository.NewStudentRepository(db)
 	donorRepository := repository.NewDonorRepository(db)
 	donationRepository := repository.NewDonationRepository(db)
+	aidRequestRepository := repository.NewAidRequestRepository(db)
 
 	// Services
 	authService := services.NewAuthService(userRepo)
@@ -78,6 +79,11 @@ func main() {
 		donorRepository,
 		personRepository,
 	)
+	aidRequestService := services.NewAidRequestService(
+		aidRequestRepository,
+		personRepository,
+	)
+
 	// Cookie configuration
 	secureCookie := cfg.AppEnv == "production"
 
@@ -98,6 +104,9 @@ func main() {
 	donorHandler := handlers.NewDonorHandler(donorService)
 	donationHandler := handlers.NewDonationHandler(
 		donationService,
+	)
+	aidRequestHandler := handlers.NewAidRequestHandler(
+		aidRequestService,
 	)
 
 	// Middleware
@@ -144,6 +153,11 @@ func main() {
 	routes.RegisterDonationRoutes(
 		router,
 		donationHandler,
+		authMiddleware,
+	)
+	routes.RegisterAidRequestRoutes(
+		router,
+		aidRequestHandler,
 		authMiddleware,
 	)
 
