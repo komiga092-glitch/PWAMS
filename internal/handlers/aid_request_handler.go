@@ -294,3 +294,93 @@ func (h *AidRequestHandler) GetByID(c *gin.Context) {
 		},
 	})
 }
+func (h *AidRequestHandler) Update(c *gin.Context) {
+	aidRequestID := c.Param("id")
+
+	var request models.UpdateAidRequest
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid aid request information",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	aidRequest, err :=
+		h.aidRequestService.UpdateAidRequest(
+			aidRequestID,
+			request,
+		)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidAidRequestID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid aid request ID",
+			})
+
+		case errors.Is(err, repository.ErrAidRequestNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Aid request not found",
+			})
+
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
+			})
+
+		case errors.Is(err, services.ErrInvalidAidType),
+			errors.Is(err, services.ErrInvalidAidPriority),
+			errors.Is(err, services.ErrInvalidAidRequestDate),
+			errors.Is(err, services.ErrInvalidNeededByDate):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		case errors.Is(err, services.ErrAidRequestCannotBeEdited):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to update aid request",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Aid request updated successfully",
+		"aid_request": gin.H{
+			"id":               aidRequest.ID,
+			"person_id":        aidRequest.PersonID,
+			"aid_type":         aidRequest.AidType,
+			"priority":         aidRequest.Priority,
+			"title":            aidRequest.Title,
+			"description":      aidRequest.Description,
+			"requested_amount": aidRequest.RequestedAmount,
+			"currency":         aidRequest.Currency,
+			"request_date":     aidRequest.RequestDate,
+			"needed_by":        aidRequest.NeededBy,
+			"status":           aidRequest.Status,
+			"updated_at":       aidRequest.UpdatedAt,
+		},
+	})
+}

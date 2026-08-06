@@ -25,6 +25,10 @@ var (
 		"invalid aid request date range",
 	)
 	ErrInvalidAidRequestID = errors.New("invalid aid request id")
+
+	ErrAidRequestCannotBeEdited = errors.New(
+		"only pending or under-review aid requests can be edited",
+	)
 )
 
 type AidRequestService struct {
@@ -282,6 +286,110 @@ func (s *AidRequestService) GetAidRequestByID(
 	if err != nil {
 		return nil, err
 	}
+
+	return aidRequest, nil
+}
+func (s *AidRequestService) UpdateAidRequest(
+	id string,
+	request models.UpdateAidRequest,
+) (*models.AidRequest, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidAidRequestID
+	}
+
+	aidRequest, err := s.aidRequestRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if aidRequest.Status != models.AidStatusPending &&
+		aidRequest.Status != models.AidStatusUnderReview {
+		return nil, ErrAidRequestCannotBeEdited
+	}
+
+	personID := strings.TrimSpace(request.PersonID)
+
+	parsedPersonID, err := uuid.Parse(personID)
+	if err != nil {
+		return nil, ErrInvalidPersonID
+	}
+
+	person, err := s.personRepo.FindByID(personID)
+	if err != nil {
+		return nil, err
+	}
+
+	if person.Status != models.PersonStatusActive {
+		return nil, errors.New("person account is not active")
+	}
+
+	aidType := strings.TrimSpace(request.AidType)
+	if !isValidAidType(aidType) {
+		return nil, ErrInvalidAidType
+	}
+
+	priority := strings.TrimSpace(request.Priority)
+	if !isValidAidPriority(priority) {
+		return nil, ErrInvalidAidPriority
+	}
+
+	requestDate := aidRequest.RequestDate
+
+	if strings.TrimSpace(request.RequestDate) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			request.RequestDate,
+		)
+		if err != nil {
+			return nil, ErrInvalidAidRequestDate
+		}
+
+		requestDate = parsedDate
+	}
+
+	var neededBy *time.Time
+
+	if strings.TrimSpace(request.NeededBy) != "" {
+		parsedDate, err := time.Parse(
+			"2006-01-02",
+			request.NeededBy,
+		)
+		if err != nil {
+			return nil, ErrInvalidNeededByDate
+		}
+
+		if parsedDate.Before(requestDate) {
+			return nil, ErrInvalidNeededByDate
+		}
+
+		neededBy = &parsedDate
+	}
+
+	currency := strings.ToUpper(
+		strings.TrimSpace(request.Currency),
+	)
+
+	if currency == "" {
+		currency = "LKR"
+	}
+
+	aidRequest.PersonID = parsedPersonID
+	aidRequest.AidType = aidType
+	aidRequest.Priority = priority
+	aidRequest.Title = strings.TrimSpace(request.Title)
+	aidRequest.Description = strings.TrimSpace(request.Description)
+	aidRequest.RequestedAmount = request.RequestedAmount
+	aidRequest.Currency = currency
+	aidRequest.RequestDate = requestDate
+	aidRequest.NeededBy = neededBy
+
+	if err := s.aidRequestRepo.Update(aidRequest); err != nil {
+		return nil, err
+	}
+
+	aidRequest.Person = *person
 
 	return aidRequest, nil
 }

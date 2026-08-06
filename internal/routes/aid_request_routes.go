@@ -28,4 +28,5 @@ func RegisterAidRequestRoutes(
 	aidRequests.GET("", aidRequestHandler.List)
 	aidRequests.GET("/:id", aidRequestHandler.GetByID)
 	aidRequests.POST("", aidRequestHandler.Create)
+	aidRequests.PUT("/:id", aidRequestHandler.Update)
 }

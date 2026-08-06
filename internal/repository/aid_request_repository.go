@@ -160,3 +160,15 @@ func (r *AidRequestRepository) FindByID(
 
 	return &aidRequest, nil
 }
+func (r *AidRequestRepository) Update(
+	aidRequest *models.AidRequest,
+) error {
+	if err := r.db.Save(aidRequest).Error; err != nil {
+		return fmt.Errorf(
+			"failed to update aid request: %w",
+			err,
+		)
+	}
+
+	return nil
+}
