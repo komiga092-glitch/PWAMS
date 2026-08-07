@@ -47,38 +47,12 @@ func (h *DonorHandler) Create(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidDonorType):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrIndividualDonorIdentityRequired):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrOrganizationDetailsRequired):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrDonorAlreadyExists):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": "Unable to create donor",
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to create donor",
+			errorResponseMapping{err: services.ErrInvalidDonorType, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrIndividualDonorIdentityRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrOrganizationDetailsRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrDonorAlreadyExists, status: http.StatusConflict, message: err.Error()},
+		)
 		return
 	}
 
@@ -232,41 +206,15 @@ func (h *DonorHandler) Update(c *gin.Context) {
 		request,
 	)
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidDonorID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidDonorID,
-			})
-
-		case errors.Is(err, repository.ErrDonorNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrDonorNotFound,
-			})
-
-		case errors.Is(err, services.ErrInvalidDonorType),
-			errors.Is(err, services.ErrIndividualDonorIdentityRequired),
-			errors.Is(err, services.ErrOrganizationDetailsRequired),
-			errors.Is(err, services.ErrInvalidDonorStatus):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrDonorAlreadyExists):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": "Unable to update donor",
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to update donor",
+			errorResponseMapping{err: services.ErrInvalidDonorID, status: http.StatusBadRequest, message: constants.ErrInvalidDonorID},
+			errorResponseMapping{err: repository.ErrDonorNotFound, status: http.StatusNotFound, message: constants.ErrDonorNotFound},
+			errorResponseMapping{err: services.ErrInvalidDonorType, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrIndividualDonorIdentityRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrOrganizationDetailsRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidDonorStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrDonorAlreadyExists, status: http.StatusConflict, message: err.Error()},
+		)
 		return
 	}
 

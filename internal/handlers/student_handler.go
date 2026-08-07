@@ -241,56 +241,15 @@ func (h *StudentHandler) Update(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidStudentID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidStudentID,
-			})
-
-		case errors.Is(err, services.ErrInvalidPersonID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidPersonID,
-			})
-
-		case errors.Is(err, repository.ErrStudentNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrStudentNotFound,
-			})
-
-		case errors.Is(err, repository.ErrPersonNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrPersonNotFound,
-			})
-
-		case errors.Is(err, services.ErrStudentAlreadyExists):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": constants.ErrStudentAlreadyExists,
-			})
-
-		case errors.Is(err, services.ErrInvalidStudentDateOfBirth):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrInvalidStudentStatus):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToUpdateStudent,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToUpdateStudent,
+			errorResponseMapping{err: services.ErrInvalidStudentID, status: http.StatusBadRequest, message: constants.ErrInvalidStudentID},
+			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: constants.ErrInvalidPersonID},
+			errorResponseMapping{err: repository.ErrStudentNotFound, status: http.StatusNotFound, message: constants.ErrStudentNotFound},
+			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: constants.ErrPersonNotFound},
+			errorResponseMapping{err: services.ErrStudentAlreadyExists, status: http.StatusConflict, message: constants.ErrStudentAlreadyExists},
+			errorResponseMapping{err: services.ErrInvalidStudentDateOfBirth, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidStudentStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+		)
 		return
 	}
 

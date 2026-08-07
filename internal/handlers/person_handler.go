@@ -209,44 +209,13 @@ func (h *PersonHandler) Update(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidPersonID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidPersonID,
-			})
-
-		case errors.Is(err, repository.ErrPersonNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrPersonNotFound,
-			})
-
-		case errors.Is(err, services.ErrPersonAlreadyExists):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrInvalidDateOfBirth):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrInvalidPersonStatus):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToUpdatePerson,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToUpdatePerson,
+			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: constants.ErrInvalidPersonID},
+			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: constants.ErrPersonNotFound},
+			errorResponseMapping{err: services.ErrPersonAlreadyExists, status: http.StatusConflict, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidDateOfBirth, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidPersonStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+		)
 		return
 	}
 

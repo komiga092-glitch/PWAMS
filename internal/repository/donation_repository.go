@@ -112,30 +112,9 @@ func (r *DonationRepository) List(
 		)
 	}
 
-	if queryParams.FromDate != "" {
-		parsedDate, err := time.Parse("2006-01-02", queryParams.FromDate)
-		if err != nil {
-			return nil, 0, fmt.Errorf("failed to parse from date: %w", err)
-		}
-
-		query = query.Where(
-			"donation_date >= ?",
-			parsedDate,
-		)
-	}
-
-	if queryParams.ToDate != "" {
-		parsedDate, err := time.Parse("2006-01-02", queryParams.ToDate)
-		if err != nil {
-			return nil, 0, fmt.Errorf("failed to parse to date: %w", err)
-		}
-
-		endOfDay := parsedDate.Add(24 * time.Hour).Add(-time.Nanosecond)
-
-		query = query.Where(
-			"donation_date <= ?",
-			endOfDay,
-		)
+	query, err := applyDonationDateFilter(query, queryParams.FromDate, queryParams.ToDate)
+	if err != nil {
+		return nil, 0, err
 	}
 
 	if err := query.Count(&total).Error; err != nil {
@@ -163,6 +142,40 @@ func (r *DonationRepository) List(
 	}
 
 	return donations, total, nil
+}
+
+func applyDonationDateFilter(
+	query *gorm.DB,
+	fromDate string,
+	toDate string,
+) (*gorm.DB, error) {
+	if fromDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", fromDate)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse from date: %w", err)
+		}
+
+		query = query.Where(
+			"donation_date >= ?",
+			parsedDate,
+		)
+	}
+
+	if toDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", toDate)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse to date: %w", err)
+		}
+
+		endOfDay := parsedDate.Add(24 * time.Hour).Add(-time.Nanosecond)
+
+		query = query.Where(
+			"donation_date <= ?",
+			endOfDay,
+		)
+	}
+
+	return query, nil
 }
 
 func (r *DonationRepository) FindByID(

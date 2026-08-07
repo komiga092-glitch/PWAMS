@@ -157,7 +157,7 @@ func (h *AuthHandler) clearSessionCookie(c *gin.Context) {
 		MaxAge:   -1,
 		Expires:  time.Unix(0, 0),
 		HttpOnly: true,
-		Secure: true,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	})
 }
