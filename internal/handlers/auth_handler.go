@@ -58,7 +58,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Unable to create login session",
+			"message": constants.ErrUnableToCreateLoginSession,
 		})
 		return
 	}
@@ -67,7 +67,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Login successful",
+		"message": constants.ErrLoginSuccessful,
 		"user": gin.H{
 			"id":       user.ID,
 			"username": user.Username,
@@ -85,7 +85,7 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		if err := h.sessionService.RevokeSession(rawToken); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to end session",
+				"message": constants.ErrUnableToEndSession,
 			})
 			return
 		}
@@ -95,7 +95,7 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Logout successful",
+		"message": constants.ErrLogoutSuccessful,
 	})
 }
 
@@ -120,7 +120,7 @@ func (h *AuthHandler) Dashboard(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Welcome to the PWAMS dashboard",
+		"message": constants.ErrDashboardStatsRetrievedSuccessfully,
 		"user": gin.H{
 			"id":       user.ID,
 			"username": user.Username,

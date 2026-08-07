@@ -31,7 +31,7 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidAidRequestInfo,
-			"error":   err.Error(),
+			"error":  err.Error(),
 		})
 		return
 	}
@@ -359,7 +359,7 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update aid request",
+				"message": constants.ErrUnableToUpdateAidRequest,
 			})
 		}
 
@@ -368,7 +368,7 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Aid request updated successfully",
+		"message": constants.ErrAidRequestUpdatedSuccessfully,
 		"aid_request": gin.H{
 			"id":               aidRequest.ID,
 			"person_id":        aidRequest.PersonID,
@@ -480,7 +480,7 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Aid request reviewed successfully",
+		"message": constants.ErrAidRequestReviewedSuccessfully,
 		"aid_request": gin.H{
 			"id":               aidRequest.ID,
 			"status":           aidRequest.Status,
@@ -552,7 +552,7 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to cancel aid request",
+				"message": constants.ErrUnableToCancelAidRequest,
 			})
 		}
 
@@ -561,7 +561,7 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Aid request cancelled successfully",
+		"message": constants.ErrAidRequestCancelledSuccessfully,
 		"aid_request": gin.H{
 			"id":             aidRequest.ID,
 			"status":         aidRequest.Status,
@@ -598,7 +598,7 @@ func (h *AidRequestHandler) Delete(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to delete aid request",
+				"message": constants.ErrUnableToDeleteAidRequest,
 			})
 		}
 
@@ -607,6 +607,6 @@ func (h *AidRequestHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Aid request deleted successfully",
+		"message": constants.ErrAidRequestDeletedSuccessfully,
 	})
 }

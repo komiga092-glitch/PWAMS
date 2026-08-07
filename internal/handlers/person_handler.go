@@ -30,7 +30,7 @@ func (h *PersonHandler) Create(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid person information",
+			"message": constants.ErrInvalidPersonInformation,
 			"error":   err.Error(),
 		})
 		return
@@ -75,7 +75,7 @@ func (h *PersonHandler) Create(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to create person",
+				"message": constants.ErrUnableToCreatePerson,
 			})
 		}
 
@@ -84,7 +84,7 @@ func (h *PersonHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
-		"message": "Person registered successfully",
+		"message": constants.ErrPersonCreatedSuccessfully,
 		"person": gin.H{
 			"id":             person.ID,
 			"full_name":      person.FullName,
@@ -108,7 +108,7 @@ func (h *PersonHandler) List(c *gin.Context) {
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid query parameters",
+			"message": constants.ErrInvalidQueryParameters,
 		})
 		return
 	}
@@ -119,7 +119,7 @@ func (h *PersonHandler) List(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Unable to retrieve persons",
+			"message": constants.ErrUnableToRetrievePersons,
 		})
 		return
 	}
@@ -153,7 +153,7 @@ func (h *PersonHandler) List(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Persons retrieved successfully",
+		"message": constants.ErrPersonsRetrievedSuccessfully,
 		"data":    items,
 		"pagination": gin.H{
 			"page":        page,
@@ -185,7 +185,7 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to retrieve person",
+				"message": constants.ErrUnableToRetrievePerson,
 			})
 		}
 
@@ -194,7 +194,7 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Person retrieved successfully",
+		"message": constants.ErrPersonRetrievedSuccessfully,
 		"person": gin.H{
 			"id":             person.ID,
 			"full_name":      person.FullName,
@@ -222,7 +222,7 @@ func (h *PersonHandler) Update(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid person information",
+			"message": constants.ErrInvalidPersonInformation,
 			"error":   err.Error(),
 		})
 		return
@@ -268,7 +268,7 @@ func (h *PersonHandler) Update(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update person",
+				"message": constants.ErrUnableToUpdatePerson,
 			})
 		}
 
@@ -277,7 +277,7 @@ func (h *PersonHandler) Update(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Person updated successfully",
+		"message": constants.ErrPersonUpdatedSuccessfully,
 		"person": gin.H{
 			"id":             person.ID,
 			"full_name":      person.FullName,
@@ -303,7 +303,7 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Status is required",
+			"message": constants.ErrStatusRequired,
 		})
 		return
 	}
@@ -330,13 +330,13 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update person status",
+				"message": constants.ErrUnableToUpdatePersonStatus,
 			})
 		}
 
@@ -345,7 +345,7 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Person status updated successfully",
+		"message": constants.ErrPersonStatusUpdatedSuccessfully,
 	})
 }
 func (h *PersonHandler) Delete(c *gin.Context) {
@@ -369,7 +369,7 @@ func (h *PersonHandler) Delete(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to delete person",
+				"message": constants.ErrUnableToDeletePerson,
 			})
 		}
 
@@ -378,6 +378,6 @@ func (h *PersonHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Person deleted successfully",
+		"message": constants.ErrPersonDeletedSuccessfully,
 	})
 }

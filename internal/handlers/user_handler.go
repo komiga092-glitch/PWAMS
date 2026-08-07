@@ -142,13 +142,13 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidUserID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid user ID",
+				"message": constants.ErrInvalidUserID,
 			})
 
 		case errors.Is(err, repository.ErrUserNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "User not found",
+				"message": constants.ErrUserNotFound,
 			})
 
 		default:
@@ -224,31 +224,31 @@ func (h *UserHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidUserID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid user ID",
+				"message": constants.ErrInvalidUserID,
 			})
 
 		case errors.Is(err, repository.ErrUserNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "User not found",
+				"message": constants.ErrUserNotFound,
 			})
 
 		case errors.Is(err, services.ErrUserAlreadyExists):
 			c.JSON(http.StatusConflict, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrUserAlreadyExists,
 			})
 
 		case errors.Is(err, services.ErrInvalidRole):
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrInvalidRole,
 			})
 
 		case errors.Is(err, services.ErrInvalidUserStatus):
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrInvalidUserStatus,
 			})
 
 		default:
@@ -295,19 +295,19 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidUserID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid user ID",
+				"message": constants.ErrInvalidUserID,
 			})
 
 		case errors.Is(err, services.ErrInvalidUserStatus):
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrInvalidUserStatus,
 			})
 
 		case errors.Is(err, repository.ErrUserNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "User not found",
+				"message": constants.ErrUserNotFound,
 			})
 
 		default:
@@ -349,19 +349,19 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidUserID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid user ID",
+				"message": constants.ErrInvalidUserID,
 			})
 
 		case errors.Is(err, services.ErrInvalidPassword):
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrInvalidPassword,
 			})
 
 		case errors.Is(err, repository.ErrUserNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "User not found",
+				"message": constants.ErrUserNotFound,
 			})
 
 		default:
@@ -411,19 +411,19 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidUserID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid user ID",
+				"message": constants.ErrInvalidUserID,
 			})
 
 		case errors.Is(err, services.ErrCannotDeleteSelf):
 			c.JSON(http.StatusForbidden, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrCannotDeleteSelf,
 			})
 
 		case errors.Is(err, repository.ErrUserNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "User not found",
+				"message": constants.ErrUserNotFound,
 			})
 
 		default:

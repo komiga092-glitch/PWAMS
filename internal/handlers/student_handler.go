@@ -30,7 +30,7 @@ func (h *StudentHandler) Create(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid student information",
+			"message": constants.ErrInvalidStudentInformation,
 			"error":   err.Error(),
 		})
 		return
@@ -88,7 +88,7 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to create student",
+				"message": 	constants.ErrUnableToCreateStudent,
 			})
 		}
 
@@ -97,7 +97,7 @@ func (h *StudentHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
-		"message": "Student registered successfully",
+		"message": constants.ErrStudentCreatedSuccessfully,
 		"student": gin.H{
 			"id":             student.ID,
 			"person_id":      student.PersonID,
@@ -123,7 +123,7 @@ func (h *StudentHandler) List(c *gin.Context) {
 	if err := c.ShouldBindQuery(&query); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid query parameters",
+			"message": constants.ErrInvalidQueryParameters,
 		})
 		return
 	}
@@ -142,7 +142,7 @@ func (h *StudentHandler) List(c *gin.Context) {
 
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Unable to retrieve students",
+			"message": constants.ErrUnableToRetrieveStudents,
 		})
 		return
 	}
@@ -181,7 +181,7 @@ func (h *StudentHandler) List(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Students retrieved successfully",
+		"message": constants.ErrStudentsRetrievedSuccessfully,
 		"data":    items,
 		"pagination": gin.H{
 			"page":        page,
@@ -201,19 +201,19 @@ func (h *StudentHandler) GetByID(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidStudentID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid student ID",
+				"message": constants.ErrInvalidStudentID,
 			})
 
 		case errors.Is(err, repository.ErrStudentNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Student not found",
+				"message": constants.ErrStudentNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to retrieve student",
+				"message": constants.ErrUnableToRetrieveStudent,
 			})
 		}
 
@@ -222,7 +222,7 @@ func (h *StudentHandler) GetByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Student retrieved successfully",
+		"message": constants.ErrStudentRetrievedSuccessfully,
 		"student": gin.H{
 			"id":             student.ID,
 			"person_id":      student.PersonID,
@@ -255,7 +255,7 @@ func (h *StudentHandler) Update(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid student information",
+			"message": constants.ErrInvalidStudentInformation,
 			"error":   err.Error(),
 		})
 		return
@@ -271,7 +271,7 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidStudentID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid student ID",
+				"message": constants.ErrInvalidStudentID,
 			})
 
 		case errors.Is(err, services.ErrInvalidPersonID):
@@ -283,19 +283,19 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		case errors.Is(err, repository.ErrStudentNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Student not found",
+				"message": constants.ErrStudentNotFound,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		case errors.Is(err, services.ErrStudentAlreadyExists):
 			c.JSON(http.StatusConflict, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrStudentAlreadyExists,
 			})
 
 		case errors.Is(err, services.ErrInvalidStudentDateOfBirth):
@@ -313,7 +313,7 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update student",
+				"message": constants.ErrUnableToUpdateStudent,
 			})
 		}
 
@@ -322,7 +322,7 @@ func (h *StudentHandler) Update(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Student updated successfully",
+		"message": constants.ErrStudentUpdatedSuccessfully,
 		"student": gin.H{
 			"id":             student.ID,
 			"person_id":      student.PersonID,
@@ -350,7 +350,7 @@ func (h *StudentHandler) UpdateStatus(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Status is required",
+			"message": constants.ErrStatusRequired,
 		})
 		return
 	}
@@ -365,25 +365,25 @@ func (h *StudentHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidStudentID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid student ID",
+				"message": constants.ErrInvalidStudentID,
 			})
 
 		case errors.Is(err, services.ErrInvalidStudentStatus):
 			c.JSON(http.StatusUnprocessableEntity, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrInvalidStudentStatus,
 			})
 
 		case errors.Is(err, repository.ErrStudentNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Student not found",
+				"message": constants.ErrStudentNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update student status",
+				"message": constants.ErrUnableToUpdateStudentStatus,
 			})
 		}
 
@@ -392,7 +392,7 @@ func (h *StudentHandler) UpdateStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Student status updated successfully",
+		"message": constants.ErrStudentStatusUpdatedSuccessfully,
 	})
 }
 
@@ -405,19 +405,19 @@ func (h *StudentHandler) Delete(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidStudentID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid student ID",
+				"message": constants.ErrInvalidStudentID,
 			})
 
 		case errors.Is(err, repository.ErrStudentNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Student not found",
+				"message": constants.ErrStudentNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to delete student",
+				"message": constants.ErrUnableToDeleteStudent,
 			})
 		}
 
@@ -426,6 +426,6 @@ func (h *StudentHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Student deleted successfully",
+		"message": constants.ErrStudentDeletedSuccessfully,
 	})
 }

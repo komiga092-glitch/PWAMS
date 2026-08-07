@@ -194,19 +194,19 @@ func (h *DonorHandler) GetByID(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonorID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donor ID",
+				"message": constants.ErrInvalidDonorID,
 			})
 
 		case errors.Is(err, repository.ErrDonorNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donor not found",
+				"message": constants.ErrDonorNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to retrieve donor",
+				"message": constants.ErrUnableToRetrieveDonor,
 			})
 		}
 
@@ -262,13 +262,13 @@ func (h *DonorHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonorID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donor ID",
+				"message": constants.ErrInvalidDonorID,
 			})
 
 		case errors.Is(err, repository.ErrDonorNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donor not found",
+				"message": constants.ErrDonorNotFound,
 			})
 
 		case errors.Is(err, services.ErrInvalidDonorType),
@@ -342,7 +342,7 @@ func (h *DonorHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonorID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donor ID",
+				"message": constants.ErrInvalidDonorID,
 			})
 
 		case errors.Is(err, services.ErrInvalidDonorStatus):
@@ -354,7 +354,7 @@ func (h *DonorHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, repository.ErrDonorNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donor not found",
+				"message": constants.ErrDonorNotFound,
 			})
 
 		default:
@@ -382,19 +382,19 @@ func (h *DonorHandler) Delete(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonorID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donor ID",
+				"message": constants.ErrInvalidDonorID,
 			})
 
 		case errors.Is(err, repository.ErrDonorNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donor not found",
+				"message": constants.ErrDonorNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to delete donor",
+				"message": constants.ErrUnableToRetrieveDonor,
 			})
 		}
 

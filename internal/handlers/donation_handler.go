@@ -243,7 +243,7 @@ func (h *DonationHandler) List(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Donations retrieved successfully",
+		"message": constants.ErrDonationsRetrievedSuccessfully,
 		"data":    items,
 		"pagination": gin.H{
 			"page":        page,
@@ -266,19 +266,19 @@ func (h *DonationHandler) GetByID(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonationID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donation ID",
+				"message": constants.ErrInvalidDonationID,
 			})
 
 		case errors.Is(err, repository.ErrDonationNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donation not found",
+				"message": constants.ErrDonationNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to retrieve donation",
+				"message": constants.ErrUnableToRetrieveDonation,
 			})
 		}
 
@@ -299,7 +299,7 @@ func (h *DonationHandler) GetByID(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Donation retrieved successfully",
+		"message": constants.ErrDonationRetrievedSuccessfully,
 		"donation": gin.H{
 			"id":           donation.ID,
 			"reference_no": donation.ReferenceNo,
@@ -344,7 +344,7 @@ func (h *DonationHandler) Update(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid donation information",
+			"message": constants.ErrInvalidDonationInfo,
 			"error":   err.Error(),
 		})
 		return
@@ -360,13 +360,13 @@ func (h *DonationHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonationID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donation ID",
+				"message": constants.ErrInvalidDonationID,
 			})
 
 		case errors.Is(err, repository.ErrDonationNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donation not found",
+				"message": constants.ErrDonationNotFound,
 			})
 
 		case errors.Is(err, services.ErrInvalidPersonID):
@@ -394,7 +394,7 @@ func (h *DonationHandler) Update(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update donation",
+				"message": constants.ErrUnableToUpdateDonation,
 			})
 		}
 
@@ -403,7 +403,7 @@ func (h *DonationHandler) Update(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Donation updated successfully",
+		"message": constants.ErrDonationUpdatedSuccessfully,
 		"donation": gin.H{
 			"id":            donation.ID,
 			"reference_no":  donation.ReferenceNo,
@@ -430,7 +430,7 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Status is required",
+			"message": constants.ErrDonationStatusRequired,
 		})
 		return
 	}
@@ -445,7 +445,7 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonationID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donation ID",
+				"message": constants.ErrInvalidDonationID,
 			})
 
 		case errors.Is(err, services.ErrInvalidDonationStatus):
@@ -457,13 +457,13 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, repository.ErrDonationNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donation not found",
+				"message": constants.ErrDonationNotFound,
 			})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to update donation status",
+				"message": constants.ErrUnableToUpdateDonationStatus,
 			})
 		}
 
@@ -472,7 +472,7 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Donation status updated successfully",
+		"message": constants.ErrDonationStatusUpdatedSuccessfully,
 	})
 }
 func (h *DonationHandler) Delete(c *gin.Context) {
@@ -486,13 +486,13 @@ func (h *DonationHandler) Delete(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidDonationID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid donation ID",
+				"message": constants.ErrInvalidDonationID,
 			})
 
 		case errors.Is(err, repository.ErrDonationNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Donation not found",
+				"message": constants.ErrDonationNotFound,
 			})
 
 		case errors.Is(err, services.ErrConfirmedDonationCannotDelete):
@@ -504,7 +504,7 @@ func (h *DonationHandler) Delete(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": "Unable to delete donation",
+				"message": constants.ErrUnableToDeleteDonation,
 				"error":   err.Error(),
 			})
 		}
@@ -514,6 +514,6 @@ func (h *DonationHandler) Delete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Donation deleted successfully",
+		"message": constants.ErrDonationDeletedSuccessfully,
 	})
 }

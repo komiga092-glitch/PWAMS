@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 type DashboardHandler struct {
@@ -25,14 +26,14 @@ func (h *DashboardHandler) GetStats(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Unable to retrieve dashboard statistics",
+			"message": constants.ErrUnableToRetrieveDashboardStats,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Dashboard statistics retrieved successfully",
+		"message": constants.ErrDashboardStatsRetrievedSuccessfully,
 		"data":    stats,
 	})
 }
