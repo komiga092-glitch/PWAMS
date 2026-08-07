@@ -209,8 +209,7 @@ func (s *UserService) UpdateUser(
 }
 
 func (s *UserService) UpdateUserStatus(
-	id string,
-	status string,
+	id, status string,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
@@ -231,8 +230,7 @@ func (s *UserService) UpdateUserStatus(
 }
 
 func (s *UserService) ResetPassword(
-	id string,
-	newPassword string,
+	id, newPassword string,
 ) error {
 	id = strings.TrimSpace(id)
 	newPassword = strings.TrimSpace(newPassword)
@@ -266,8 +264,7 @@ func (s *UserService) ResetPassword(
 }
 
 func (s *UserService) DeleteUser(
-	targetUserID string,
-	currentUserID string,
+	targetUserID, currentUserID string,
 ) error {
 	targetUserID = strings.TrimSpace(targetUserID)
 	currentUserID = strings.TrimSpace(currentUserID)

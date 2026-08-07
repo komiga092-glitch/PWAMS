@@ -323,46 +323,35 @@ func (s *DonationService) UpdateDonation(
 		return nil, err
 	}
 
-	var personID *uuid.UUID
-	if strings.TrimSpace(request.PersonID) != "" {
-		value, err := uuid.Parse(strings.TrimSpace(request.PersonID))
-		if err != nil {
-			return nil, ErrInvalidPersonID
-		}
-
-		if _, err := s.personRepo.FindByID(value.String()); err != nil {
-			return nil, err
-		}
-
-		personID = &value
-	}
-
-	donationType := strings.TrimSpace(request.DonationType)
-	if !isValidDonationType(donationType) {
-		return nil, ErrInvalidDonationType
-	}
-
-	status := strings.TrimSpace(request.Status)
-	if !isValidDonationStatus(status) {
-		return nil, ErrInvalidDonationStatus
-	}
-
-	if err := validateDonationPayload(donationType, request.Amount, request.ItemName, request.Quantity, request.Unit); err != nil {
+	personID, err := s.resolveDonationPersonID(request.PersonID)
+	if err != nil {
 		return nil, err
 	}
 
-	donationDate := donation.DonationDate
-	if strings.TrimSpace(request.DonationDate) != "" {
-		parsedDate, err := parseDateValue(request.DonationDate)
-		if err != nil {
-			return nil, ErrInvalidDonationDate
-		}
+	donationType, status, err := resolveDonationUpdateFields(
+		request.DonationType,
+		request.Status,
+	)
+	if err != nil {
+		return nil, err
+	}
 
-		if parsedDate.After(time.Now().UTC()) {
-			return nil, ErrInvalidDonationDate
-		}
+	if err := validateDonationPayload(
+		donationType,
+		request.Amount,
+		request.ItemName,
+		request.Quantity,
+		request.Unit,
+	); err != nil {
+		return nil, err
+	}
 
-		donationDate = parsedDate
+	donationDate, err := s.resolveDonationDate(
+		donation.DonationDate,
+		request.DonationDate,
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	currency := normalizeCurrency(request.Currency)
@@ -370,6 +359,84 @@ func (s *DonationService) UpdateDonation(
 		currency = "LKR"
 	}
 
+	applyDonationUpdate(
+		donation,
+		personID,
+		donationType,
+		status,
+		request,
+		donationDate,
+		currency,
+	)
+
+	if err := s.donationRepo.Update(donation); err != nil {
+		return nil, err
+	}
+
+	return donation, nil
+}
+
+func (s *DonationService) resolveDonationPersonID(personID string) (*uuid.UUID, error) {
+	personID = strings.TrimSpace(personID)
+	if personID == "" {
+		return nil, nil
+	}
+
+	value, err := uuid.Parse(personID)
+	if err != nil {
+		return nil, ErrInvalidPersonID
+	}
+
+	if _, err := s.personRepo.FindByID(value.String()); err != nil {
+		return nil, err
+	}
+
+	return &value, nil
+}
+
+func resolveDonationUpdateFields(donationType, status string) (string, string, error) {
+	normalizedDonationType := strings.TrimSpace(donationType)
+	if !isValidDonationType(normalizedDonationType) {
+		return "", "", ErrInvalidDonationType
+	}
+
+	normalizedStatus := strings.TrimSpace(status)
+	if !isValidDonationStatus(normalizedStatus) {
+		return "", "", ErrInvalidDonationStatus
+	}
+
+	return normalizedDonationType, normalizedStatus, nil
+}
+
+func (s *DonationService) resolveDonationDate(
+	existingDate time.Time,
+	requestDate string,
+) (time.Time, error) {
+	if strings.TrimSpace(requestDate) == "" {
+		return existingDate, nil
+	}
+
+	parsedDate, err := parseDateValue(requestDate)
+	if err != nil {
+		return time.Time{}, ErrInvalidDonationDate
+	}
+
+	if parsedDate.After(time.Now().UTC()) {
+		return time.Time{}, ErrInvalidDonationDate
+	}
+
+	return parsedDate, nil
+}
+
+func applyDonationUpdate(
+	donation *models.Donation,
+	personID *uuid.UUID,
+	donationType string,
+	status string,
+	request models.UpdateDonationRequest,
+	donationDate time.Time,
+	currency string,
+) {
 	donation.PersonID = personID
 	donation.DonationType = donationType
 	donation.Amount = request.Amount
@@ -385,19 +452,14 @@ func (s *DonationService) UpdateDonation(
 		donation.ItemName = ""
 		donation.Quantity = 0
 		donation.Unit = ""
-	} else {
-		donation.Amount = 0
+		return
 	}
 
-	if err := s.donationRepo.Update(donation); err != nil {
-		return nil, err
-	}
-
-	return donation, nil
+	donation.Amount = 0
 }
+
 func (s *DonationService) UpdateDonationStatus(
-	id string,
-	status string,
+	id, status string,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)

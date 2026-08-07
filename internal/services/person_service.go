@@ -223,8 +223,7 @@ func (s *PersonService) UpdatePerson(
 }
 
 func (s *PersonService) UpdatePersonStatus(
-	id string,
-	status string,
+	id, status string,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)

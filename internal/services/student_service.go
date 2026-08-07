@@ -266,8 +266,7 @@ func (s *StudentService) UpdateStudent(
 }
 
 func (s *StudentService) UpdateStudentStatus(
-	id string,
-	status string,
+	id, status string,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
