@@ -22,8 +22,7 @@ func NewDonorRepository(db *gorm.DB) *DonorRepository {
 }
 
 func (r *DonorRepository) ExistsByIdentity(
-	nicPassport string,
-	registrationNumber string,
+	nicPassport, registrationNumber string,
 ) (bool, error) {
 	var count int64
 
@@ -159,9 +158,7 @@ func (r *DonorRepository) FindByID(id string) (*models.Donor, error) {
 }
 
 func (r *DonorRepository) ExistsByIdentityExceptID(
-	nicPassport string,
-	registrationNumber string,
-	donorID string,
+	nicPassport, registrationNumber, donorID string,
 ) (bool, error) {
 	var count int64
 

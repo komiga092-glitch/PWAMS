@@ -164,8 +164,7 @@ func (r *StudentRepository) FindByID(id string) (*models.Student, error) {
 }
 
 func (r *StudentRepository) ExistsByStudentCodeExceptID(
-	studentCode string,
-	studentID string,
+	studentCode, studentID string,
 ) (bool, error) {
 	if strings.TrimSpace(studentCode) == "" {
 		return false, nil

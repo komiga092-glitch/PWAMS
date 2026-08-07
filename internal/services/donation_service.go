@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
-	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 var (
@@ -84,32 +84,31 @@ func (s *DonationService) CreateDonation(
 	createdByID uuid.UUID,
 ) (*models.Donation, error) {
 	parsedDonorID, err := s.validateDonor(request.DonorID)
-if err != nil {
-	return nil, err
-}
+	if err != nil {
+		return nil, err
+	}
 
 	parsedPersonID, err := s.validatePerson(request.PersonID)
-if err != nil {
-	return nil, err
-}
+	if err != nil {
+		return nil, err
+	}
 
 	donationType, err := s.validateDonationDetails(request)
-if err != nil {
-	return nil, err
-}
+	if err != nil {
+		return nil, err
+	}
 
 	donationDate, err := s.parseDonationDate(request.DonationDate)
-if err != nil {
-	return nil, err
-}
+	if err != nil {
+		return nil, err
+	}
 
 	referenceNo, err := s.generateReferenceNo(request.ReferenceNo)
-if err != nil {
-	return nil, err
-}
+	if err != nil {
+		return nil, err
+	}
 
 	currency := normalizeCurrency(request.Currency)
-
 	if currency == "" {
 		currency = "LKR"
 	}
@@ -137,10 +136,7 @@ if err != nil {
 	}
 
 	if err := s.donationRepo.Create(donation); err != nil {
-		return nil, fmt.Errorf(
-			"unable to create donation: %w",
-			err,
-		)
+		return nil, fmt.Errorf("unable to create donation: %w", err)
 	}
 
 	return donation, nil
@@ -243,22 +239,9 @@ func generateDonationReference() string {
 func (s *DonationService) ListDonations(
 	query models.DonationListQuery,
 ) ([]models.Donation, int64, int, int, error) {
-	page := query.Page
-	if page < 1 {
-		page = 1
-	}
-
-	pageSize := query.PageSize
-	if pageSize < 1 {
-		pageSize = 10
-	}
-
-	if pageSize > 100 {
-		pageSize = 100
-	}
+	page, pageSize := normalizePagination(query.Page, query.PageSize)
 
 	donorID := strings.TrimSpace(query.DonorID)
-
 	if donorID != "" {
 		if _, err := uuid.Parse(donorID); err != nil {
 			return nil, 0, page, pageSize, ErrInvalidDonorID
@@ -266,7 +249,6 @@ func (s *DonationService) ListDonations(
 	}
 
 	personID := strings.TrimSpace(query.PersonID)
-
 	if personID != "" {
 		if _, err := uuid.Parse(personID); err != nil {
 			return nil, 0, page, pageSize, ErrInvalidPersonID
@@ -274,53 +256,18 @@ func (s *DonationService) ListDonations(
 	}
 
 	donationType := strings.TrimSpace(query.Type)
-
-	if donationType != "" &&
-		!isValidDonationType(donationType) {
+	if donationType != "" && !isValidDonationType(donationType) {
 		return nil, 0, page, pageSize, ErrInvalidDonationType
 	}
 
 	status := strings.TrimSpace(query.Status)
-
-	if status != "" &&
-		!isValidDonationStatus(status) {
+	if status != "" && !isValidDonationStatus(status) {
 		return nil, 0, page, pageSize, ErrInvalidDonationStatus
 	}
 
-	var fromDate *time.Time
-	var toDate *time.Time
-
-	if strings.TrimSpace(query.FromDate) != "" {
-		parsed, err := time.Parse(
-			"2006-01-02",
-			query.FromDate,
-		)
-		if err != nil {
-			return nil, 0, page, pageSize,
-				ErrInvalidDonationDateRange
-		}
-
-		fromDate = &parsed
-	}
-
-	if strings.TrimSpace(query.ToDate) != "" {
-		parsed, err := time.Parse(
-			"2006-01-02",
-			query.ToDate,
-		)
-		if err != nil {
-			return nil, 0, page, pageSize,
-				ErrInvalidDonationDateRange
-		}
-
-		toDate = &parsed
-	}
-
-	if fromDate != nil &&
-		toDate != nil &&
-		fromDate.After(*toDate) {
-		return nil, 0, page, pageSize,
-			ErrInvalidDonationDateRange
+	fromDate, toDate, err := parseDateRange(query.FromDate, query.ToDate)
+	if err != nil {
+		return nil, 0, page, pageSize, ErrInvalidDonationDateRange
 	}
 
 	donations, total, err := s.donationRepo.List(
@@ -374,7 +321,6 @@ func (s *DonationService) UpdateDonation(
 	}
 
 	var personID *uuid.UUID
-
 	if strings.TrimSpace(request.PersonID) != "" {
 		value, err := uuid.Parse(strings.TrimSpace(request.PersonID))
 		if err != nil {
@@ -398,27 +344,13 @@ func (s *DonationService) UpdateDonation(
 		return nil, ErrInvalidDonationStatus
 	}
 
-	switch donationType {
-	case models.DonationTypeCash:
-		if request.Amount <= 0 {
-			return nil, ErrCashAmountRequired
-		}
-
-	default:
-		if strings.TrimSpace(request.ItemName) == "" ||
-			request.Quantity <= 0 ||
-			strings.TrimSpace(request.Unit) == "" {
-			return nil, ErrItemDetailsRequired
-		}
+	if err := validateDonationPayload(donationType, request.Amount, request.ItemName, request.Quantity, request.Unit); err != nil {
+		return nil, err
 	}
 
 	donationDate := donation.DonationDate
-
 	if strings.TrimSpace(request.DonationDate) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			request.DonationDate,
-		)
+		parsedDate, err := parseDateValue(request.DonationDate)
 		if err != nil {
 			return nil, ErrInvalidDonationDate
 		}
@@ -430,7 +362,7 @@ func (s *DonationService) UpdateDonation(
 		donationDate = parsedDate
 	}
 
-	currency := strings.ToUpper(strings.TrimSpace(request.Currency))
+	currency := normalizeCurrency(request.Currency)
 	if currency == "" {
 		currency = "LKR"
 	}
@@ -505,12 +437,11 @@ func (s *DonationService) DeleteDonation(id string) error {
 	return nil
 }
 func (s *DonationService) parseDonationDate(date string) (time.Time, error) {
-
 	if strings.TrimSpace(date) == "" {
 		return time.Now().UTC(), nil
 	}
 
-	parsedDate, err := time.Parse(constants.DateLayout, date)
+	parsedDate, err := parseDateValue(date)
 	if err != nil {
 		return time.Time{}, ErrInvalidDonationDate
 	}
@@ -520,6 +451,77 @@ func (s *DonationService) parseDonationDate(date string) (time.Time, error) {
 	}
 
 	return parsedDate, nil
+}
+
+func validateDonationPayload(
+	donationType string,
+	amount float64,
+	itemName string,
+	quantity float64,
+	unit string,
+) error {
+	switch donationType {
+	case models.DonationTypeCash:
+		if amount <= 0 {
+			return ErrCashAmountRequired
+		}
+
+	default:
+		if strings.TrimSpace(itemName) == "" ||
+			quantity <= 0 ||
+			strings.TrimSpace(unit) == "" {
+			return ErrItemDetailsRequired
+		}
+	}
+
+	return nil
+}
+
+func parseDateValue(value string) (time.Time, error) {
+	return time.Parse(constants.DateLayout, strings.TrimSpace(value))
+}
+
+func normalizePagination(page int, pageSize int) (int, int) {
+	if page < 1 {
+		page = 1
+	}
+
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	return page, pageSize
+}
+
+func parseDateRange(fromDateValue string, toDateValue string) (*time.Time, *time.Time, error) {
+	var fromDate *time.Time
+	var toDate *time.Time
+
+	if strings.TrimSpace(fromDateValue) != "" {
+		parsed, err := parseDateValue(fromDateValue)
+		if err != nil {
+			return nil, nil, err
+		}
+		fromDate = &parsed
+	}
+
+	if strings.TrimSpace(toDateValue) != "" {
+		parsed, err := parseDateValue(toDateValue)
+		if err != nil {
+			return nil, nil, err
+		}
+		toDate = &parsed
+	}
+
+	if fromDate != nil && toDate != nil && fromDate.After(*toDate) {
+		return nil, nil, errors.New("invalid range")
+	}
+
+	return fromDate, toDate, nil
 }
 
 func (s *DonationService) generateReferenceNo(reference string) (string, error) {

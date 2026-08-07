@@ -95,12 +95,8 @@ func (s *AidRequestService) CreateAidRequest(
 	}
 
 	requestDate := time.Now().UTC()
-
 	if strings.TrimSpace(request.RequestDate) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			request.RequestDate,
-		)
+		parsedDate, err := parseDateValue(request.RequestDate)
 		if err != nil {
 			return nil, ErrInvalidAidRequestDate
 		}
@@ -109,12 +105,8 @@ func (s *AidRequestService) CreateAidRequest(
 	}
 
 	var neededBy *time.Time
-
 	if strings.TrimSpace(request.NeededBy) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			request.NeededBy,
-		)
+		parsedDate, err := parseDateValue(request.NeededBy)
 		if err != nil {
 			return nil, ErrInvalidNeededByDate
 		}
@@ -198,22 +190,9 @@ func isValidAidStatus(value string) bool {
 func (s *AidRequestService) ListAidRequests(
 	query models.AidRequestListQuery,
 ) ([]models.AidRequest, int64, int, int, error) {
-	page := query.Page
-	if page < 1 {
-		page = 1
-	}
-
-	pageSize := query.PageSize
-	if pageSize < 1 {
-		pageSize = 10
-	}
-
-	if pageSize > 100 {
-		pageSize = 100
-	}
+	page, pageSize := normalizePagination(query.Page, query.PageSize)
 
 	personID := strings.TrimSpace(query.PersonID)
-
 	if personID != "" {
 		if _, err := uuid.Parse(personID); err != nil {
 			return nil, 0, page, pageSize, ErrInvalidPersonID
@@ -221,57 +200,23 @@ func (s *AidRequestService) ListAidRequests(
 	}
 
 	aidType := strings.TrimSpace(query.Type)
-
 	if aidType != "" && !isValidAidType(aidType) {
 		return nil, 0, page, pageSize, ErrInvalidAidType
 	}
 
 	priority := strings.TrimSpace(query.Priority)
-
 	if priority != "" && !isValidAidPriority(priority) {
 		return nil, 0, page, pageSize, ErrInvalidAidPriority
 	}
 
 	status := strings.TrimSpace(query.Status)
-
 	if status != "" && !isValidAidStatus(status) {
 		return nil, 0, page, pageSize, ErrInvalidAidStatus
 	}
 
-	var fromDate *time.Time
-	var toDate *time.Time
-
-	if strings.TrimSpace(query.FromDate) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			query.FromDate,
-		)
-		if err != nil {
-			return nil, 0, page, pageSize,
-				ErrInvalidAidDateRange
-		}
-
-		fromDate = &parsedDate
-	}
-
-	if strings.TrimSpace(query.ToDate) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			query.ToDate,
-		)
-		if err != nil {
-			return nil, 0, page, pageSize,
-				ErrInvalidAidDateRange
-		}
-
-		toDate = &parsedDate
-	}
-
-	if fromDate != nil &&
-		toDate != nil &&
-		fromDate.After(*toDate) {
-		return nil, 0, page, pageSize,
-			ErrInvalidAidDateRange
+	fromDate, toDate, err := parseDateRange(query.FromDate, query.ToDate)
+	if err != nil {
+		return nil, 0, page, pageSize, ErrInvalidAidDateRange
 	}
 
 	aidRequests, total, err := s.aidRequestRepo.List(
@@ -354,12 +299,8 @@ func (s *AidRequestService) UpdateAidRequest(
 	}
 
 	requestDate := aidRequest.RequestDate
-
 	if strings.TrimSpace(request.RequestDate) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			request.RequestDate,
-		)
+		parsedDate, err := parseDateValue(request.RequestDate)
 		if err != nil {
 			return nil, ErrInvalidAidRequestDate
 		}
@@ -368,12 +309,8 @@ func (s *AidRequestService) UpdateAidRequest(
 	}
 
 	var neededBy *time.Time
-
 	if strings.TrimSpace(request.NeededBy) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			request.NeededBy,
-		)
+		parsedDate, err := parseDateValue(request.NeededBy)
 		if err != nil {
 			return nil, ErrInvalidNeededByDate
 		}

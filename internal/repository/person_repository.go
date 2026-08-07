@@ -126,8 +126,7 @@ func (r *PersonRepository) FindByID(id string) (*models.Person, error) {
 }
 
 func (r *PersonRepository) ExistsByNICPassportExceptID(
-	nicPassport string,
-	personID string,
+	nicPassport, personID string,
 ) (bool, error) {
 	var count int64
 
