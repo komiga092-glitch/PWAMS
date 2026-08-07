@@ -215,8 +215,7 @@ func (r *DonationRepository) Update(
 }
 
 func (r *DonationRepository) UpdateStatus(
-	donationID string,
-	status string,
+	donationID, status string,
 ) error {
 	result := r.db.
 		Model(&models.Donation{}).

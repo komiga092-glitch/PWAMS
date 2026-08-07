@@ -25,8 +25,7 @@ func NewAuthService(userRepo *repository.UserRepository) *AuthService {
 	}
 }
 func (s *AuthService) Login(
-	login string,
-	password string,
+	login, password string,
 ) (*models.User, error) {
 	user, err := s.userRepo.FindByLogin(login)
 	if err != nil {

@@ -11,6 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const userIDCondition = "id = ?"
+
 var ErrUserNotFound = errors.New("user not found")
 
 type UserRepository struct {
@@ -55,7 +57,7 @@ func (r *UserRepository) UpdateLastLogin(userID uuid.UUID) error {
 
 	if err := r.db.
 		Model(&models.User{}).
-		Where("id = ?", userID).
+		Where(userIDCondition, userID).
 		Update("last_login_at", now).
 		Error; err != nil {
 		return fmt.Errorf("failed to update last login: %w", err)
@@ -65,8 +67,7 @@ func (r *UserRepository) UpdateLastLogin(userID uuid.UUID) error {
 }
 
 func (r *UserRepository) ExistsByUsernameOrEmail(
-	username string,
-	email string,
+	username, email string,
 ) (bool, error) {
 	var count int64
 
@@ -96,10 +97,8 @@ func (r *UserRepository) Create(user *models.User) error {
 }
 
 func (r *UserRepository) List(
-	search string,
-	role string,
-	page int,
-	pageSize int,
+	search, role string,
+	page, pageSize int,
 ) ([]models.User, int64, error) {
 	var users []models.User
 	var total int64
@@ -149,7 +148,7 @@ func (r *UserRepository) FindByID(id string) (*models.User, error) {
 
 	err := r.db.
 		Preload("Role").
-		First(&user, "id = ?", id).
+		First(&user, userIDCondition, id).
 		Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -164,9 +163,7 @@ func (r *UserRepository) FindByID(id string) (*models.User, error) {
 }
 
 func (r *UserRepository) ExistsByUsernameOrEmailExceptID(
-	username string,
-	email string,
-	userID string,
+	username, email, userID string,
 ) (bool, error) {
 	var count int64
 
@@ -200,12 +197,11 @@ func (r *UserRepository) Update(user *models.User) error {
 }
 
 func (r *UserRepository) UpdateStatus(
-	userID string,
-	status string,
+	userID, status string,
 ) error {
 	result := r.db.
 		Model(&models.User{}).
-		Where("id = ?", userID).
+		Where(userIDCondition, userID).
 		Update("status", status)
 
 	if result.Error != nil {
@@ -224,7 +220,7 @@ func (r *UserRepository) UpdatePassword(
 ) error {
 	result := r.db.
 		Model(&models.User{}).
-		Where("id = ?", userID).
+		Where(userIDCondition, userID).
 		Update("password_hash", passwordHash)
 
 	if result.Error != nil {

@@ -271,70 +271,35 @@ func (s *AidRequestService) UpdateAidRequest(
 		return nil, err
 	}
 
-	if aidRequest.Status != models.AidStatusPending &&
-		aidRequest.Status != models.AidStatusUnderReview {
+	if !canEditAidRequest(aidRequest.Status) {
 		return nil, ErrAidRequestCannotBeEdited
 	}
 
-	personID := strings.TrimSpace(request.PersonID)
-
-	parsedPersonID, err := uuid.Parse(personID)
-	if err != nil {
-		return nil, ErrInvalidPersonID
-	}
-
-	person, err := s.personRepo.FindByID(personID)
+	personID, person, err := s.validateAidRequestPerson(request.PersonID)
 	if err != nil {
 		return nil, err
 	}
 
-	if person.Status != models.PersonStatusActive {
-		return nil, errors.New("person account is not active")
+	aidType, priority, err := validateAidRequestDetails(request.AidType, request.Priority)
+	if err != nil {
+		return nil, err
 	}
 
-	aidType := strings.TrimSpace(request.AidType)
-	if !isValidAidType(aidType) {
-		return nil, ErrInvalidAidType
-	}
-
-	priority := strings.TrimSpace(request.Priority)
-	if !isValidAidPriority(priority) {
-		return nil, ErrInvalidAidPriority
-	}
-
-	requestDate := aidRequest.RequestDate
-	if strings.TrimSpace(request.RequestDate) != "" {
-		parsedDate, err := parseDateValue(request.RequestDate)
-		if err != nil {
-			return nil, ErrInvalidAidRequestDate
-		}
-
-		requestDate = parsedDate
-	}
-
-	var neededBy *time.Time
-	if strings.TrimSpace(request.NeededBy) != "" {
-		parsedDate, err := parseDateValue(request.NeededBy)
-		if err != nil {
-			return nil, ErrInvalidNeededByDate
-		}
-
-		if parsedDate.Before(requestDate) {
-			return nil, ErrInvalidNeededByDate
-		}
-
-		neededBy = &parsedDate
-	}
-
-	currency := strings.ToUpper(
-		strings.TrimSpace(request.Currency),
+	requestDate, neededBy, err := resolveAidRequestDates(
+		aidRequest.RequestDate,
+		request.RequestDate,
+		request.NeededBy,
 	)
+	if err != nil {
+		return nil, err
+	}
 
+	currency := normalizeCurrency(request.Currency)
 	if currency == "" {
 		currency = "LKR"
 	}
 
-	aidRequest.PersonID = parsedPersonID
+	aidRequest.PersonID = personID
 	aidRequest.AidType = aidType
 	aidRequest.Priority = priority
 	aidRequest.Title = strings.TrimSpace(request.Title)
@@ -352,9 +317,78 @@ func (s *AidRequestService) UpdateAidRequest(
 
 	return aidRequest, nil
 }
+
+func canEditAidRequest(status string) bool {
+	return status == models.AidStatusPending || status == models.AidStatusUnderReview
+}
+
+func (s *AidRequestService) validateAidRequestPerson(personID string) (uuid.UUID, *models.Person, error) {
+	personID = strings.TrimSpace(personID)
+
+	parsedPersonID, err := uuid.Parse(personID)
+	if err != nil {
+		return uuid.Nil, nil, ErrInvalidPersonID
+	}
+
+	person, err := s.personRepo.FindByID(personID)
+	if err != nil {
+		return uuid.Nil, nil, err
+	}
+
+	if person.Status != models.PersonStatusActive {
+		return uuid.Nil, nil, errors.New("person account is not active")
+	}
+
+	return parsedPersonID, person, nil
+}
+
+func validateAidRequestDetails(aidType, priority string) (string, string, error) {
+	aidType = strings.TrimSpace(aidType)
+	if !isValidAidType(aidType) {
+		return "", "", ErrInvalidAidType
+	}
+
+	priority = strings.TrimSpace(priority)
+	if !isValidAidPriority(priority) {
+		return "", "", ErrInvalidAidPriority
+	}
+
+	return aidType, priority, nil
+}
+
+func resolveAidRequestDates(
+	requestDate time.Time,
+	requestDateValue string,
+	neededByValue string,
+) (time.Time, *time.Time, error) {
+	resolvedRequestDate := requestDate
+	if strings.TrimSpace(requestDateValue) != "" {
+		parsedDate, err := parseDateValue(requestDateValue)
+		if err != nil {
+			return time.Time{}, nil, ErrInvalidAidRequestDate
+		}
+
+		resolvedRequestDate = parsedDate
+	}
+
+	var neededBy *time.Time
+	if strings.TrimSpace(neededByValue) != "" {
+		parsedDate, err := parseDateValue(neededByValue)
+		if err != nil {
+			return time.Time{}, nil, ErrInvalidNeededByDate
+		}
+
+		if parsedDate.Before(resolvedRequestDate) {
+			return time.Time{}, nil, ErrInvalidNeededByDate
+		}
+
+		neededBy = &parsedDate
+	}
+
+	return resolvedRequestDate, neededBy, nil
+}
 func isValidAidStatusTransition(
-	currentStatus string,
-	newStatus string,
+	currentStatus, newStatus string,
 ) bool {
 	switch currentStatus {
 	case models.AidStatusPending:

@@ -160,8 +160,7 @@ func (r *PersonRepository) Update(person *models.Person) error {
 }
 
 func (r *PersonRepository) UpdateStatus(
-	personID string,
-	status string,
+	personID, status string,
 ) error {
 	result := r.db.
 		Model(&models.Person{}).

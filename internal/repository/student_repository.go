@@ -203,8 +203,7 @@ func (r *StudentRepository) Update(student *models.Student) error {
 }
 
 func (r *StudentRepository) UpdateStatus(
-	studentID string,
-	status string,
+	studentID, status string,
 ) error {
 	result := r.db.
 		Model(&models.Student{}).
