@@ -220,8 +220,7 @@ func (r *UserRepository) UpdateStatus(
 }
 
 func (r *UserRepository) UpdatePassword(
-	userID string,
-	passwordHash string,
+	userID, passwordHash string,
 ) error {
 	result := r.db.
 		Model(&models.User{}).

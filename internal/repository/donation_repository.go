@@ -58,24 +58,16 @@ func (r *DonationRepository) Create(
 }
 
 func (r *DonationRepository) List(
-	search string,
-	donorID string,
-	personID string,
-	donationType string,
-	status string,
-	fromDate *time.Time,
-	toDate *time.Time,
-	page int,
-	pageSize int,
+	queryParams models.DonationListQuery,
 ) ([]models.Donation, int64, error) {
 	var donations []models.Donation
 	var total int64
 
 	query := r.db.Model(&models.Donation{})
 
-	if search != "" {
+	if queryParams.Search != "" {
 		searchValue := "%" +
-			strings.ToLower(strings.TrimSpace(search)) +
+			strings.ToLower(strings.TrimSpace(queryParams.Search)) +
 			"%"
 
 		query = query.Where(
@@ -88,45 +80,57 @@ func (r *DonationRepository) List(
 		)
 	}
 
+	donorID := strings.TrimSpace(queryParams.DonorID)
 	if donorID != "" {
 		query = query.Where(
 			"donor_id = ?",
-			strings.TrimSpace(donorID),
+			donorID,
 		)
 	}
 
+	personID := strings.TrimSpace(queryParams.PersonID)
 	if personID != "" {
 		query = query.Where(
 			"person_id = ?",
-			strings.TrimSpace(personID),
+			personID,
 		)
 	}
 
+	donationType := strings.TrimSpace(queryParams.Type)
 	if donationType != "" {
 		query = query.Where(
 			"LOWER(donation_type) = LOWER(?)",
-			strings.TrimSpace(donationType),
+			donationType,
 		)
 	}
 
+	status := strings.TrimSpace(queryParams.Status)
 	if status != "" {
 		query = query.Where(
 			"LOWER(status) = LOWER(?)",
-			strings.TrimSpace(status),
+			status,
 		)
 	}
 
-	if fromDate != nil {
+	if queryParams.FromDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", queryParams.FromDate)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to parse from date: %w", err)
+		}
+
 		query = query.Where(
 			"donation_date >= ?",
-			*fromDate,
+			parsedDate,
 		)
 	}
 
-	if toDate != nil {
-		endOfDay := toDate.
-			Add(24 * time.Hour).
-			Add(-time.Nanosecond)
+	if queryParams.ToDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", queryParams.ToDate)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to parse to date: %w", err)
+		}
+
+		endOfDay := parsedDate.Add(24 * time.Hour).Add(-time.Nanosecond)
 
 		query = query.Where(
 			"donation_date <= ?",
@@ -141,14 +145,14 @@ func (r *DonationRepository) List(
 		)
 	}
 
-	offset := (page - 1) * pageSize
+	offset := (queryParams.Page - 1) * queryParams.PageSize
 
 	if err := query.
 		Preload("Donor").
 		Preload("Person").
 		Preload("CreatedBy").
 		Order("donation_date DESC, created_at DESC").
-		Limit(pageSize).
+		Limit(queryParams.PageSize).
 		Offset(offset).
 		Find(&donations).
 		Error; err != nil {

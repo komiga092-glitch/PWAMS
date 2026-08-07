@@ -33,24 +33,16 @@ func (r *AidRequestRepository) Create(
 }
 
 func (r *AidRequestRepository) List(
-	search string,
-	personID string,
-	aidType string,
-	priority string,
-	status string,
-	fromDate *time.Time,
-	toDate *time.Time,
-	page int,
-	pageSize int,
+	queryParams models.AidRequestListQuery,
 ) ([]models.AidRequest, int64, error) {
 	var aidRequests []models.AidRequest
 	var total int64
 
 	query := r.db.Model(&models.AidRequest{})
 
-	if search != "" {
+	if queryParams.Search != "" {
 		searchValue := "%" +
-			strings.ToLower(strings.TrimSpace(search)) +
+			strings.ToLower(strings.TrimSpace(queryParams.Search)) +
 			"%"
 
 		query = query.Where(
@@ -63,45 +55,57 @@ func (r *AidRequestRepository) List(
 		)
 	}
 
+	personID := strings.TrimSpace(queryParams.PersonID)
 	if personID != "" {
 		query = query.Where(
 			"person_id = ?",
-			strings.TrimSpace(personID),
+			personID,
 		)
 	}
 
+	aidType := strings.TrimSpace(queryParams.Type)
 	if aidType != "" {
 		query = query.Where(
 			"LOWER(aid_type) = LOWER(?)",
-			strings.TrimSpace(aidType),
+			aidType,
 		)
 	}
 
+	priority := strings.TrimSpace(queryParams.Priority)
 	if priority != "" {
 		query = query.Where(
 			"LOWER(priority) = LOWER(?)",
-			strings.TrimSpace(priority),
+			priority,
 		)
 	}
 
+	status := strings.TrimSpace(queryParams.Status)
 	if status != "" {
 		query = query.Where(
 			"LOWER(status) = LOWER(?)",
-			strings.TrimSpace(status),
+			status,
 		)
 	}
 
-	if fromDate != nil {
+	if queryParams.FromDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", queryParams.FromDate)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to parse from date: %w", err)
+		}
+
 		query = query.Where(
 			"request_date >= ?",
-			*fromDate,
+			parsedDate,
 		)
 	}
 
-	if toDate != nil {
-		endOfDay := toDate.
-			Add(24 * time.Hour).
-			Add(-time.Nanosecond)
+	if queryParams.ToDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", queryParams.ToDate)
+		if err != nil {
+			return nil, 0, fmt.Errorf("failed to parse to date: %w", err)
+		}
+
+		endOfDay := parsedDate.Add(24 * time.Hour).Add(-time.Nanosecond)
 
 		query = query.Where(
 			"request_date <= ?",
@@ -116,14 +120,14 @@ func (r *AidRequestRepository) List(
 		)
 	}
 
-	offset := (page - 1) * pageSize
+	offset := (queryParams.Page - 1) * queryParams.PageSize
 
 	if err := query.
 		Preload("Person").
 		Preload("CreatedBy").
 		Preload("ReviewedBy").
 		Order("request_date DESC, created_at DESC").
-		Limit(pageSize).
+		Limit(queryParams.PageSize).
 		Offset(offset).
 		Find(&aidRequests).
 		Error; err != nil {

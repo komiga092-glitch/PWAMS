@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 )
@@ -219,17 +220,20 @@ func (s *AidRequestService) ListAidRequests(
 		return nil, 0, page, pageSize, ErrInvalidAidDateRange
 	}
 
-	aidRequests, total, err := s.aidRequestRepo.List(
-		query.Search,
-		personID,
-		aidType,
-		priority,
-		status,
-		fromDate,
-		toDate,
-		page,
-		pageSize,
-	)
+	query.PersonID = personID
+	query.Type = aidType
+	query.Priority = priority
+	query.Status = status
+	if fromDate != nil {
+		query.FromDate = fromDate.Format(constants.DateLayout)
+	}
+	if toDate != nil {
+		query.ToDate = toDate.Format(constants.DateLayout)
+	}
+	query.Page = page
+	query.PageSize = pageSize
+
+	aidRequests, total, err := s.aidRequestRepo.List(query)
 	if err != nil {
 		return nil, 0, page, pageSize, err
 	}

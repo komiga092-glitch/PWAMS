@@ -270,17 +270,20 @@ func (s *DonationService) ListDonations(
 		return nil, 0, page, pageSize, ErrInvalidDonationDateRange
 	}
 
-	donations, total, err := s.donationRepo.List(
-		query.Search,
-		donorID,
-		personID,
-		donationType,
-		status,
-		fromDate,
-		toDate,
-		page,
-		pageSize,
-	)
+	query.DonorID = donorID
+	query.PersonID = personID
+	query.Type = donationType
+	query.Status = status
+	if fromDate != nil {
+		query.FromDate = fromDate.Format(constants.DateLayout)
+	}
+	if toDate != nil {
+		query.ToDate = toDate.Format(constants.DateLayout)
+	}
+	query.Page = page
+	query.PageSize = pageSize
+
+	donations, total, err := s.donationRepo.List(query)
 	if err != nil {
 		return nil, 0, page, pageSize, err
 	}
