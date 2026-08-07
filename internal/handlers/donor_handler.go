@@ -9,6 +9,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 type DonorHandler struct {
@@ -39,7 +40,7 @@ func (h *DonorHandler) Create(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -48,7 +49,7 @@ func (h *DonorHandler) Create(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}

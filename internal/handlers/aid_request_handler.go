@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
@@ -29,7 +30,7 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid aid request information",
+			"message": constants.ErrInvalidAidRequestInfo,
 			"error":   err.Error(),
 		})
 		return
@@ -39,7 +40,7 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -48,7 +49,7 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -130,7 +131,7 @@ func (h *AidRequestHandler) List(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, services.ErrInvalidAidType),
@@ -224,7 +225,7 @@ func (h *AidRequestHandler) GetByID(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidAidRequestID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid aid request ID",
+				"message": constants.ErrInvalidAidRequestID,
 			})
 
 		case errors.Is(err, repository.ErrAidRequestNotFound):
@@ -302,7 +303,7 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid aid request information",
+			"message": constants.ErrInvalidAidRequestInfo,
 			"error":   err.Error(),
 		})
 		return
@@ -319,25 +320,25 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidAidRequestID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid aid request ID",
+				"message": constants.ErrInvalidAidRequestID,
 			})
 
 		case errors.Is(err, repository.ErrAidRequestNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Aid request not found",
+				"message": constants.ErrAidRequestNotFound,
 			})
 
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		case errors.Is(err, services.ErrInvalidAidType),
@@ -392,7 +393,7 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Invalid review information",
+			"message": constants.ErrInvalidReviewInfo,
 			"error":   err.Error(),
 		})
 		return
@@ -402,7 +403,7 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -411,7 +412,7 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -431,7 +432,7 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 		):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid aid request ID",
+				"message": constants.ErrInvalidAidRequestID,
 			})
 
 		case errors.Is(
@@ -440,7 +441,7 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 		):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Aid request not found",
+				"message": constants.ErrAidRequestNotFound,
 			})
 
 		case errors.Is(
@@ -499,7 +500,7 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Cancellation reason is required",
+			"message": constants.ErrCancellationReasonRequired,
 		})
 		return
 	}
@@ -508,7 +509,7 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -517,7 +518,7 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -533,13 +534,13 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidAidRequestID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid aid request ID",
+				"message": constants.ErrInvalidAidRequestID,
 			})
 
 		case errors.Is(err, repository.ErrAidRequestNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Aid request not found",
+				"message": constants.ErrAidRequestNotFound,
 			})
 
 		case errors.Is(err, services.ErrAidRequestCannotBeCancelled):
@@ -579,19 +580,19 @@ func (h *AidRequestHandler) Delete(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidAidRequestID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid aid request ID",
+				"message": constants.ErrInvalidAidRequestID,
 			})
 
 		case errors.Is(err, repository.ErrAidRequestNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Aid request not found",
+				"message": constants.ErrAidRequestNotFound,
 			})
 
 		case errors.Is(err, services.ErrAidRequestCannotBeDeleted):
 			c.JSON(http.StatusConflict, gin.H{
 				"success": false,
-				"message": err.Error(),
+				"message": constants.ErrAidRequestCannotBeDeleted,
 			})
 
 		default:

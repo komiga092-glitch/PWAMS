@@ -10,6 +10,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 type DonationHandler struct {
@@ -40,7 +41,7 @@ func (h *DonationHandler) Create(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -49,7 +50,7 @@ func (h *DonationHandler) Create(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -82,7 +83,7 @@ func (h *DonationHandler) Create(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
@@ -163,7 +164,7 @@ func (h *DonationHandler) List(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, services.ErrInvalidDonationType):
@@ -371,13 +372,13 @@ func (h *DonationHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		case errors.Is(err, services.ErrInvalidDonationType),

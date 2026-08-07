@@ -9,6 +9,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 type UserHandler struct {
@@ -194,7 +195,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -203,7 +204,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -212,7 +213,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 		request.Role == models.RoleSuperAdmin {
 		c.JSON(http.StatusForbidden, gin.H{
 			"success": false,
-			"message": "Only Super Admin can assign the Super Admin role",
+			"message": constants.ErrInvalidRoleAssignment,
 		})
 		return
 	}
@@ -386,7 +387,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -395,7 +396,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}

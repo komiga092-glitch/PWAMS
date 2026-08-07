@@ -8,6 +8,7 @@ import (
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 const sessionCookieName = "pwams_session"
@@ -36,7 +37,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "Login and password are required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -103,7 +104,7 @@ func (h *AuthHandler) Dashboard(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -112,7 +113,7 @@ func (h *AuthHandler) Dashboard(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}

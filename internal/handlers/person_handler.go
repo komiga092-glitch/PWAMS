@@ -9,6 +9,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 type PersonHandler struct {
@@ -39,7 +40,7 @@ func (h *PersonHandler) Create(c *gin.Context) {
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "Authentication required",
+			"message": constants.ErrAuthenticationRequired,
 		})
 		return
 	}
@@ -48,7 +49,7 @@ func (h *PersonHandler) Create(c *gin.Context) {
 	if !ok {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": "Invalid authentication context",
+			"message": constants.ErrInvalidAuthContext,
 		})
 		return
 	}
@@ -172,13 +173,13 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		default:
@@ -237,13 +238,13 @@ func (h *PersonHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		case errors.Is(err, services.ErrPersonAlreadyExists):
@@ -317,7 +318,7 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, services.ErrInvalidPersonStatus):
@@ -356,13 +357,13 @@ func (h *PersonHandler) Delete(c *gin.Context) {
 		case errors.Is(err, services.ErrInvalidPersonID):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
-				"message": "Invalid person ID",
+				"message": constants.ErrInvalidPersonID,
 			})
 
 		case errors.Is(err, repository.ErrPersonNotFound):
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
-				"message": "Person not found",
+				"message": constants.ErrPersonNotFound,
 			})
 
 		default:
