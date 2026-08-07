@@ -36,21 +36,8 @@ func (h *PersonHandler) Create(c *gin.Context) {
 		return
 	}
 
-	currentUserValue, exists := c.Get("current_user")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": constants.ErrAuthenticationRequired,
-		})
-		return
-	}
-
-	currentUser, ok := currentUserValue.(*models.User)
+	currentUser, ok := getCurrentUser(c)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": constants.ErrInvalidAuthContext,
-		})
 		return
 	}
 
@@ -144,23 +131,11 @@ func (h *PersonHandler) List(c *gin.Context) {
 		})
 	}
 
-	totalPages := 0
-	if total > 0 {
-		totalPages = int(
-			(total + int64(pageSize) - 1) / int64(pageSize),
-		)
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": constants.ErrPersonsRetrievedSuccessfully,
-		"data":    items,
-		"pagination": gin.H{
-			"page":        page,
-			"page_size":   pageSize,
-			"total_items": total,
-			"total_pages": totalPages,
-		},
+		"success":    true,
+		"message":    constants.ErrPersonsRetrievedSuccessfully,
+		"data":       items,
+		"pagination": buildPagination(total, page, pageSize),
 	})
 }
 

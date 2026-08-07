@@ -37,21 +37,8 @@ func (h *DonationHandler) Create(c *gin.Context) {
 		return
 	}
 
-	value, exists := c.Get("current_user")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"message": constants.ErrAuthenticationRequired,
-		})
-		return
-	}
-
-	currentUser, ok := value.(*models.User)
+	currentUser, ok := getCurrentUser(c)
 	if !ok {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": constants.ErrInvalidAuthContext,
-		})
 		return
 	}
 
@@ -232,25 +219,11 @@ func (h *DonationHandler) List(c *gin.Context) {
 		})
 	}
 
-	totalPages := 0
-
-	if total > 0 {
-		totalPages = int(
-			(total + int64(pageSize) - 1) /
-				int64(pageSize),
-		)
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": constants.ErrDonationsRetrievedSuccessfully,
-		"data":    items,
-		"pagination": gin.H{
-			"page":        page,
-			"page_size":   pageSize,
-			"total_items": total,
-			"total_pages": totalPages,
-		},
+		"success":    true,
+		"message":    constants.ErrDonationsRetrievedSuccessfully,
+		"data":       items,
+		"pagination": buildPagination(total, page, pageSize),
 	})
 }
 
@@ -356,48 +329,17 @@ func (h *DonationHandler) Update(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidDonationID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidDonationID,
-			})
-
-		case errors.Is(err, repository.ErrDonationNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrDonationNotFound,
-			})
-
-		case errors.Is(err, services.ErrInvalidPersonID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidPersonID,
-			})
-
-		case errors.Is(err, repository.ErrPersonNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrPersonNotFound,
-			})
-
-		case errors.Is(err, services.ErrInvalidDonationType),
-			errors.Is(err, services.ErrInvalidDonationStatus),
-			errors.Is(err, services.ErrCashAmountRequired),
-			errors.Is(err, services.ErrItemDetailsRequired),
-			errors.Is(err, services.ErrInvalidDonationDate):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToUpdateDonation,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToUpdateDonation,
+			errorResponseMapping{err: services.ErrInvalidDonationID, status: http.StatusBadRequest, message: constants.ErrInvalidDonationID},
+			errorResponseMapping{err: repository.ErrDonationNotFound, status: http.StatusNotFound, message: constants.ErrDonationNotFound},
+			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: constants.ErrInvalidPersonID},
+			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: constants.ErrPersonNotFound},
+			errorResponseMapping{err: services.ErrInvalidDonationType, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidDonationStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrCashAmountRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrItemDetailsRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidDonationDate, status: http.StatusUnprocessableEntity, message: err.Error()},
+		)
 		return
 	}
 
@@ -441,32 +383,11 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidDonationID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidDonationID,
-			})
-
-		case errors.Is(err, services.ErrInvalidDonationStatus):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, repository.ErrDonationNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrDonationNotFound,
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToUpdateDonationStatus,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToUpdateDonationStatus,
+			errorResponseMapping{err: services.ErrInvalidDonationID, status: http.StatusBadRequest, message: constants.ErrInvalidDonationID},
+			errorResponseMapping{err: services.ErrInvalidDonationStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: repository.ErrDonationNotFound, status: http.StatusNotFound, message: constants.ErrDonationNotFound},
+		)
 		return
 	}
 
@@ -482,33 +403,11 @@ func (h *DonationHandler) Delete(c *gin.Context) {
 	if err != nil {
 		log.Printf("delete donation error: %T - %v", err, err)
 
-		switch {
-		case errors.Is(err, services.ErrInvalidDonationID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidDonationID,
-			})
-
-		case errors.Is(err, repository.ErrDonationNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrDonationNotFound,
-			})
-
-		case errors.Is(err, services.ErrConfirmedDonationCannotDelete):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToDeleteDonation,
-				"error":   err.Error(),
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToDeleteDonation,
+			errorResponseMapping{err: services.ErrInvalidDonationID, status: http.StatusBadRequest, message: constants.ErrInvalidDonationID},
+			errorResponseMapping{err: repository.ErrDonationNotFound, status: http.StatusNotFound, message: constants.ErrDonationNotFound},
+			errorResponseMapping{err: services.ErrConfirmedDonationCannotDelete, status: http.StatusConflict, message: err.Error()},
+		)
 		return
 	}
 

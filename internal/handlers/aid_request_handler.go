@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -60,35 +59,14 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidPersonID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": "Invalid person ID",
-			})
-
-		case errors.Is(err, repository.ErrPersonNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": "Person not found",
-			})
-
-		case errors.Is(err, services.ErrInvalidAidType),
-			errors.Is(err, services.ErrInvalidAidPriority),
-			errors.Is(err, services.ErrInvalidAidRequestDate),
-			errors.Is(err, services.ErrInvalidNeededByDate):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": "Unable to create aid request",
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to create aid request",
+			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: "Invalid person ID"},
+			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: "Person not found"},
+			errorResponseMapping{err: services.ErrInvalidAidType, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidPriority, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidRequestDate, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidNeededByDate, status: http.StatusUnprocessableEntity, message: err.Error()},
+		)
 		return
 	}
 
@@ -127,29 +105,13 @@ func (h *AidRequestHandler) List(c *gin.Context) {
 		h.aidRequestService.ListAidRequests(query)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidPersonID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidPersonID,
-			})
-
-		case errors.Is(err, services.ErrInvalidAidType),
-			errors.Is(err, services.ErrInvalidAidPriority),
-			errors.Is(err, services.ErrInvalidAidStatus),
-			errors.Is(err, services.ErrInvalidAidDateRange):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": "Unable to retrieve aid requests",
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to retrieve aid requests",
+			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: constants.ErrInvalidPersonID},
+			errorResponseMapping{err: services.ErrInvalidAidType, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidPriority, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidDateRange, status: http.StatusUnprocessableEntity, message: err.Error()},
+		)
 		return
 	}
 
@@ -221,26 +183,10 @@ func (h *AidRequestHandler) GetByID(c *gin.Context) {
 		h.aidRequestService.GetAidRequestByID(aidRequestID)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidAidRequestID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidAidRequestID,
-			})
-
-		case errors.Is(err, repository.ErrAidRequestNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": "Aid request not found",
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": "Unable to retrieve aid request",
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to retrieve aid request",
+			errorResponseMapping{err: services.ErrInvalidAidRequestID, status: http.StatusBadRequest, message: constants.ErrInvalidAidRequestID},
+			errorResponseMapping{err: repository.ErrAidRequestNotFound, status: http.StatusNotFound, message: "Aid request not found"},
+		)
 		return
 	}
 
@@ -316,53 +262,17 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 		)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidAidRequestID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidAidRequestID,
-			})
-
-		case errors.Is(err, repository.ErrAidRequestNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrAidRequestNotFound,
-			})
-
-		case errors.Is(err, services.ErrInvalidPersonID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidPersonID,
-			})
-
-		case errors.Is(err, repository.ErrPersonNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrPersonNotFound,
-			})
-
-		case errors.Is(err, services.ErrInvalidAidType),
-			errors.Is(err, services.ErrInvalidAidPriority),
-			errors.Is(err, services.ErrInvalidAidRequestDate),
-			errors.Is(err, services.ErrInvalidNeededByDate):
-			c.JSON(http.StatusUnprocessableEntity, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		case errors.Is(err, services.ErrAidRequestCannotBeEdited):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToUpdateAidRequest,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToUpdateAidRequest,
+			errorResponseMapping{err: services.ErrInvalidAidRequestID, status: http.StatusBadRequest, message: constants.ErrInvalidAidRequestID},
+			errorResponseMapping{err: repository.ErrAidRequestNotFound, status: http.StatusNotFound, message: constants.ErrAidRequestNotFound},
+			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: constants.ErrInvalidPersonID},
+			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: constants.ErrPersonNotFound},
+			errorResponseMapping{err: services.ErrInvalidAidType, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidPriority, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidRequestDate, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidNeededByDate, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrAidRequestCannotBeEdited, status: http.StatusConflict, message: err.Error()},
+		)
 		return
 	}
 
@@ -425,56 +335,14 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 		)
 
 	if err != nil {
-		switch {
-		case errors.Is(
-			err,
-			services.ErrInvalidAidRequestID,
-		):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidAidRequestID,
-			})
-
-		case errors.Is(
-			err,
-			repository.ErrAidRequestNotFound,
-		):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrAidRequestNotFound,
-			})
-
-		case errors.Is(
-			err,
-			services.ErrInvalidAidStatus,
-		),
-			errors.Is(
-				err,
-				services.ErrInvalidAidStatusTransition,
-			),
-			errors.Is(
-				err,
-				services.ErrApprovedAmountRequired,
-			),
-			errors.Is(
-				err,
-				services.ErrApprovedAmountTooHigh,
-			):
-			c.JSON(
-				http.StatusUnprocessableEntity,
-				gin.H{
-					"success": false,
-					"message": err.Error(),
-				},
-			)
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": "Unable to review aid request",
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to review aid request",
+			errorResponseMapping{err: services.ErrInvalidAidRequestID, status: http.StatusBadRequest, message: constants.ErrInvalidAidRequestID},
+			errorResponseMapping{err: repository.ErrAidRequestNotFound, status: http.StatusNotFound, message: constants.ErrAidRequestNotFound},
+			errorResponseMapping{err: services.ErrInvalidAidStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidStatusTransition, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrApprovedAmountRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrApprovedAmountTooHigh, status: http.StatusUnprocessableEntity, message: err.Error()},
+		)
 		return
 	}
 
@@ -530,32 +398,11 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 	)
 
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidAidRequestID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidAidRequestID,
-			})
-
-		case errors.Is(err, repository.ErrAidRequestNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrAidRequestNotFound,
-			})
-
-		case errors.Is(err, services.ErrAidRequestCannotBeCancelled):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": err.Error(),
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToCancelAidRequest,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToCancelAidRequest,
+			errorResponseMapping{err: services.ErrInvalidAidRequestID, status: http.StatusBadRequest, message: constants.ErrInvalidAidRequestID},
+			errorResponseMapping{err: repository.ErrAidRequestNotFound, status: http.StatusNotFound, message: constants.ErrAidRequestNotFound},
+			errorResponseMapping{err: services.ErrAidRequestCannotBeCancelled, status: http.StatusConflict, message: err.Error()},
+		)
 		return
 	}
 
@@ -576,32 +423,11 @@ func (h *AidRequestHandler) Delete(c *gin.Context) {
 
 	err := h.aidRequestService.DeleteAidRequest(aidRequestID)
 	if err != nil {
-		switch {
-		case errors.Is(err, services.ErrInvalidAidRequestID):
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": constants.ErrInvalidAidRequestID,
-			})
-
-		case errors.Is(err, repository.ErrAidRequestNotFound):
-			c.JSON(http.StatusNotFound, gin.H{
-				"success": false,
-				"message": constants.ErrAidRequestNotFound,
-			})
-
-		case errors.Is(err, services.ErrAidRequestCannotBeDeleted):
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"message": constants.ErrAidRequestCannotBeDeleted,
-			})
-
-		default:
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"message": constants.ErrUnableToDeleteAidRequest,
-			})
-		}
-
+		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToDeleteAidRequest,
+			errorResponseMapping{err: services.ErrInvalidAidRequestID, status: http.StatusBadRequest, message: constants.ErrInvalidAidRequestID},
+			errorResponseMapping{err: repository.ErrAidRequestNotFound, status: http.StatusNotFound, message: constants.ErrAidRequestNotFound},
+			errorResponseMapping{err: services.ErrAidRequestCannotBeDeleted, status: http.StatusConflict, message: constants.ErrAidRequestCannotBeDeleted},
+		)
 		return
 	}
 
