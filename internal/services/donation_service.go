@@ -82,21 +82,10 @@ func (s *DonationService) CreateDonation(
 	request models.CreateDonationRequest,
 	createdByID uuid.UUID,
 ) (*models.Donation, error) {
-	donorID := strings.TrimSpace(request.DonorID)
-
-	parsedDonorID, err := uuid.Parse(donorID)
-	if err != nil {
-		return nil, ErrInvalidDonorID
-	}
-
-	donor, err := s.donorRepo.FindByID(donorID)
-	if err != nil {
-		return nil, err
-	}
-
-	if donor.Status != models.DonorStatusActive {
-		return nil, ErrDonorNotActive
-	}
+	parsedDonorID, err := s.validateDonor(request.DonorID)
+if err != nil {
+	return nil, err
+}
 
 	var parsedPersonID *uuid.UUID
 
@@ -210,6 +199,25 @@ func (s *DonationService) CreateDonation(
 	return donation, nil
 }
 
+func (s *DonationService) validateDonor(donorID string) (uuid.UUID, error) {
+	donorID = strings.TrimSpace(donorID)
+
+	parsedID, err := uuid.Parse(donorID)
+	if err != nil {
+		return uuid.Nil, ErrInvalidDonorID
+	}
+
+	donor, err := s.donorRepo.FindByID(donorID)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	if donor.Status != models.DonorStatusActive {
+		return uuid.Nil, ErrDonorNotActive
+	}
+
+	return parsedID, nil
+}
 func isValidDonationType(value string) bool {
 	switch value {
 	case models.DonationTypeCash,
