@@ -339,8 +339,8 @@ func (s *DonationService) UpdateDonation(
 	if err := validateDonationPayload(
 		donationType,
 		request.Amount,
-		request.ItemName,
 		request.Quantity,
+		request.ItemName,
 		request.Unit,
 	); err != nil {
 		return nil, err
@@ -520,10 +520,8 @@ func (s *DonationService) parseDonationDate(date string) (time.Time, error) {
 
 func validateDonationPayload(
 	donationType string,
-	amount float64,
-	itemName string,
-	quantity float64,
-	unit string,
+	amount, quantity float64,
+	itemName, unit string,
 ) error {
 	switch donationType {
 	case models.DonationTypeCash:
@@ -546,7 +544,7 @@ func parseDateValue(value string) (time.Time, error) {
 	return time.Parse(constants.DateLayout, strings.TrimSpace(value))
 }
 
-func normalizePagination(page int, pageSize int) (int, int) {
+func normalizePagination(page, pageSize int) (int, int) {
 	if page < 1 {
 		page = 1
 	}
@@ -562,7 +560,7 @@ func normalizePagination(page int, pageSize int) (int, int) {
 	return page, pageSize
 }
 
-func parseDateRange(fromDateValue string, toDateValue string) (*time.Time, *time.Time, error) {
+func parseDateRange(fromDateValue, toDateValue string) (*time.Time, *time.Time, error) {
 	var fromDate *time.Time
 	var toDate *time.Time
 
