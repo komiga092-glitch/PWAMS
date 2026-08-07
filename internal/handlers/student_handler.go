@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
-	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 type StudentHandler struct {
@@ -88,7 +88,7 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
-				"message": 	constants.ErrUnableToCreateStudent,
+				"message": constants.ErrUnableToCreateStudent,
 			})
 		}
 

@@ -31,7 +31,7 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidAidRequestInfo,
-			"error":  err.Error(),
+			"error":   err.Error(),
 		})
 		return
 	}
