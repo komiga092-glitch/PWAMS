@@ -10,6 +10,7 @@ import (
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
+	"github.com/komiga092-glitch/pwams/internal/constants"
 )
 
 var (
@@ -87,81 +88,27 @@ if err != nil {
 	return nil, err
 }
 
-	var parsedPersonID *uuid.UUID
+	parsedPersonID, err := s.validatePerson(request.PersonID)
+if err != nil {
+	return nil, err
+}
 
-	if strings.TrimSpace(request.PersonID) != "" {
-		personID := strings.TrimSpace(request.PersonID)
+	donationType, err := s.validateDonationDetails(request)
+if err != nil {
+	return nil, err
+}
 
-		value, err := uuid.Parse(personID)
-		if err != nil {
-			return nil, ErrInvalidPersonID
-		}
+	donationDate, err := s.parseDonationDate(request.DonationDate)
+if err != nil {
+	return nil, err
+}
 
-		if _, err := s.personRepo.FindByID(personID); err != nil {
-			return nil, err
-		}
+	referenceNo, err := s.generateReferenceNo(request.ReferenceNo)
+if err != nil {
+	return nil, err
+}
 
-		parsedPersonID = &value
-	}
-
-	donationType := strings.TrimSpace(request.DonationType)
-
-	if !isValidDonationType(donationType) {
-		return nil, ErrInvalidDonationType
-	}
-
-	switch donationType {
-	case models.DonationTypeCash:
-		if request.Amount <= 0 {
-			return nil, ErrCashAmountRequired
-		}
-
-	default:
-		if strings.TrimSpace(request.ItemName) == "" ||
-			request.Quantity <= 0 ||
-			strings.TrimSpace(request.Unit) == "" {
-			return nil, ErrItemDetailsRequired
-		}
-	}
-
-	donationDate := time.Now().UTC()
-
-	if strings.TrimSpace(request.DonationDate) != "" {
-		parsedDate, err := time.Parse(
-			"2006-01-02",
-			request.DonationDate,
-		)
-		if err != nil {
-			return nil, ErrInvalidDonationDate
-		}
-
-		if parsedDate.After(time.Now().UTC()) {
-			return nil, ErrInvalidDonationDate
-		}
-
-		donationDate = parsedDate
-	}
-
-	referenceNo := strings.ToUpper(
-		strings.TrimSpace(request.ReferenceNo),
-	)
-
-	if referenceNo == "" {
-		referenceNo = generateDonationReference()
-	}
-
-	exists, err := s.donationRepo.ExistsByReferenceNo(referenceNo)
-	if err != nil {
-		return nil, err
-	}
-
-	if exists {
-		return nil, ErrDonationReferenceExists
-	}
-
-	currency := strings.ToUpper(
-		strings.TrimSpace(request.Currency),
-	)
+	currency := normalizeCurrency(request.Currency)
 
 	if currency == "" {
 		currency = "LKR"
@@ -169,7 +116,7 @@ if err != nil {
 
 	donation := &models.Donation{
 		DonorID:      parsedDonorID,
-		PersonID:     parsedPersonID,
+		PersonID:     &parsedPersonID,
 		DonationType: donationType,
 		Amount:       request.Amount,
 		Currency:     currency,
@@ -218,6 +165,53 @@ func (s *DonationService) validateDonor(donorID string) (uuid.UUID, error) {
 
 	return parsedID, nil
 }
+
+func (s *DonationService) validatePerson(personID string) (uuid.UUID, error) {
+	personID = strings.TrimSpace(personID)
+
+	parsedID, err := uuid.Parse(personID)
+	if err != nil {
+		return uuid.Nil, ErrInvalidPersonID
+	}
+
+	if _, err := s.personRepo.FindByID(personID); err != nil {
+		return uuid.Nil, err
+	}
+
+	return parsedID, nil
+}
+
+func (s *DonationService) validateDonationDetails(
+	request models.CreateDonationRequest,
+) (string, error) {
+
+	donationType := strings.TrimSpace(request.DonationType)
+
+	if !isValidDonationType(donationType) {
+		return "", ErrInvalidDonationType
+	}
+
+	switch donationType {
+
+	case models.DonationTypeCash:
+
+		if request.Amount <= 0 {
+			return "", ErrCashAmountRequired
+		}
+
+	default:
+
+		if strings.TrimSpace(request.ItemName) == "" ||
+			request.Quantity <= 0 ||
+			strings.TrimSpace(request.Unit) == "" {
+
+			return "", ErrItemDetailsRequired
+		}
+
+	}
+
+	return donationType, nil
+}
 func isValidDonationType(value string) bool {
 	switch value {
 	case models.DonationTypeCash,
@@ -232,6 +226,10 @@ func isValidDonationType(value string) bool {
 	default:
 		return false
 	}
+}
+
+func normalizeCurrency(currency string) string {
+	return strings.ToUpper(strings.TrimSpace(currency))
 }
 
 func generateDonationReference() string {
@@ -505,4 +503,41 @@ func (s *DonationService) DeleteDonation(id string) error {
 	}
 
 	return nil
+}
+func (s *DonationService) parseDonationDate(date string) (time.Time, error) {
+
+	if strings.TrimSpace(date) == "" {
+		return time.Now().UTC(), nil
+	}
+
+	parsedDate, err := time.Parse(constants.DateLayout, date)
+	if err != nil {
+		return time.Time{}, ErrInvalidDonationDate
+	}
+
+	if parsedDate.After(time.Now().UTC()) {
+		return time.Time{}, ErrInvalidDonationDate
+	}
+
+	return parsedDate, nil
+}
+
+func (s *DonationService) generateReferenceNo(reference string) (string, error) {
+
+	reference = strings.ToUpper(strings.TrimSpace(reference))
+
+	if reference == "" {
+		reference = generateDonationReference()
+	}
+
+	exists, err := s.donationRepo.ExistsByReferenceNo(reference)
+	if err != nil {
+		return "", err
+	}
+
+	if exists {
+		return "", ErrDonationReferenceExists
+	}
+
+	return reference, nil
 }
