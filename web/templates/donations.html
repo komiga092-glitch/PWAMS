@@ -1,0 +1,191 @@
+{{ define "donations_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Donations</h1>
+      <p>Manage and track donations received by PWAMS.</p>
+    </div>
+
+    <button class="btn btn-primary" type="button" onclick="openDonationModal()">
+      + New Donation
+    </button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Donation Records</h2>
+        <p>View and manage donation transactions.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>DONOR</th>
+            <th>AMOUNT</th>
+            <th>DATE</th>
+            <th>PURPOSE</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .data }}
+
+          <tr>
+            <td>{{ .DonorID }}</td>
+
+            <td>{{ .Amount }}</td>
+
+            <td>{{ .DonationDate }}</td>
+
+            <td>{{ .Purpose }}</td>
+
+            <td>
+              {{ if eq .Status "completed" }}
+
+              <span class="status-badge status-active"> Completed </span>
+
+              {{ else if eq .Status "cancelled" }}
+
+              <span class="status-badge status-inactive"> Cancelled </span>
+
+              {{ else }}
+
+              <span class="status-badge"> {{ .Status }} </span>
+
+              {{ end }}
+            </td>
+
+            <td class="actions">
+              <a class="btn btn-small" href="/donations/{{ .ID }}"> View </a>
+            </td>
+          </tr>
+
+          {{ else }}
+
+          <tr>
+            <td colspan="6" class="empty">No donation records found.</td>
+          </tr>
+
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- New Donation Modal -->
+
+<div id="donationModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeDonationModal()"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>New Donation</h2>
+        <p>Record a new donation.</p>
+      </div>
+
+      <button type="button" class="modal-close" onclick="closeDonationModal()">
+        ×
+      </button>
+    </div>
+
+    <form method="POST" action="/donations" class="form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="donorID"> Donor ID * </label>
+
+          <input
+            id="donorID"
+            type="text"
+            name="donor_id"
+            required
+            placeholder="Donor ID"
+          />
+        </div>
+        <div class="form-group">
+          <label for="donationType">Donation Type *</label>
+
+          <select id="donationType" name="donation_type" required>
+            <option value="">Select type</option>
+            <option value="Cash">Cash</option>
+            <option value="Food">Food</option>
+            <option value="Medical">Medical</option>
+            <option value="Education">Education</option>
+            <option value="Clothing">Clothing</option>
+            <option value="Equipment">Equipment</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="donationAmount"> Amount * </label>
+
+          <input
+            id="donationAmount"
+            type="number"
+            name="amount"
+            min="0"
+            step="0.01"
+            required
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="donationDate"> Donation Date * </label>
+
+          <input id="donationDate" type="date" name="donation_date" required />
+        </div>
+
+        <div class="form-group">
+          <label for="donationPurpose"> Purpose </label>
+
+          <input
+            id="donationPurpose"
+            type="text"
+            name="purpose"
+            placeholder="Donation purpose"
+          />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeDonationModal()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary">Save Donation</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openDonationModal() {
+    const modal = document.getElementById("donationModal");
+
+    if (modal) {
+      modal.classList.remove("hidden");
+    }
+  }
+
+  function closeDonationModal() {
+    const modal = document.getElementById("donationModal");
+
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+  }
+</script>
+
+{{ end }}

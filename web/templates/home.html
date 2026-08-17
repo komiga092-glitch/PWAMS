@@ -1,0 +1,39 @@
+{{ define "home_content" }}
+<section class="page">
+    <div class="page-heading">
+        <div>
+            <h1>Welcome to PWAMS</h1>
+            <p>People Welfare Association Management System</p>
+        </div>
+        <a href="/login" class="btn btn-primary">Sign In</a>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Core Services</h2>
+            </div>
+            <div class="panel-body">
+                <div class="quick-grid">
+                    <a class="quick-card" href="/persons/page"><div class="quick-icon">♙</div><div class="quick-title">Care Seekers</div><div class="quick-text">Manage beneficiary information</div></a>
+                    <a class="quick-card" href="/care-provided"><div class="quick-icon">🤝</div><div class="quick-title">Care Provided</div><div class="quick-text">Track support delivered</div></a>
+                    <a class="quick-card" href="/aid-requests"><div class="quick-icon">▣</div><div class="quick-title">Aid Requests</div><div class="quick-text">Manage assistance requests</div></a>
+                    <a class="quick-card" href="/donors"><div class="quick-icon">♡</div><div class="quick-title">Donors</div><div class="quick-text">Manage donor records</div></a>
+                    <a class="quick-card" href="/donations"><div class="quick-icon">◈</div><div class="quick-title">Donations</div><div class="quick-text">Track incoming donations</div></a>
+                    <a class="quick-card" href="/loans"><div class="quick-icon">₹</div><div class="quick-title">Loans</div><div class="quick-text">Manage self-initiative loans</div></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header"><h2>Platform</h2></div>
+            <div class="panel-body">
+                <p style="color:var(--muted);line-height:1.7;">
+                    Secure NGO field-data management with role-based access,
+                    audit logging, reporting and offline-first capabilities.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{{ end }}

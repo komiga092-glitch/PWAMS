@@ -1,0 +1,546 @@
+{{ define "care_provided_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Care Provided</h1>
+      <p>Track welfare services and assistance provided to beneficiaries.</p>
+    </div>
+
+    <button class="btn btn-primary" type="button" onclick="openCareModal()">
+      + Add Care Record
+    </button>
+  </div>
+
+  <!-- Filters -->
+
+  <div class="panel">
+    <div class="panel-body">
+      <form
+        class="search-bar"
+        onsubmit="
+          loadCareRecords(1);
+          return false;
+        "
+      >
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search person or service..."
+        />
+
+        <select id="careTypeFilter">
+          <option value="">All Care Types</option>
+          <option value="medical">Medical</option>
+          <option value="food">Food Assistance</option>
+          <option value="education">Education</option>
+          <option value="financial">Financial</option>
+          <option value="counselling">Counselling</option>
+          <option value="other">Other</option>
+        </select>
+
+        <button class="btn btn-secondary" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Care Records -->
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Care Records</h2>
+
+      <span class="badge" id="recordCount"> 0 Records </span>
+    </div>
+
+    <div class="table-wrap">
+      <div id="loadingSpinner" class="empty">Loading care records...</div>
+      <table class="data-table" id="careTable" style="display: none">
+        <thead>
+          <tr>
+            <th>PERSON</th>
+            <th>CARE TYPE</th>
+            <th>DESCRIPTION</th>
+            <th>AMOUNT</th>
+            <th>DATE</th>
+            <th>PROVIDED BY</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+
+        <tbody id="careTableBody"></tbody>
+      </table>
+      <div id="emptyState" class="empty" style="display: none">
+        No care records found.
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="paginationContainer" class="pagination" style="display: none">
+      <button class="btn btn-secondary" onclick="previousPage()" id="prevBtn">
+        ← Previous
+      </button>
+      <span id="pageInfo"></span>
+      <button class="btn btn-secondary" onclick="nextPage()" id="nextBtn">
+        Next →
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Add/Edit Care Modal -->
+
+<div id="careModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeCareModal()"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle">Add Care Record</h2>
+        <p id="modalSubtitle">Record welfare assistance provided.</p>
+      </div>
+
+      <button type="button" class="modal-close" onclick="closeCareModal()">
+        ×
+      </button>
+    </div>
+
+    <form id="careForm" class="form" onsubmit="handleCareFormSubmit(event)">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="careAidRequestID"> Aid Request ID * </label>
+
+          <input
+            id="careAidRequestID"
+            type="text"
+            name="aid_request_id"
+            required
+            placeholder="Aid Request UUID"
+          />
+        </div>
+        <div class="form-group">
+          <label for="carePersonID"> Person ID * </label>
+
+          <input
+            id="carePersonID"
+            type="text"
+            name="person_id"
+            required
+            placeholder="Person ID"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="careType"> Care Type * </label>
+
+          <select id="careType" name="care_type" required>
+            <option value="">Select care type</option>
+
+            <option value="medical">Medical</option>
+
+            <option value="food">Food Assistance</option>
+
+            <option value="education">Education</option>
+
+            <option value="financial">Financial</option>
+
+            <option value="counselling">Counselling</option>
+
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="providedDate"> Provided Date * </label>
+
+          <input id="providedDate" type="date" name="provided_at" required />
+        </div>
+
+        <div class="form-group">
+          <label for="providedBy"> Provided By </label>
+
+          <input
+            id="providedBy"
+            type="text"
+            name="provided_by"
+            placeholder="Staff / organization"
+          />
+        </div>
+        <div class="form-group">
+          <label for="careAmount"> Amount * </label>
+
+          <input
+            id="careAmount"
+            type="number"
+            name="amount"
+            min="0.01"
+            step="0.01"
+            required
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group form-full">
+          <label for="careDescription"> Description * </label>
+
+          <textarea
+            id="careDescription"
+            name="description"
+            rows="4"
+            required
+            placeholder="Describe the care or service provided"
+          ></textarea>
+        </div>
+      </div>
+
+      <div id="formMessage" class="form-message" style="display: none"></div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeCareModal()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary" id="submitBtn">
+          Save Care Record
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let currentPage = 1;
+  let pageSize = 20;
+  let totalPages = 1;
+  let editingId = null;
+
+  // Initialize on page load
+  document.addEventListener("DOMContentLoaded", () => {
+    loadCareRecords(1);
+    document.getElementById("careTypeFilter").addEventListener("change", () => {
+      loadCareRecords(1);
+    });
+  });
+
+  async function loadCareRecords(page = 1) {
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const careTable = document.getElementById("careTable");
+    const emptyState = document.getElementById("emptyState");
+    const paginationContainer = document.getElementById("paginationContainer");
+
+    loadingSpinner.style.display = "block";
+    careTable.style.display = "none";
+    emptyState.style.display = "none";
+    paginationContainer.style.display = "none";
+
+    try {
+      const response = await fetch(
+        `/care-provided?page=${page}&page_size=${pageSize}`,
+        {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to load care records");
+      }
+
+      const result = await response.json();
+      const records = result.data || [];
+      const pagination = result.pagination || {};
+
+      currentPage = pagination.page || 1;
+      totalPages = pagination.total_pages || 1;
+
+      if (records.length === 0) {
+        loadingSpinner.style.display = "none";
+        emptyState.style.display = "block";
+        return;
+      }
+
+      // Populate table
+      const tbody = document.getElementById("careTableBody");
+      tbody.innerHTML = records
+        .map(
+          (record) => `
+      <tr>
+        <td>${escapeHtml(record.person_id || "-")}</td>
+        <td>${escapeHtml(record.care_type || "-")}</td>
+        <td>${escapeHtml(record.description || "-")}</td>
+        <td>${formatCurrency(record.amount)}</td>
+        <td>${formatDate(record.provided_at)}</td>
+        <td>${escapeHtml(record.provided_by || "-")}</td>
+        <td><span class="badge badge-${record.status?.toLowerCase() || "pending"}">${escapeHtml(record.status || "pending")}</span></td>
+        <td class="actions">
+          <button class="btn btn-small" onclick="viewCareRecord('${record.id}')">View</button>
+          <button class="btn btn-small" onclick="editCareRecord('${record.id}')">Edit</button>
+          <button class="btn btn-small btn-danger" onclick="deleteCareRecord('${record.id}')">Delete</button>
+        </td>
+      </tr>
+    `,
+        )
+        .join("");
+
+      // Update record count
+      document.getElementById("recordCount").textContent =
+        `${pagination.total_items || 0} Records`;
+
+      // Show table
+      loadingSpinner.style.display = "none";
+      careTable.style.display = "table";
+
+      // Show pagination if needed
+      if (totalPages > 1) {
+        paginationContainer.style.display = "flex";
+        document.getElementById("pageInfo").textContent =
+          `Page ${currentPage} of ${totalPages}`;
+        document.getElementById("prevBtn").disabled = currentPage === 1;
+        document.getElementById("nextBtn").disabled =
+          currentPage === totalPages;
+      }
+    } catch (error) {
+      console.error("Care record loading error:", error);
+      loadingSpinner.style.display = "none";
+      emptyState.textContent = "Unable to load care records.";
+      emptyState.style.display = "block";
+    }
+  }
+
+  async function viewCareRecord(id) {
+    try {
+      const response = await fetch(`/care-provided/${id}`, {
+        method: "GET",
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load care record");
+      }
+
+      const result = await response.json();
+      const record = result.data;
+
+      // Populate form with read-only data
+      alert(`
+Care Record Details:
+Person ID: ${record.person_id}
+Care Type: ${record.care_type}
+Amount: ${record.amount}
+Date: ${formatDate(record.provided_at)}
+Status: ${record.status}
+Description: ${record.description}
+    `);
+    } catch (error) {
+      console.error("Error viewing care record:", error);
+      alert("Unable to load care record details.");
+    }
+  }
+
+  async function editCareRecord(id) {
+    try {
+      const response = await fetch(`/care-provided/${id}`, {
+        method: "GET",
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load care record");
+      }
+
+      const result = await response.json();
+      const record = result.data;
+
+      // Set editing mode
+      editingId = id;
+      document.getElementById("modalTitle").textContent = "Edit Care Record";
+      document.getElementById("modalSubtitle").textContent =
+        "Update care assistance details.";
+
+      // Populate form fields
+      document.getElementById("careAidRequestID").value =
+        record.aid_request_id || "";
+      document.getElementById("carePersonID").value = record.person_id || "";
+      document.getElementById("careType").value = record.care_type || "";
+      document.getElementById("providedDate").value =
+        record.provided_at?.split("T")[0] || "";
+      document.getElementById("providedBy").value = record.provided_by || "";
+      document.getElementById("careAmount").value = record.amount || "";
+      document.getElementById("careDescription").value =
+        record.description || "";
+
+      openCareModal();
+    } catch (error) {
+      console.error("Error editing care record:", error);
+      alert("Unable to load care record for editing.");
+    }
+  }
+
+  async function handleCareFormSubmit(event) {
+    event.preventDefault();
+
+    const submitBtn = document.getElementById("submitBtn");
+    const formMessage = document.getElementById("formMessage");
+    submitBtn.disabled = true;
+    formMessage.style.display = "none";
+
+    try {
+      const formData = new FormData(document.getElementById("careForm"));
+      const requestBody = {
+        aid_request_id: formData.get("aid_request_id"),
+        person_id: formData.get("person_id"),
+        care_type: formData.get("care_type"),
+        provided_at: formData.get("provided_at"),
+        provided_by: formData.get("provided_by"),
+        amount: parseFloat(formData.get("amount")),
+        description: formData.get("description"),
+      };
+
+      let response;
+      if (editingId) {
+        // Update existing record
+        response = await fetch(`/care-provided/${editingId}`, {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+      } else {
+        // Create new record
+        response = await fetch("/care-provided", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+      }
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to save care record");
+      }
+
+      formMessage.className = "form-message success";
+      formMessage.textContent =
+        result.message || "Care record saved successfully";
+      formMessage.style.display = "block";
+
+      setTimeout(() => {
+        closeCareModal();
+        editingId = null;
+        document.getElementById("careForm").reset();
+        loadCareRecords(1);
+      }, 1500);
+    } catch (error) {
+      console.error("Error saving care record:", error);
+      formMessage.className = "form-message error";
+      formMessage.textContent = error.message || "Failed to save care record";
+      formMessage.style.display = "block";
+    } finally {
+      submitBtn.disabled = false;
+    }
+  }
+
+  async function deleteCareRecord(id) {
+    if (!confirm("Are you sure you want to delete this care record?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/care-provided/${id}`, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete care record");
+      }
+
+      alert(result.message || "Care record deleted successfully");
+      loadCareRecords(currentPage);
+    } catch (error) {
+      console.error("Error deleting care record:", error);
+      alert("Failed to delete care record: " + error.message);
+    }
+  }
+
+  function openCareModal() {
+    if (editingId === null) {
+      document.getElementById("modalTitle").textContent = "Add Care Record";
+      document.getElementById("modalSubtitle").textContent =
+        "Record welfare assistance provided.";
+      document.getElementById("careForm").reset();
+      document.getElementById("submitBtn").textContent = "Save Care Record";
+    } else {
+      document.getElementById("submitBtn").textContent = "Update Care Record";
+    }
+    document.getElementById("formMessage").style.display = "none";
+    const modal = document.getElementById("careModal");
+    if (modal) {
+      modal.classList.remove("hidden");
+    }
+  }
+
+  function closeCareModal() {
+    const modal = document.getElementById("careModal");
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+    editingId = null;
+  }
+
+  function previousPage() {
+    if (currentPage > 1) {
+      loadCareRecords(currentPage - 1);
+    }
+  }
+
+  function nextPage() {
+    if (currentPage < totalPages) {
+      loadCareRecords(currentPage + 1);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function formatDate(value) {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+    return date.toLocaleDateString();
+  }
+
+  function formatCurrency(value) {
+    if (!value) return "-";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(value);
+  }
+</script>
+
+{{ end }}

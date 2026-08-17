@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verify OTP - PWAMS</title>
+    <link rel="stylesheet" href="/static/css/app.css" />
+  </head>
+  <body>
+    <div class="login-page">
+      <section class="login-brand">
+        <div class="brand-mark">PWA</div>
+
+        <h1 style="margin-top: 24px">Verify Your Identity</h1>
+
+        <p>Enter the 6-digit OTP sent to your registered email address.</p>
+      </section>
+
+      <section class="login-form-side">
+        <div class="login-card">
+          <h2>Verify OTP</h2>
+
+          <p class="subtitle">Check your email for the OTP.</p>
+
+          <div id="message" class="alert" style="display: none"></div>
+
+          <form id="verifyOtpForm">
+            <div class="form-group" style="margin-bottom: 16px">
+              <label class="form-label" for="email"> Email </label>
+
+              <input
+                class="form-control"
+                id="email"
+                name="email"
+                type="email"
+                required
+                readonly
+              />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 18px">
+              <label class="form-label" for="otp"> 6-Digit OTP </label>
+
+              <input
+                class="form-control"
+                id="otp"
+                name="otp"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                pattern="[0-9]{6}"
+                placeholder="Enter 6-digit OTP"
+                required
+              />
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%" type="submit">
+              Verify OTP
+            </button>
+          </form>
+
+          <div style="text-align: center; margin-top: 18px">
+            <a
+              href="/forgot-password"
+              style="color: var(--primary); font-size: 13px; font-weight: 700"
+            >
+              Send OTP Again
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get("email");
+
+      const emailInput = document.getElementById("email");
+      const form = document.getElementById("verifyOtpForm");
+      const message = document.getElementById("message");
+
+      if (!email) {
+        message.style.display = "block";
+        message.textContent = "Email address is missing.";
+        form.style.display = "none";
+      } else {
+        emailInput.value = email;
+      }
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const otp = document.getElementById("otp").value.trim();
+
+        message.style.display = "none";
+
+        try {
+          const response = await fetch("/verify-reset-otp", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: email,
+              otp: otp,
+            }),
+          });
+
+          const data = await response.json();
+
+          message.style.display = "block";
+          message.textContent = data.message || "Request completed.";
+
+          if (response.ok && data.success) {
+            window.location.href =
+              "/reset-password?email=" +
+              encodeURIComponent(email) +
+              "&otp=" +
+              encodeURIComponent(otp);
+          }
+        } catch (error) {
+          message.style.display = "block";
+          message.textContent = "Unable to verify OTP. Please try again.";
+        }
+      });
+    </script>
+  </body>
+</html>

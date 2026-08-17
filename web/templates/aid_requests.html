@@ -1,0 +1,260 @@
+{{ define "aid_requests_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Aid Requests</h1>
+      <p>Review and manage assistance requests.</p>
+    </div>
+
+    <button
+      class="btn btn-primary"
+      type="button"
+      onclick="openAidRequestModal()"
+    >
+      + New Aid Request
+    </button>
+  </div>
+
+  <!-- Search / Filter -->
+
+  <div class="panel">
+    <div class="panel-body">
+      <form class="search-bar" method="GET" action="/aid-requests">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search person, request or description..."
+          value="{{ .search }}"
+        />
+
+        <select name="status">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="completed">Completed</option>
+        </select>
+
+        <button class="btn btn-secondary" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Aid Request List -->
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Aid Request List</h2>
+
+      <span class="badge">
+        {{ if .data }} {{ len .data }} Records {{ else }} 0 Records {{ end }}
+      </span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>PERSON</th>
+            <th>REQUEST TYPE</th>
+            <th>AMOUNT</th>
+            <th>DATE</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .data }}
+
+          <tr>
+            <td>{{ .PersonID }}</td>
+
+            <td>{{ .RequestType }}</td>
+
+            <td>{{ .Amount }}</td>
+
+            <td>{{ .RequestedAt }}</td>
+
+            <td>
+              {{ if eq .Status "approved" }}
+
+              <span class="status-badge status-active"> Approved </span>
+
+              {{ else if eq .Status "rejected" }}
+
+              <span class="status-badge status-inactive"> Rejected </span>
+
+              {{ else if eq .Status "cancelled" }}
+
+              <span class="status-badge status-inactive"> Cancelled </span>
+
+              {{ else if eq .Status "completed" }}
+
+              <span class="status-badge status-active"> Completed </span>
+
+              {{ else }}
+
+              <span class="status-badge"> Pending </span>
+
+              {{ end }}
+            </td>
+
+            <td class="actions">
+              <a class="btn btn-small" href="/aid-requests/{{ .ID }}"> View </a>
+            </td>
+          </tr>
+
+          {{ else }}
+
+          <tr>
+            <td colspan="6" class="empty">No aid requests found.</td>
+          </tr>
+
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- New Aid Request Modal -->
+
+<div id="aidRequestModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeAidRequestModal()"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>New Aid Request</h2>
+        <p>Create a new assistance request.</p>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        onclick="closeAidRequestModal()"
+      >
+        ×
+      </button>
+    </div>
+
+    <form method="POST" action="/aid-requests" class="form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="personID"> Person ID * </label>
+
+          <input
+            id="personID"
+            type="text"
+            name="person_id"
+            required
+            placeholder="Person ID"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="requestType"> Request Type * </label>
+
+          <select id="requestType" name="aid_type" required>
+            <option value="">Select request type</option>
+
+            <option value="medical">Medical</option>
+
+            <option value="food">Food</option>
+
+            <option value="education">Education</option>
+
+            <option value="housing">Housing</option>
+
+            <option value="financial">Financial</option>
+
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="aidAmount"> Amount </label>
+
+          <input
+            id="aidAmount"
+            type="number"
+            name="requested_amount"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="priority"> Priority </label>
+
+          <select id="priority" name="priority">
+            <option value="normal">Normal</option>
+
+            <option value="high">High</option>
+
+            <option value="urgent">Urgent</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label for="aidTitle">Title *</label>
+
+          <input
+            id="aidTitle"
+            type="text"
+            name="title"
+            minlength="3"
+            maxlength="200"
+            required
+            placeholder="Request title"
+          />
+        </div>
+        <div class="form-group form-full">
+          <label for="aidDescription"> Description * </label>
+
+          <textarea
+            id="aidDescription"
+            name="description"
+            rows="4"
+            required
+            placeholder="Describe the assistance required"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeAidRequestModal()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openAidRequestModal() {
+    const modal = document.getElementById("aidRequestModal");
+
+    if (modal) {
+      modal.classList.remove("hidden");
+    }
+  }
+
+  function closeAidRequestModal() {
+    const modal = document.getElementById("aidRequestModal");
+
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+  }
+</script>
+
+{{ end }}

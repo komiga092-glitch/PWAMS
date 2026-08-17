@@ -1,0 +1,336 @@
+{{ define "students_content" }}
+
+<section class="page">
+
+    <!-- Page Header -->
+    <div class="page-heading">
+        <div>
+            <h1>Students</h1>
+            <p>Manage student information and records.</p>
+        </div>
+
+        <button
+            class="btn btn-primary"
+            type="button"
+            onclick="openStudentModal()">
+            + Add Student
+        </button>
+    </div>
+
+
+    <!-- Search / Filter -->
+    <div class="panel">
+
+        <div class="panel-body">
+
+            <form method="GET" action="/students/page" class="filter-bar">
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search student..."
+                    value="{{ .search }}"
+                >
+
+                <select name="status">
+                    <option value="">All Status</option>
+
+                    <option
+                        value="active"
+                        {{ if eq .status "active" }}selected{{ end }}>
+                        Active
+                    </option>
+
+                    <option
+                        value="inactive"
+                        {{ if eq .status "inactive" }}selected{{ end }}>
+                        Inactive
+                    </option>
+                </select>
+
+                <button
+                    type="submit"
+                    class="btn btn-secondary">
+                    Search
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Error -->
+    {{ if .error }}
+
+    <div class="alert alert-danger">
+        {{ .error }}
+    </div>
+
+    {{ end }}
+
+
+    <!-- Student List -->
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h2>Student List</h2>
+
+            <span class="badge">
+                {{ len .students }} Records
+            </span>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Name</th>
+                        <th>Student ID</th>
+                        <th>Phone</th>
+                        <th>School / Institution</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {{ range .students }}
+
+                    <tr>
+
+                        <!-- Name -->
+                        <td>
+                            {{ .Name }}
+                        </td>
+
+
+                        <!-- Student ID -->
+                        <td>
+                            {{ .StudentID }}
+                        </td>
+
+
+                        <!-- Phone -->
+                        <td>
+                            {{ .Phone }}
+                        </td>
+
+
+                        <!-- Institution -->
+                        <td>
+                            {{ .Institution }}
+                        </td>
+
+
+                        <!-- Status -->
+                        <td>
+
+                            {{ if eq .Status "active" }}
+
+                            <span class="status-badge status-active">
+                                Active
+                            </span>
+
+                            {{ else }}
+
+                            <span class="status-badge status-inactive">
+                                Inactive
+                            </span>
+
+                            {{ end }}
+
+                        </td>
+
+
+                        <!-- Actions -->
+                        <td>
+
+                            <div class="table-actions">
+
+                                <a
+                                    href="/students/{{ .ID }}"
+                                    class="btn btn-secondary">
+                                    View
+                                </a>
+
+                                <a
+                                    href="/students/{{ .ID }}/edit"
+                                    class="btn btn-primary">
+                                    Edit
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {{ else }}
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="empty">
+
+                            No students found.
+
+                        </td>
+
+                    </tr>
+
+                    {{ end }}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Add Student Modal -->
+<div
+    id="student-modal"
+    class="modal"
+    style="display: none;">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Add Student</h2>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeStudentModal()">
+                &times;
+            </button>
+
+        </div>
+
+
+        <div class="modal-body">
+
+            <form
+                method="POST"
+                action="/students">
+
+                <div class="form-group">
+
+                    <label for="student_name">
+                        Name
+                    </label>
+
+                    <input
+                        id="student_name"
+                        type="text"
+                        name="name"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="student_id">
+                        Student ID
+                    </label>
+
+                    <input
+                        id="student_id"
+                        type="text"
+                        name="student_id"
+                        required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="student_phone">
+                        Phone
+                    </label>
+
+                    <input
+                        id="student_phone"
+                        type="text"
+                        name="phone">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="student_institution">
+                        School / Institution
+                    </label>
+
+                    <input
+                        id="student_institution"
+                        type="text"
+                        name="institution">
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="closeStudentModal()">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+                        Save Student
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+function openStudentModal() {
+    const modal = document.getElementById("student-modal");
+
+    if (modal) {
+        modal.style.display = "flex";
+    }
+}
+
+function closeStudentModal() {
+    const modal = document.getElementById("student-modal");
+
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+{{ end }}

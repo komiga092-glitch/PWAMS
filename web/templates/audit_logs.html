@@ -1,0 +1,110 @@
+{{ define "audit_logs_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Audit Logs</h1>
+      <p>Track important changes made within the PWAMS system.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Recent Activity</h2>
+      <span class="badge badge-muted">System</span>
+    </div>
+
+    <div class="panel-body">
+      <div id="audit-log-container">
+        <div class="empty">Loading audit logs...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  async function loadAuditLogs() {
+    const container = document.getElementById("audit-log-container");
+
+    try {
+      const response = await fetch("/audit-logs", {
+        method: "GET",
+        credentials: "same-origin",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load audit logs");
+      }
+
+      const result = await response.json();
+
+      const logs = Array.isArray(result)
+        ? result
+        : result.data || result.logs || result.audit_logs || [];
+
+      if (!logs.length) {
+        container.innerHTML = '<div class="empty">No audit logs found.</div>';
+        return;
+      }
+
+      container.innerHTML = `
+      <div style="overflow-x:auto;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Action</th>
+              <th>Entity</th>
+              <th>Details</th>
+              <th>IP Address</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logs
+              .map(
+                (log) => `
+              <tr>
+                <td>${escapeHtml(log.action || "-")}</td>
+                <td>${escapeHtml(log.entity || "-")}</td>
+                <td>${escapeHtml(log.details || "-")}</td>
+                <td>${escapeHtml(log.ip_address || "-")}</td>
+                <td>${formatDate(log.created_at)}</td>
+              </tr>
+            `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+    } catch (error) {
+      console.error("Audit log loading error:", error);
+
+      container.innerHTML =
+        '<div class="empty">Unable to load audit logs.</div>';
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function formatDate(value) {
+    if (!value) return "-";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return date.toLocaleString();
+  }
+
+  document.addEventListener("DOMContentLoaded", loadAuditLogs);
+</script>
+{{ end }}

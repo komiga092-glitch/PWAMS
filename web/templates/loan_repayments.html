@@ -1,0 +1,200 @@
+{{ define "loan_repayments_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Loan Repayments</h1>
+      <p>Track and manage loan repayment records.</p>
+    </div>
+
+    <button
+      class="btn btn-primary"
+      type="button"
+      onclick="openRepaymentModal()"
+    >
+      + New Repayment
+    </button>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Repayment Records</h2>
+        <p>Payments made against active loans.</p>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>LOAN ID</th>
+            <th>AMOUNT</th>
+            <th>PAYMENT DATE</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .data }}
+
+          <tr>
+            <td>{{ .LoanID }}</td>
+
+            <td>{{ .Amount }}</td>
+
+            <td>{{ .PaymentDate }}</td>
+
+            <td>
+              {{ if .PaidAt }}
+
+              <span class="status-badge status-active"> Paid </span>
+
+              {{ else }}
+
+              <span class="status-badge"> Pending </span>
+
+              {{ end }}
+            </td>
+
+            <td class="actions">
+              {{ if not .PaidAt }}
+
+              <form
+                method="POST"
+                action="/loan-repayments/{{ .ID }}/pay"
+                style="display: inline"
+              >
+                <button class="btn btn-small btn-primary" type="submit">
+                  Mark Paid
+                </button>
+              </form>
+
+              <form
+                method="POST"
+                action="/loan-repayments/{{ .ID }}/cancel"
+                style="display: inline"
+              >
+                <button class="btn btn-small" type="submit">Cancel</button>
+              </form>
+
+              {{ else }}
+
+              <span class="muted"> Completed </span>
+
+              {{ end }}
+            </td>
+          </tr>
+
+          {{ else }}
+
+          <tr>
+            <td colspan="5" class="empty">No repayment records found.</td>
+          </tr>
+
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- New Repayment Modal -->
+
+<div id="repaymentModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeRepaymentModal()"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>New Repayment</h2>
+        <p>Create a repayment record.</p>
+      </div>
+
+      <button type="button" class="modal-close" onclick="closeRepaymentModal()">
+        ×
+      </button>
+    </div>
+
+    <form method="POST" action="/loan-repayments" class="form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="installmentNumber"> Installment Number * </label>
+
+          <input
+            id="installmentNumber"
+            type="number"
+            name="installment_number"
+            min="1"
+            value="1"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="repaymentLoanID"> Loan ID * </label>
+
+          <input
+            id="repaymentLoanID"
+            type="text"
+            name="loan_id"
+            required
+            placeholder="Loan ID"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="repaymentAmount"> Amount * </label>
+
+          <input
+            id="repaymentAmount"
+            type="number"
+            name="amount"
+            min="0"
+            step="0.01"
+            required
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="paymentDate"> Payment Date * </label>
+
+          <input id="paymentDate" type="date" name="due_date" required />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeRepaymentModal()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary">Save Repayment</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openRepaymentModal() {
+    const modal = document.getElementById("repaymentModal");
+
+    if (modal) {
+      modal.classList.remove("hidden");
+    }
+  }
+
+  function closeRepaymentModal() {
+    const modal = document.getElementById("repaymentModal");
+
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+  }
+</script>
+
+{{ end }}

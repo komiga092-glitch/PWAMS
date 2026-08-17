@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWAMS Login</title>
+    <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<div class="login-page">
+    <section class="login-brand">
+        <div class="brand-mark">PWA</div>
+        <h1 style="margin-top:24px;">People Welfare Association Management System</h1>
+        <p>Secure management of community welfare operations, beneficiaries, donations, aid, loans and field activities.</p>
+
+        <div class="login-features">
+            <div class="login-feature">✓ Role-based access control</div>
+            <div class="login-feature">✓ Secure session authentication</div>
+            <div class="login-feature">✓ Audit-ready operations</div>
+            <div class="login-feature">✓ Offline-first field support</div>
+        </div>
+    </section>
+
+    <section class="login-form-side">
+        <div class="login-card">
+            <h2>Welcome back</h2>
+            <p class="subtitle">Sign in to your PWAMS account.</p>
+
+            {{ if .error }}
+                <div class="alert alert-danger" data-auto-dismiss>{{ .error }}</div>
+            {{ end }}
+
+            <form method="POST" action="/login">
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label class="form-label" for="login">Email / Username</label>
+                    <input class="form-control" id="login" name="login" type="text" autocomplete="username" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom:18px;">
+                    <label class="form-label" for="password">Password</label>
+                    <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
+                </div>
+
+                <button class="btn btn-primary" style="width:100%;" type="submit">Sign In</button>
+            </form>
+
+            <div style="text-align:center;margin-top:18px;">
+                <a href="/forgot-password" style="color:var(--primary);font-size:13px;font-weight:700;">Forgot password?</a>
+            </div>
+        </div>
+    </section>
+</div>
+<script src="/static/js/app.js"></script>
+</body>
+</html>

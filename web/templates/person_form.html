@@ -1,0 +1,318 @@
+{{ define "person_form_content" }}
+
+<section class="person-page">
+
+    <div class="form-page-header">
+        <div>
+            <h1>Person ID</h1>
+            <p>Care Seeker Details</p>
+        </div>
+
+        <a href="/" class="back-link">← Home</a>
+    </div>
+
+    <div class="person-form-card">
+
+        <form
+            id="person-form"
+            method="POST"
+            action="/persons">
+
+            <!-- Person Type -->
+
+            <div class="form-section">
+
+                <h2>Person Information</h2>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="person_type">
+                            Person Type
+                        </label>
+
+                        <select
+                            id="person_type"
+                            name="person_type"
+                            class="input">
+                            <option value="Individual">
+                                Individual
+                            </option>
+                            <option value="Organization">
+                                Organization
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="full_name">
+                            Full Name <span>*</span>
+                        </label>
+
+                        <input
+                            id="full_name"
+                            name="full_name"
+                            type="text"
+                            class="input"
+                            placeholder="Enter full name"
+                            required>
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="nic_passport">
+                            NIC / Passport <span>*</span>
+                        </label>
+
+                        <input
+                            id="nic_passport"
+                            name="nic_passport"
+                            type="text"
+                            class="input"
+                            placeholder="Enter NIC or passport number"
+                            required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="date_of_birth">
+                            Date of Birth
+                        </label>
+
+                        <input
+                            id="date_of_birth"
+                            name="date_of_birth"
+                            type="date"
+                            class="input">
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="gender">
+                            Gender
+                        </label>
+
+                        <select
+                            id="gender"
+                            name="gender"
+                            class="input">
+
+                            <option value="">
+                                Select Gender
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="phone">
+                            Contact Number
+                        </label>
+
+                        <input
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            class="input"
+                            placeholder="Enter contact number">
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            class="input"
+                            placeholder="Enter email address">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="occupation">
+                            Occupation
+                        </label>
+
+                        <input
+                            id="occupation"
+                            name="occupation"
+                            type="text"
+                            class="input"
+                            placeholder="Enter occupation">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Address -->
+
+            <div class="form-section">
+
+                <h2>Address Information</h2>
+
+                <div class="form-field full-field">
+
+                    <label for="address">
+                        Address
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        class="input textarea"
+                        rows="4"
+                        placeholder="Enter address"></textarea>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="district">
+                            District
+                        </label>
+
+                        <input
+                            id="district"
+                            name="district"
+                            type="text"
+                            class="input"
+                            placeholder="Enter district">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="ds_division">
+                            DS Division
+                        </label>
+
+                        <input
+                            id="ds_division"
+                            name="ds_division"
+                            type="text"
+                            class="input"
+                            placeholder="Enter DS division">
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-field">
+                        <label for="gn_division">
+                            GN Division
+                        </label>
+
+                        <input
+                            id="gn_division"
+                            name="gn_division"
+                            type="text"
+                            class="input"
+                            placeholder="Enter GN division">
+                    </div>
+
+                    <div class="form-field">
+                        <label for="monthly_income">
+                            Monthly Income
+                        </label>
+
+                        <input
+                            id="monthly_income"
+                            name="monthly_income"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            class="input"
+                            placeholder="0.00">
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Status -->
+
+            <div class="form-section">
+
+                <h2>Registration Information</h2>
+
+                <div class="form-field">
+
+                    <label for="status">
+                        Status
+                    </label>
+
+                    <select
+                        id="status"
+                        name="status"
+                        class="input">
+
+                        <option value="Active">
+                            Active
+                        </option>
+
+                        <option value="Inactive">
+                            Inactive
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+
+            <div class="form-actions">
+
+                <a
+                    href="/"
+                    class="btn-secondary">
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn-primary">
+                    Proceed
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{{ end }}

@@ -1,0 +1,106 @@
+{{ define "dashboard_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Overview of PWAMS operations</p>
+    </div>
+    <a href="/reports/dashboard" class="btn btn-primary">View Reports</a>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ else }}
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Total Users</span
+        ><span class="stat-icon">♟</span>
+      </div>
+      <div class="stat-value">{{ .stats.TotalUsers }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Active Users</span
+        ><span class="stat-icon">✓</span>
+      </div>
+      <div class="stat-value">{{ .stats.ActiveUsers }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Pending Users</span
+        ><span class="stat-icon">◷</span>
+      </div>
+      <div class="stat-value">{{ .stats.PendingUsers }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Disabled Users</span
+        ><span class="stat-icon">⊘</span>
+      </div>
+      <div class="stat-value">{{ .stats.DisabledUsers }}</div>
+    </div>
+  </section>
+
+  <div class="dashboard-grid">
+    <div class="panel">
+      <div class="panel-header"><h2>Quick Access</h2></div>
+      <div class="panel-body">
+        <div class="quick-grid">
+          <a class="quick-card" href="/persons/page"
+            ><div class="quick-icon">♙</div>
+            <div class="quick-title">Care Seekers</div>
+            <div class="quick-text">View and manage persons</div></a
+          >
+          <a class="quick-card" href="/students/page"
+            ><div class="quick-icon">🎓</div>
+            <div class="quick-title">Students</div>
+            <div class="quick-text">Manage student records</div></a
+          >
+          <a class="quick-card" href="/donations/page"
+            ><div class="quick-icon">◈</div>
+            <div class="quick-title">Donations</div>
+            <div class="quick-text">Manage donations</div></a
+          >
+          <a class="quick-card" href="/aid-requests/page"
+            ><div class="quick-icon">▣</div>
+            <div class="quick-title">Aid Requests</div>
+            <div class="quick-text">Review assistance</div></a
+          >
+          <a class="quick-card" href="/loans/page"
+            ><div class="quick-icon">₹</div>
+            <div class="quick-title">Loans</div>
+            <div class="quick-text">Manage loans</div></a
+          >
+          <a class="quick-card" href="/notifications/page"
+            ><div class="quick-icon">♢</div>
+            <div class="quick-title">Notifications</div>
+            <div class="quick-text">View notifications</div></a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header"><h2>Users by Role</h2></div>
+      <div class="panel-body">
+        {{ range $role, $count := .stats.UsersByRole }}
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+          "
+        >
+          <span>{{ $role }}</span><strong>{{ $count }}</strong>
+        </div>
+        {{ else }}
+        <div class="empty">No role data available.</div>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+  {{ end }}
+</section>
+{{ end }}

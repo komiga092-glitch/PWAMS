@@ -1,0 +1,247 @@
+{{ define "loans_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Loans</h1>
+      <p>Manage beneficiary loan applications and approvals.</p>
+    </div>
+
+    <button class="btn btn-primary" type="button" onclick="openLoanModal()">
+      + New Loan
+    </button>
+  </div>
+
+  <!-- Filters -->
+
+  <div class="panel">
+    <div class="panel-body">
+      <form class="search-bar" method="GET" action="/loans">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search person or loan..."
+          value="{{ .search }}"
+        />
+
+        <select name="status">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+
+        <button class="btn btn-secondary" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Loan List -->
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Loan List</h2>
+        <p>Loan applications and active loans.</p>
+      </div>
+
+      <span class="badge">
+        {{ if .data }} {{ len .data }} Records {{ else }} 0 Records {{ end }}
+      </span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>PERSON</th>
+            <th>AMOUNT</th>
+            <th>INTEREST</th>
+            <th>DURATION</th>
+            <th>INSTALLMENT</th>
+            <th>STATUS</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {{ range .data }}
+
+          <tr>
+            <td>{{ .PersonID }}</td>
+
+            <td>{{ .LoanAmount }}</td>
+
+            <td>{{ .InterestRate }}%</td>
+
+            <td>{{ .DurationMonths }} months</td>
+
+            <td>{{ .InstallmentAmount }}</td>
+
+            <td>
+              {{ if eq .Status "approved" }}
+
+              <span class="status-badge status-active"> Approved </span>
+
+              {{ else if eq .Status "active" }}
+
+              <span class="status-badge status-active"> Active </span>
+
+              {{ else if eq .Status "completed" }}
+
+              <span class="status-badge status-active"> Completed </span>
+
+              {{ else if eq .Status "rejected" }}
+
+              <span class="status-badge status-inactive"> Rejected </span>
+
+              {{ else if eq .Status "cancelled" }}
+
+              <span class="status-badge status-inactive"> Cancelled </span>
+
+              {{ else }}
+
+              <span class="status-badge"> Pending </span>
+
+              {{ end }}
+            </td>
+
+            <td class="actions">
+              <a class="btn btn-small" href="/loans/{{ .ID }}"> View </a>
+            </td>
+          </tr>
+
+          {{ else }}
+
+          <tr>
+            <td colspan="7" class="empty">No loan records found.</td>
+          </tr>
+
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- New Loan Modal -->
+
+<div id="loanModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeLoanModal()"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>New Loan</h2>
+        <p>Create a new loan application.</p>
+      </div>
+
+      <button type="button" class="modal-close" onclick="closeLoanModal()">
+        ×
+      </button>
+    </div>
+
+    <form method="POST" action="/loans" class="form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="loanPersonID"> Person ID * </label>
+
+          <input
+            id="loanPersonID"
+            type="text"
+            name="person_id"
+            required
+            placeholder="Person ID"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="loanAmount"> Loan Amount * </label>
+
+          <input
+            id="loanAmount"
+            type="number"
+            name="loan_amount"
+            min="0"
+            step="0.01"
+            required
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="interestRate"> Interest Rate (%) </label>
+
+          <input
+            id="interestRate"
+            type="number"
+            name="interest_rate"
+            min="0"
+            step="0.01"
+            value="0"
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="durationMonths"> Duration (Months) * </label>
+
+          <input
+            id="durationMonths"
+            type="number"
+            name="duration_months"
+            min="1"
+            required
+            placeholder="12"
+          />
+        </div>
+
+        <div class="form-group form-full">
+          <label for="loanPurpose"> Purpose </label>
+
+          <textarea
+            id="loanPurpose"
+            name="purpose"
+            rows="4"
+            placeholder="Describe the purpose of the loan"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeLoanModal()"
+        >
+          Cancel
+        </button>
+
+        <button type="submit" class="btn btn-primary">Submit Loan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openLoanModal() {
+    const modal = document.getElementById("loanModal");
+
+    if (modal) {
+      modal.classList.remove("hidden");
+    }
+  }
+
+  function closeLoanModal() {
+    const modal = document.getElementById("loanModal");
+
+    if (modal) {
+      modal.classList.add("hidden");
+    }
+  }
+</script>
+
+{{ end }}

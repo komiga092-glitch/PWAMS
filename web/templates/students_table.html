@@ -1,0 +1,33 @@
+{{ define "students_table" }} {{ if .error }}
+
+<div class="alert alert-danger">{{ .error }}</div>
+
+{{ else if not .students }}
+
+<div class="empty">No students found.</div>
+
+{{ else }}
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {{ range .students }}
+    <tr>
+      <td>{{ .Name }}</td>
+      <td>{{ .Status }}</td>
+      <td>
+        <a href="/students/{{ .ID }}">View</a>
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+
+{{ end }} {{ end }}

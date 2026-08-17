@@ -1,0 +1,74 @@
+{{ define "base" }}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ block "title" . }}PWAMS{{ end }}</title>
+    <link rel="stylesheet" href="/static/css/app.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      {{ template "header" . }}
+
+      <div class="main">
+        <header class="topbar">
+          <button
+            class="menu-btn"
+            type="button"
+            data-menu-button
+            aria-label="Open menu"
+          >
+            ☰
+          </button>
+          <div></div>
+          <div class="topbar-right">
+            <a
+              class="notification-btn"
+              href="/notifications"
+              aria-label="Notifications"
+              >🔔</a
+            >
+            <div class="profile">
+              <div class="avatar">U</div>
+              <div>
+                <div class="profile-name">Account</div>
+                <div class="profile-role">PWAMS User</div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main>
+          {{ if eq .page_template "home_content" }} {{ template "home_content" .
+          }} {{ else if eq .page_template "dashboard_content" }} {{ template
+          "dashboard_content" . }} {{ else if eq .page_template "users_content"
+          }} {{ template "users_content" . }} {{ else if eq .page_template
+          "persons_content" }} {{ template "persons_content" . }} {{ else if eq
+          .page_template "person_form_content" }} {{ template
+          "person_form_content" . }} {{ else if eq .page_template
+          "students_content" }} {{ template "students_content" . }} {{ else if
+          eq .page_template "donors_content" }} {{ template "donors_content" .
+          }} {{ else if eq .page_template "donations_content" }} {{ template
+          "donations_content" . }} {{ else if eq .page_template
+          "aid_requests_content" }} {{ template "aid_requests_content" . }} {{
+          else if eq .page_template "care_provided_content" }} {{ template
+          "care_provided_content" . }} {{ else if eq .page_template
+          "loans_content" }} {{ template "loans_content" . }} {{ else if eq
+          .page_template "loan_repayments_content" }} {{ template
+          "loan_repayments_content" . }} {{ else if eq .page_template
+          "notifications_content" }} {{ template "notifications_content" . }} {{
+          else if eq .page_template "audit_logs_content" }} {{ template
+          "audit_logs_content" . }} {{ else if eq .page_template
+          "reports_content" }} {{ template "reports_content" . }} {{ end }}
+        </main>
+      </div>
+
+      <div class="overlay" data-overlay></div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+  </body>
+</html>
+{{ end }}

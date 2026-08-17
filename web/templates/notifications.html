@@ -1,0 +1,54 @@
+{{ define "notifications_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Notifications</h1>
+      <p>View and manage system notifications</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Notifications</h2>
+    </div>
+
+    <div class="panel-body">
+      {{ if .notifications }}
+
+      <div class="notification-list">
+        {{ range .notifications }}
+
+        <div class="notification-item">
+          <div>
+            <strong>{{ .Title }}</strong>
+
+            <p>{{ .Message }}</p>
+
+            {{ if .CreatedAt }}
+            <small> {{ .CreatedAt }} </small>
+            {{ end }}
+          </div>
+
+          <div>
+            {{ if not .IsRead }}
+            <span class="badge badge-warning"> Unread </span>
+            {{ else }}
+            <span class="badge badge-success"> Read </span>
+            {{ end }}
+          </div>
+        </div>
+
+        {{ end }}
+      </div>
+
+      {{ else }}
+
+      <div class="empty">No notifications available.</div>
+
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+{{ end }}
