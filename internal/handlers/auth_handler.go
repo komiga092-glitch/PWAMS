@@ -37,6 +37,19 @@ func NewAuthHandler(
 // Login authenticates the user, creates a session,
 // stores the session token in an HttpOnly cookie,
 // and redirects the user to the dashboard.
+//
+// @Summary User login
+// @Description Authenticate a user and create a session
+// @Tags Authentication
+// @Accept application/x-www-form-urlencoded
+// @Produce text/html
+// @Param login formData string true "Email or username"
+// @Param password formData string true "Password"
+// @Success 303
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var request models.LoginRequest
 
@@ -75,6 +88,16 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 // ForgotPassword starts the password reset process.
+//
+// @Summary Send password reset OTP
+// @Description Sends a 6-digit password reset OTP to the user's registered email.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body models.ForgotPasswordRequest true "Forgot password request"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /forgot-password [post]
 func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	var request models.ForgotPasswordRequest
 
@@ -101,6 +124,16 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 }
 
 // VerifyResetOTP verifies the password reset OTP.
+//
+// @Summary Verify password reset OTP
+// @Description Verifies the 6-digit OTP sent to the user's email.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body models.VerifyResetOTPRequest true "OTP verification request"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /verify-reset-otp [post]
 func (h *AuthHandler) VerifyResetOTP(c *gin.Context) {
 	var request models.VerifyResetOTPRequest
 
@@ -130,6 +163,16 @@ func (h *AuthHandler) VerifyResetOTP(c *gin.Context) {
 }
 
 // ResetPassword changes the user's password after OTP verification.
+//
+// @Summary Reset password
+// @Description Changes the user's password after successful OTP verification.
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body models.ResetPasswordRequest true "Reset password request"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /reset-password [post]
 func (h *AuthHandler) ResetPassword(c *gin.Context) {
 	var request models.ResetPasswordRequest
 
@@ -169,6 +212,14 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 }
 
 // Logout revokes the current session and removes the session cookie.
+//
+// @Summary Logout
+// @Description Revoke the current authenticated session.
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /logout [post]
 func (h *AuthHandler) Logout(c *gin.Context) {
 	rawToken, err := c.Cookie(sessionCookieName)
 

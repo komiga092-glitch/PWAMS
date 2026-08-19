@@ -36,6 +36,19 @@ func (h *UserHandler) Page(c *gin.Context) {
 }
 
 // Create creates a new system user.
+//
+// @Summary Create user
+// @Description Create a new system user.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param request body models.CreateUserRequest true "User information"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 409 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users [post]
 func (h *UserHandler) Create(c *gin.Context) {
 	var request models.CreateUserRequest
 
@@ -103,6 +116,19 @@ func (h *UserHandler) Create(c *gin.Context) {
 }
 
 // List returns users with search, role filter and pagination.
+//
+// @Summary List users
+// @Description Retrieve users with search, role filtering and pagination.
+// @Tags Users
+// @Produce json
+// @Param search query string false "Search users"
+// @Param role query string false "Filter by role"
+// @Param page query int false "Page number"
+// @Param page_size query int false "Number of users per page"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users [get]
 func (h *UserHandler) List(c *gin.Context) {
 	var query models.UserListQuery
 
@@ -162,6 +188,17 @@ func (h *UserHandler) List(c *gin.Context) {
 }
 
 // GetByID returns one user by UUID.
+//
+// @Summary Get user
+// @Description Retrieve a single user by UUID.
+// @Tags Users
+// @Produce json
+// @Param id path string true "User UUID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id} [get]
 func (h *UserHandler) GetByID(c *gin.Context) {
 	userID := c.Param("id")
 
@@ -207,6 +244,22 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 }
 
 // Update updates an existing system user.
+//
+// @Summary Update user
+// @Description Update an existing system user's information.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User UUID"
+// @Param request body models.UpdateUserRequest true "Updated user information"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 409 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id} [put]
 func (h *UserHandler) Update(c *gin.Context) {
 	userID := c.Param("id")
 
@@ -303,6 +356,20 @@ func (h *UserHandler) Update(c *gin.Context) {
 }
 
 // UpdateStatus updates the status of a user.
+//
+// @Summary Update user status
+// @Description Change the status of an existing user.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User UUID"
+// @Param request body models.UpdateUserStatusRequest true "User status"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id}/status [patch]
 func (h *UserHandler) UpdateStatus(c *gin.Context) {
 	userID := c.Param("id")
 
@@ -373,6 +440,20 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 }
 
 // ResetPassword resets a user's password.
+//
+// @Summary Reset user password
+// @Description Reset the password of an existing user.
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param id path string true "User UUID"
+// @Param request body models.ResetUserPasswordRequest true "New password"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id}/password [patch]
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	userID := c.Param("id")
 
@@ -428,6 +509,18 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 }
 
 // Delete deletes a user.
+//
+// @Summary Delete user
+// @Description Delete an existing user.
+// @Tags Users
+// @Produce json
+// @Param id path string true "User UUID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /users/{id} [delete]
 func (h *UserHandler) Delete(c *gin.Context) {
 	targetUserID := c.Param("id")
 

@@ -143,15 +143,14 @@
     <form method="POST" action="/aid-requests" class="form">
       <div class="form-grid">
         <div class="form-group">
-          <label for="personID"> Person ID * </label>
+          <label for="personID">Beneficiary *</label>
 
-          <input
-            id="personID"
-            type="text"
-            name="person_id"
-            required
-            placeholder="Person ID"
-          />
+<select
+    id="personID"
+    name="person_id"
+    required>
+    <option value="">Select Person</option>
+</select>
         </div>
 
         <div class="form-group">

@@ -32,21 +32,27 @@
                     value="{{ .search }}"
                 >
 
-                <select name="status">
-                    <option value="">All Status</option>
+              <select name="status">
+    <option value="">All Status</option>
 
-                    <option
-                        value="active"
-                        {{ if eq .status "active" }}selected{{ end }}>
-                        Active
-                    </option>
+    <option
+        value="Active"
+        {{ if eq .status "Active" }}selected{{ end }}>
+        Active
+    </option>
 
-                    <option
-                        value="inactive"
-                        {{ if eq .status "inactive" }}selected{{ end }}>
-                        Inactive
-                    </option>
-                </select>
+    <option
+        value="Inactive"
+        {{ if eq .status "Inactive" }}selected{{ end }}>
+        Inactive
+    </option>
+
+    <option
+        value="Pending"
+        {{ if eq .status "Pending" }}selected{{ end }}>
+        Pending
+    </option>
+</select>
 
                 <button
                     type="submit"
@@ -227,86 +233,192 @@
 
         <div class="modal-body">
 
-            <form
-                method="POST"
-                action="/students">
+<form
+    id="student-create-form">
+    <div class="form-group">
 
-                <div class="form-group">
+    <label for="student_person_id">
+        Person *
+    </label>
 
-                    <label for="student_name">
-                        Name
-                    </label>
+    <select
+        id="student_person_id"
+        name="person_id"
+        required>
 
-                    <input
-                        id="student_name"
-                        type="text"
-                        name="name"
-                        required>
+        <option value="">Select Person</option>
 
-                </div>
+    </select>
 
+</div>
 
-                <div class="form-group">
+    <div class="form-group">
 
-                    <label for="student_id">
-                        Student ID
-                    </label>
+        <label for="student_name">
+            Full Name
+        </label>
 
-                    <input
-                        id="student_id"
-                        type="text"
-                        name="student_id"
-                        required>
+        <input
+            id="student_name"
+            type="text"
+            name="full_name"
+            required>
 
-                </div>
+    </div>
 
+    
 
-                <div class="form-group">
+    <div class="form-group">
 
-                    <label for="student_phone">
-                        Phone
-                    </label>
+        <label for="student_school">
+            School / Institution
+        </label>
 
-                    <input
-                        id="student_phone"
-                        type="text"
-                        name="phone">
+        <input
+            id="student_school"
+            type="text"
+            name="school_name">
 
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="student_institution">
-                        School / Institution
-                    </label>
-
-                    <input
-                        id="student_institution"
-                        type="text"
-                        name="institution">
-
-                </div>
+    </div>
 
 
-                <div class="form-actions">
+    <div class="form-group">
 
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="closeStudentModal()">
-                        Cancel
-                    </button>
+        <label for="student_grade">
+            Grade
+        </label>
 
-                    <button
-                        type="submit"
-                        class="btn btn-primary">
-                        Save Student
-                    </button>
+        <input
+            id="student_grade"
+            type="text"
+            name="grade">
 
-                </div>
+    </div>
 
-            </form>
+
+    <div class="form-group">
+
+        <label for="student_code">
+            Student Code
+        </label>
+
+        <input
+            id="student_code"
+            type="text"
+            name="student_code"
+            placeholder="Optional">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="student_dob">
+            Date of Birth
+        </label>
+
+        <input
+            id="student_dob"
+            type="date"
+            name="date_of_birth">
+
+    </div>
+
+<div class="form-group">
+
+    <label for="student_gender">
+        Gender
+    </label>
+
+    <select
+        id="student_gender"
+        name="gender">
+
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+
+    </select>
+
+</div>
+    <div class="form-group">
+
+        <label for="student_guardian">
+            Guardian Name
+        </label>
+
+        <input
+            id="student_guardian"
+            type="text"
+            name="guardian_name">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="student_guardian_phone">
+            Guardian Phone
+        </label>
+
+        <input
+            id="student_guardian_phone"
+            type="text"
+            name="guardian_phone">
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="student_academic_year">
+            Academic Year
+        </label>
+
+       <input
+    id="student_academic_year"
+    type="number"
+    name="academic_year"
+    min="2000"
+    max="2100"
+    placeholder="2026"
+    required>
+    </div>
+
+
+    <div class="form-group">
+
+        <label for="student_remarks">
+            Remarks
+        </label>
+
+        <textarea
+            id="student_remarks"
+            name="remarks"
+            rows="3"></textarea>
+
+    </div>
+
+
+    <div class="form-actions">
+
+        <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="closeStudentModal()">
+            Cancel
+        </button>
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+            Save Student
+        </button>
+
+    </div>
+
+</form>
 
         </div>
 
@@ -329,6 +441,100 @@ function closeStudentModal() {
 
     if (modal) {
         modal.style.display = "none";
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    loadStudentPersons();
+    const form = document.getElementById("student-create-form");
+
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        const data = {
+            person_id: formData.get("person_id"),
+            full_name: formData.get("full_name"),
+            school_name: formData.get("school_name"),
+            grade: formData.get("grade"),
+            student_code: formData.get("student_code"),
+            date_of_birth: formData.get("date_of_birth"),
+            gender: formData.get("gender"),
+            guardian_name: formData.get("guardian_name"),
+            guardian_phone: formData.get("guardian_phone"),
+            academic_year: Number(formData.get("academic_year")),
+            remarks: formData.get("remarks")
+        };
+
+        try {
+            const response = await fetch("/students", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+         if (!response.ok) {
+    alert(
+        (result.message || "Unable to create student.") +
+        (result.error ? "\n\n" + result.error : "")
+    );
+
+    console.error("Student create error:", result);
+
+    return;
+}
+            alert(result.message || "Student created successfully.");
+
+            closeStudentModal();
+            window.location.reload();
+
+        } catch (error) {
+            console.error(error);
+            alert("Unable to create student.");
+        }
+    });
+});
+
+async function loadStudentPersons() {
+    const select = document.getElementById("student_person_id");
+
+    if (!select) {
+        return;
+    }
+
+    try {
+        const response = await fetch("/persons");
+
+        if (!response.ok) {
+            throw new Error("Unable to load persons");
+        }
+
+        const result = await response.json();
+
+        const persons = result.data || result.persons || [];
+
+        persons.forEach(function (person) {
+            const option = document.createElement("option");
+
+            option.value = person.id;
+            option.textContent =
+                person.full_name ||
+                person.name ||
+                "Unnamed Person";
+
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error("Failed to load persons:", error);
     }
 }
 </script>

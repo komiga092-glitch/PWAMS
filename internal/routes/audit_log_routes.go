@@ -38,5 +38,5 @@ func RegisterAuditLogRoutes(
 		"/audit-logs/:id",
 		handler.GetByID,
 	)
-	
+
 }

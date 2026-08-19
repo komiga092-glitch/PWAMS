@@ -5,6 +5,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/komiga092-glitch/pwams/docs"
 
 	"github.com/komiga092-glitch/pwams/internal/config"
 	"github.com/komiga092-glitch/pwams/internal/database"
@@ -280,7 +284,7 @@ func main() {
 		"web/templates/login.html",
 		"web/templates/forgot_password.html",
 		"web/templates/verify_reset_otp.html",
-"web/templates/reset_password.html",
+		"web/templates/reset_password.html",
 		"web/templates/dashboard.html",
 		"web/templates/users.html",
 		"web/templates/persons.html",
@@ -419,7 +423,7 @@ func main() {
 		loanRepaymentHandler,
 		authMiddleware,
 	)
-
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// =========================
 	// Start Server
 	// =========================

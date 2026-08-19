@@ -24,6 +24,20 @@ func NewPersonHandler(
 	}
 }
 
+// Create creates a new person.
+//
+// @Summary Create person
+// @Description Create a new beneficiary/person record.
+// @Tags Persons
+// @Accept json
+// @Produce json
+// @Param request body models.CreatePersonRequest true "Person information"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 409 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /persons [post]
 func (h *PersonHandler) Create(c *gin.Context) {
 	var request models.CreatePersonRequest
 
@@ -89,6 +103,20 @@ func (h *PersonHandler) Create(c *gin.Context) {
 	})
 }
 
+// List returns persons with search and pagination.
+//
+// @Summary List persons
+// @Description Retrieve persons with search, filtering and pagination.
+// @Tags Persons
+// @Produce json
+// @Param search query string false "Search persons"
+// @Param status query string false "Filter by status"
+// @Param page query int false "Page number"
+// @Param page_size query int false "Number of records per page"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /persons [get]
 func (h *PersonHandler) List(c *gin.Context) {
 	var query models.PersonListQuery
 
@@ -139,6 +167,18 @@ func (h *PersonHandler) List(c *gin.Context) {
 	})
 }
 
+// GetByID returns one person by UUID.
+//
+// @Summary Get person
+// @Description Retrieve a single person by UUID.
+// @Tags Persons
+// @Produce json
+// @Param id path string true "Person UUID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /persons/{id} [get]
 func (h *PersonHandler) GetByID(c *gin.Context) {
 	personID := c.Param("id")
 
@@ -189,6 +229,22 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 	})
 }
 
+// Update updates an existing person.
+//
+// @Summary Update person
+// @Description Update an existing person record.
+// @Tags Persons
+// @Accept json
+// @Produce json
+// @Param id path string true "Person UUID"
+// @Param request body models.UpdatePersonRequest true "Updated person information"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 409 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /persons/{id} [put]
 func (h *PersonHandler) Update(c *gin.Context) {
 	personID := c.Param("id")
 
@@ -239,6 +295,21 @@ func (h *PersonHandler) Update(c *gin.Context) {
 	})
 }
 
+// UpdateStatus updates the status of a person.
+//
+// @Summary Update person status
+// @Description Change the status of an existing person.
+// @Tags Persons
+// @Accept json
+// @Produce json
+// @Param id path string true "Person UUID"
+// @Param request body models.UpdatePersonStatusRequest true "Person status"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 422 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /persons/{id}/status [patch]
 func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 	personID := c.Param("id")
 
@@ -292,6 +363,19 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 		"message": constants.ErrPersonStatusUpdatedSuccessfully,
 	})
 }
+
+// Delete deletes a person.
+//
+// @Summary Delete person
+// @Description Delete an existing person record.
+// @Tags Persons
+// @Produce json
+// @Param id path string true "Person UUID"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 404 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /persons/{id} [delete]
 func (h *PersonHandler) Delete(c *gin.Context) {
 	personID := c.Param("id")
 

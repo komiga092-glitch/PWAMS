@@ -26,10 +26,10 @@ func RegisterAuthRoutes(
 		})
 	})
 	router.GET("/forgot-password", func(c *gin.Context) {
-	c.HTML(http.StatusOK, "forgot_password.html", gin.H{
-		"title": "Forgot Password",
+		c.HTML(http.StatusOK, "forgot_password.html", gin.H{
+			"title": "Forgot Password",
+		})
 	})
-})
 	router.GET("/verify-reset-otp", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "verify_reset_otp.html", gin.H{
 			"title": "Verify OTP",

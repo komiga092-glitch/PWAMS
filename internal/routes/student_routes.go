@@ -29,7 +29,9 @@ func RegisterStudentRoutes(
 
 	// API endpoints
 	students.GET("", studentHandler.List)
-	students.GET("/:id", studentHandler.GetByID)
+	students.GET("/page", studentHandler.Page)
+
+students.GET("/:id", studentHandler.GetByID)
 	students.POST("", studentHandler.Create)
 	students.PUT("/:id", studentHandler.Update)
 	students.PATCH("/:id/status", studentHandler.UpdateStatus)
