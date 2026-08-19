@@ -364,9 +364,52 @@ func (h *StudentHandler) Delete(c *gin.Context) {
 }
 
 func (h *StudentHandler) Page(c *gin.Context) {
+	var query models.StudentListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.HTML(http.StatusBadRequest, "base", gin.H{
+			"page_template": "students_content",
+			"title":         "Students - PWAMS",
+			"students":      []interface{}{},
+			"search":        "",
+			"status":        "",
+			"error":         constants.ErrInvalidQueryParameters,
+		})
+		return
+	}
+
+	students, _, _, _, err := h.studentService.ListStudents(query)
+
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{
+			"page_template": "students_content",
+			"title":         "Students - PWAMS",
+			"students":      []interface{}{},
+			"search":        query.Search,
+			"status":        query.Status,
+			"error":         constants.ErrUnableToRetrieveStudents,
+		})
+		return
+	}
+
+	items := make([]gin.H, 0, len(students))
+
+	for _, student := range students {
+		items = append(items, gin.H{
+			"ID":          student.ID,
+			"Name":        student.FullName,
+			"StudentID":   student.StudentCode,
+			"Phone":       student.GuardianPhone,
+			"Institution": student.SchoolName,
+			"Status":      student.Status,
+		})
+	}
+
 	c.HTML(http.StatusOK, "base", gin.H{
 		"page_template": "students_content",
 		"title":         "Students - PWAMS",
-		"students":      []interface{}{},
+		"students":      items,
+		"search":        query.Search,
+		"status":        query.Status,
 	})
 }

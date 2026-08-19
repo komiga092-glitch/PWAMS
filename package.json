@@ -1,0 +1,26 @@
+{
+  "name": "pwams",
+  "version": "1.0.0",
+  "description": "People Welfare Association Management System",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/komiga092-glitch/pwams.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/komiga092-glitch/pwams/issues"
+  },
+  "homepage": "https://github.com/komiga092-glitch/pwams#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

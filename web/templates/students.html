@@ -2,63 +2,96 @@
 
 <section class="page">
 
-    <!-- Page Header -->
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
     <div class="page-heading">
+
         <div>
             <h1>Students</h1>
             <p>Manage student information and records.</p>
         </div>
 
         <button
+            id="add-student-btn"
             class="btn btn-primary"
-            type="button"
-            onclick="openStudentModal()">
+            type="button">
             + Add Student
         </button>
+
     </div>
 
 
-    <!-- Search / Filter -->
-    <div class="panel">
+    <!-- =========================
+         SEARCH / FILTER
+    ========================== -->
+    <div class="panel students-filter-panel">
 
         <div class="panel-body">
 
-            <form method="GET" action="/students/page" class="filter-bar">
+            <form
+                method="GET"
+                action="/students/page"
+                class="students-filter">
 
-                <input
-                    type="text"
-                    name="search"
-                    placeholder="Search student..."
-                    value="{{ .search }}"
-                >
+                <div>
+                    <label for="student-search">
+                        Search
+                    </label>
 
-              <select name="status">
-    <option value="">All Status</option>
+                    <input
+                        id="student-search"
+                        type="text"
+                        name="search"
+                        placeholder="Search student..."
+                        value="{{ .search }}">
+                </div>
 
-    <option
-        value="Active"
-        {{ if eq .status "Active" }}selected{{ end }}>
-        Active
-    </option>
 
-    <option
-        value="Inactive"
-        {{ if eq .status "Inactive" }}selected{{ end }}>
-        Inactive
-    </option>
+                <div>
+                    <label for="student-status">
+                        Status
+                    </label>
 
-    <option
-        value="Pending"
-        {{ if eq .status "Pending" }}selected{{ end }}>
-        Pending
-    </option>
-</select>
+                    <select
+                        id="student-status"
+                        name="status">
 
-                <button
-                    type="submit"
-                    class="btn btn-secondary">
-                    Search
-                </button>
+                        <option value="">
+                            All Status
+                        </option>
+
+                        <option
+                            value="Active"
+                            {{ if eq .status "Active" }}selected{{ end }}>
+                            Active
+                        </option>
+
+                        <option
+                            value="Inactive"
+                            {{ if eq .status "Inactive" }}selected{{ end }}>
+                            Inactive
+                        </option>
+
+                        <option
+                            value="Pending"
+                            {{ if eq .status "Pending" }}selected{{ end }}>
+                            Pending
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="students-filter-action">
+
+                    <button
+                        type="submit"
+                        class="btn btn-secondary">
+                        Search
+                    </button>
+
+                </div>
 
             </form>
 
@@ -67,7 +100,9 @@
     </div>
 
 
-    <!-- Error -->
+    <!-- =========================
+         ERROR
+    ========================== -->
     {{ if .error }}
 
     <div class="alert alert-danger">
@@ -77,21 +112,23 @@
     {{ end }}
 
 
-    <!-- Student List -->
+    <!-- =========================
+         STUDENT LIST
+    ========================== -->
     <div class="panel">
 
         <div class="panel-header">
 
             <h2>Student List</h2>
 
-            <span class="badge">
+            <span class="badge badge-muted">
                 {{ len .students }} Records
             </span>
 
         </div>
 
 
-        <div class="table-wrapper">
+        <div class="table-wrap">
 
             <table class="data-table">
 
@@ -142,19 +179,25 @@
                         <!-- Status -->
                         <td>
 
-                            {{ if eq .Status "active" }}
+                           {{ if eq .Status "Active" }}
 
-                            <span class="status-badge status-active">
-                                Active
-                            </span>
+<span class="badge badge-success">
+    Active
+</span>
 
-                            {{ else }}
+{{ else if eq .Status "Pending" }}
 
-                            <span class="status-badge status-inactive">
-                                Inactive
-                            </span>
+<span class="badge badge-warning">
+    Pending
+</span>
 
-                            {{ end }}
+{{ else }}
+
+<span class="badge badge-danger">
+    Inactive
+</span>
+
+{{ end }}
 
                         </td>
 
@@ -209,7 +252,10 @@
 </section>
 
 
-<!-- Add Student Modal -->
+<!-- =====================================================
+     ADD STUDENT MODAL
+====================================================== -->
+
 <div
     id="student-modal"
     class="modal"
@@ -217,208 +263,248 @@
 
     <div class="modal-content">
 
+        <!-- Modal Header -->
         <div class="modal-header">
 
-            <h2>Add Student</h2>
+            <div>
+                <h2>Add Student</h2>
+            </div>
 
             <button
+                id="student-modal-close"
                 type="button"
                 class="modal-close"
-                onclick="closeStudentModal()">
+                aria-label="Close">
                 &times;
             </button>
 
         </div>
 
 
+        <!-- Modal Body -->
         <div class="modal-body">
 
-<form
-    id="student-create-form">
-    <div class="form-group">
-
-    <label for="student_person_id">
-        Person *
-    </label>
-
-    <select
-        id="student_person_id"
-        name="person_id"
-        required>
-
-        <option value="">Select Person</option>
-
-    </select>
-
-</div>
-
-    <div class="form-group">
-
-        <label for="student_name">
-            Full Name
-        </label>
-
-        <input
-            id="student_name"
-            type="text"
-            name="full_name"
-            required>
-
-    </div>
-
-    
-
-    <div class="form-group">
-
-        <label for="student_school">
-            School / Institution
-        </label>
-
-        <input
-            id="student_school"
-            type="text"
-            name="school_name">
-
-    </div>
+            <form
+                id="student-create-form">
 
 
-    <div class="form-group">
+                <!-- Person -->
+                <div class="form-group">
 
-        <label for="student_grade">
-            Grade
-        </label>
+                    <label for="student_person_id">
+                        Person *
+                    </label>
 
-        <input
-            id="student_grade"
-            type="text"
-            name="grade">
+                    <select id="student_person_id" name="person_id" required>
+    <option value="">Select Person</option>
+</select>
+                    
 
-    </div>
-
-
-    <div class="form-group">
-
-        <label for="student_code">
-            Student Code
-        </label>
-
-        <input
-            id="student_code"
-            type="text"
-            name="student_code"
-            placeholder="Optional">
-
-    </div>
+                </div>
 
 
-    <div class="form-group">
+                <!-- Full Name -->
+                <div class="form-group">
 
-        <label for="student_dob">
-            Date of Birth
-        </label>
+                    <label for="student_name">
+                        Full Name *
+                    </label>
 
-        <input
-            id="student_dob"
-            type="date"
-            name="date_of_birth">
+                    <input
+                        id="student_name"
+                        type="text"
+                        name="full_name"
+                        minlength="3"
+                        maxlength="150"
+                        required>
 
-    </div>
-
-<div class="form-group">
-
-    <label for="student_gender">
-        Gender
-    </label>
-
-    <select
-        id="student_gender"
-        name="gender">
-
-        <option value="">Select Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-
-    </select>
-
-</div>
-    <div class="form-group">
-
-        <label for="student_guardian">
-            Guardian Name
-        </label>
-
-        <input
-            id="student_guardian"
-            type="text"
-            name="guardian_name">
-
-    </div>
+                </div>
 
 
-    <div class="form-group">
+                <!-- School -->
+                <div class="form-group">
 
-        <label for="student_guardian_phone">
-            Guardian Phone
-        </label>
+                    <label for="student_school">
+                        School / Institution *
+                    </label>
 
-        <input
-            id="student_guardian_phone"
-            type="text"
-            name="guardian_phone">
+                    <input
+                        id="student_school"
+                        type="text"
+                        name="school_name"
+                        minlength="2"
+                        maxlength="150"
+                        required>
 
-    </div>
-
-
-    <div class="form-group">
-
-        <label for="student_academic_year">
-            Academic Year
-        </label>
-
-       <input
-    id="student_academic_year"
-    type="number"
-    name="academic_year"
-    min="2000"
-    max="2100"
-    placeholder="2026"
-    required>
-    </div>
+                </div>
 
 
-    <div class="form-group">
+                <!-- Grade -->
+                <div class="form-group">
 
-        <label for="student_remarks">
-            Remarks
-        </label>
+                    <label for="student_grade">
+                        Grade *
+                    </label>
 
-        <textarea
-            id="student_remarks"
-            name="remarks"
-            rows="3"></textarea>
+                    <input
+                        id="student_grade"
+                        type="text"
+                        name="grade"
+                        maxlength="30"
+                        required>
 
-    </div>
+                </div>
 
 
-    <div class="form-actions">
+                <!-- Student Code -->
+                <div class="form-group">
 
-        <button
-            type="button"
-            class="btn btn-secondary"
-            onclick="closeStudentModal()">
-            Cancel
-        </button>
+                    <label for="student_code">
+                        Student Code
+                    </label>
 
-        <button
-            type="submit"
-            class="btn btn-primary">
-            Save Student
-        </button>
+                    <input
+                        id="student_code"
+                        type="text"
+                        name="student_code"
+                        maxlength="50"
+                        placeholder="Optional">
 
-    </div>
+                </div>
 
-</form>
+
+                <!-- Date of Birth -->
+                <div class="form-group">
+
+                    <label for="student_dob">
+                        Date of Birth
+                    </label>
+
+                    <input
+                        id="student_dob"
+                        type="date"
+                        name="date_of_birth">
+
+                </div>
+
+
+                <!-- Gender -->
+                <div class="form-group">
+
+                    <label for="student_gender">
+                        Gender
+                    </label>
+
+                    <select
+                        id="student_gender"
+                        name="gender">
+
+                        <option value="">
+                            Select Gender
+                        </option>
+
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Guardian Name -->
+                <div class="form-group">
+
+                    <label for="student_guardian">
+                        Guardian Name
+                    </label>
+
+                    <input
+                        id="student_guardian"
+                        type="text"
+                        name="guardian_name"
+                        maxlength="150">
+
+                </div>
+
+
+                <!-- Guardian Phone -->
+                <div class="form-group">
+
+                    <label for="student_guardian_phone">
+                        Guardian Phone
+                    </label>
+
+                    <input
+                        id="student_guardian_phone"
+                        type="text"
+                        name="guardian_phone"
+                        maxlength="20">
+
+                </div>
+
+
+                <!-- Academic Year -->
+                <div class="form-group">
+
+                    <label for="student_academic_year">
+                        Academic Year *
+                    </label>
+
+                    <input
+                        id="student_academic_year"
+                        type="number"
+                        name="academic_year"
+                        min="2000"
+                        max="2100"
+                        placeholder="2026"
+                        required>
+
+                </div>
+
+
+                <!-- Remarks -->
+                <div class="form-group">
+
+                    <label for="student_remarks">
+                        Remarks
+                    </label>
+
+                    <textarea
+                        id="student_remarks"
+                        name="remarks"
+                        rows="3"></textarea>
+
+                </div>
+
+
+                <!-- Actions -->
+                <div class="form-actions">
+
+                    <button
+                        id="student-cancel"
+                        type="button"
+                        class="btn btn-secondary">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+                        Save Student
+                    </button>
+
+                </div>
+
+            </form>
 
         </div>
 
@@ -427,116 +513,10 @@
 </div>
 
 
-<script>
-function openStudentModal() {
-    const modal = document.getElementById("student-modal");
+<!-- =====================================================
+     TYPESCRIPT COMPILED JAVASCRIPT
+====================================================== -->
 
-    if (modal) {
-        modal.style.display = "flex";
-    }
-}
-
-function closeStudentModal() {
-    const modal = document.getElementById("student-modal");
-
-    if (modal) {
-        modal.style.display = "none";
-    }
-}
-document.addEventListener("DOMContentLoaded", function () {
-    loadStudentPersons();
-    const form = document.getElementById("student-create-form");
-
-    if (!form) {
-        return;
-    }
-
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const formData = new FormData(form);
-
-        const data = {
-            person_id: formData.get("person_id"),
-            full_name: formData.get("full_name"),
-            school_name: formData.get("school_name"),
-            grade: formData.get("grade"),
-            student_code: formData.get("student_code"),
-            date_of_birth: formData.get("date_of_birth"),
-            gender: formData.get("gender"),
-            guardian_name: formData.get("guardian_name"),
-            guardian_phone: formData.get("guardian_phone"),
-            academic_year: Number(formData.get("academic_year")),
-            remarks: formData.get("remarks")
-        };
-
-        try {
-            const response = await fetch("/students", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await response.json();
-
-         if (!response.ok) {
-    alert(
-        (result.message || "Unable to create student.") +
-        (result.error ? "\n\n" + result.error : "")
-    );
-
-    console.error("Student create error:", result);
-
-    return;
-}
-            alert(result.message || "Student created successfully.");
-
-            closeStudentModal();
-            window.location.reload();
-
-        } catch (error) {
-            console.error(error);
-            alert("Unable to create student.");
-        }
-    });
-});
-
-async function loadStudentPersons() {
-    const select = document.getElementById("student_person_id");
-
-    if (!select) {
-        return;
-    }
-
-    try {
-        const response = await fetch("/persons");
-
-        if (!response.ok) {
-            throw new Error("Unable to load persons");
-        }
-
-        const result = await response.json();
-
-        const persons = result.data || result.persons || [];
-
-        persons.forEach(function (person) {
-            const option = document.createElement("option");
-
-            option.value = person.id;
-            option.textContent =
-                person.full_name ||
-                person.name ||
-                "Unnamed Person";
-
-            select.appendChild(option);
-        });
-
-    } catch (error) {
-        console.error("Failed to load persons:", error);
-    }
-}
-</script>
+<script src="/static/js/students.js"></script>
 
 {{ end }}
