@@ -7,6 +7,7 @@ import (
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
 	"github.com/komiga092-glitch/pwams/internal/middleware"
+	"github.com/komiga092-glitch/pwams/internal/models"
 )
 
 func RegisterCareProvidedRoutes(
@@ -17,6 +18,7 @@ func RegisterCareProvidedRoutes(
 	protected := router.Group("/")
 	protected.Use(
 		authMiddleware.RequireAuth(),
+		middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin, models.RoleStaff),
 	)
 
 	protected.GET(

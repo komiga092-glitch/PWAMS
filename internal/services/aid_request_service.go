@@ -180,14 +180,9 @@ func (s *AidRequestService) CreateAidRequest(
 }
 
 func isValidAidType(value string) bool {
+	value = strings.ToLower(strings.TrimSpace(value))
 	switch value {
-	case models.AidTypeMedical,
-		models.AidTypeEducation,
-		models.AidTypeFood,
-		models.AidTypeHousing,
-		models.AidTypeClothing,
-		models.AidTypeEmergency,
-		models.AidTypeOther:
+	case "medical", "education", "food", "housing", "clothing", "emergency", "other":
 		return true
 
 	default:
@@ -196,11 +191,9 @@ func isValidAidType(value string) bool {
 }
 
 func isValidAidPriority(value string) bool {
+	value = strings.ToLower(strings.TrimSpace(value))
 	switch value {
-	case models.AidPriorityLow,
-		models.AidPriorityMedium,
-		models.AidPriorityHigh,
-		models.AidPriorityCritical:
+	case "low", "medium", "high", "critical":
 		return true
 
 	default:

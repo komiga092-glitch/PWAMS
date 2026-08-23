@@ -24,10 +24,28 @@ func NewDonationHandler(
 	}
 }
 
+func (h *DonationHandler) Page(c *gin.Context) {
+	var query models.DonationListQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.HTML(http.StatusBadRequest, "base", gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "error": "Invalid query parameters"})
+		return
+	}
+	donations, _, _, _, err := h.donationService.ListDonations(query)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "error": "Unable to retrieve donations"})
+		return
+	}
+	items := make([]gin.H, 0, len(donations))
+	for _, donation := range donations {
+		items = append(items, gin.H{"ID": donation.ID, "DonorID": donation.DonorID, "Amount": donation.Amount, "DonationDate": donation.DonationDate, "Description": donation.Description, "Status": donation.Status})
+	}
+	c.HTML(http.StatusOK, "base", gin.H{"page_template": "donations_content", "title": "Donations", "data": items})
+}
+
 func (h *DonationHandler) Create(c *gin.Context) {
 	var request models.CreateDonationRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid donation information",

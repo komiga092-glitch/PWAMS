@@ -40,7 +40,7 @@ type LoanRepayment struct {
 }
 
 type CreateLoanRepaymentRequest struct {
-	LoanID            string  `json:"loan_id" binding:"required"`
+	LoanID            string  `json:"loan_id" binding:"required,uuid"`
 	InstallmentNumber int     `json:"installment_number" binding:"required"`
 	DueDate           string  `json:"due_date" binding:"required"`
 	Amount            float64 `json:"amount" binding:"required,gt=0"`

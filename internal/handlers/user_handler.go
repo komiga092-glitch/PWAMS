@@ -66,6 +66,15 @@ func (h *UserHandler) Create(c *gin.Context) {
 		return
 	}
 
+	if currentUser.Role.Name != models.RoleSuperAdmin &&
+		request.Role == models.RoleSuperAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"message": constants.ErrInvalidRoleAssignment,
+		})
+		return
+	}
+
 	user, err := h.userService.CreateUser(request)
 	if err != nil {
 		switch {
@@ -288,7 +297,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.UpdateUser(userID, request)
+	user, err := h.userService.UpdateUser(userID, request, currentUser.Role.Name)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidUserID):
@@ -320,6 +329,9 @@ func (h *UserHandler) Update(c *gin.Context) {
 				"success": false,
 				"message": constants.ErrInvalidUserStatus,
 			})
+
+		case errors.Is(err, services.ErrCannotModifySuperAdmin):
+			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": err.Error()})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -388,7 +400,37 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
-	err := h.userService.UpdateUserStatus(
+	targetUser, err := h.userService.GetUserByID(userID)
+	if err != nil {
+		if errors.Is(err, services.ErrInvalidUserID) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": constants.ErrInvalidUserID,
+			})
+		} else if errors.Is(err, repository.ErrUserNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": constants.ErrUserNotFound,
+			})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to retrieve user",
+			})
+		}
+		return
+	}
+
+	if currentUser.Role.Name != models.RoleSuperAdmin &&
+		targetUser.Role.Name == models.RoleSuperAdmin {
+		c.JSON(http.StatusForbidden, gin.H{
+			"success": false,
+			"message": constants.ErrInvalidRoleAssignment,
+		})
+		return
+	}
+
+	err = h.userService.UpdateUserStatus(
 		userID,
 		request.Status,
 	)
@@ -467,9 +509,15 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
+	currentUser, ok := h.getCurrentUser(c)
+	if !ok {
+		return
+	}
+
 	err := h.userService.ResetPassword(
 		userID,
 		request.NewPassword,
+		currentUser.Role.Name,
 	)
 
 	if err != nil {
@@ -491,6 +539,9 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 				"success": false,
 				"message": constants.ErrUserNotFound,
 			})
+
+		case errors.Is(err, services.ErrCannotModifySuperAdmin):
+			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": err.Error()})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{

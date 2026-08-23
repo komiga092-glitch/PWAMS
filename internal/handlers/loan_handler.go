@@ -25,10 +25,28 @@ func NewLoanHandler(
 	}
 }
 
+func (h *LoanHandler) Page(c *gin.Context) {
+	var query models.LoanListQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.HTML(http.StatusBadRequest, "base", gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Invalid query parameters"})
+		return
+	}
+	loans, _, _, _, err := h.loanService.ListLoans(query)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Unable to retrieve loans"})
+		return
+	}
+	items := make([]gin.H, 0, len(loans))
+	for _, loan := range loans {
+		items = append(items, gin.H{"ID": loan.ID, "PersonID": loan.PersonID, "LoanAmount": loan.LoanAmount, "InterestRate": loan.InterestRate, "DurationMonths": loan.DurationMonths, "InstallmentAmount": loan.InstallmentAmount, "Status": loan.Status})
+	}
+	c.HTML(http.StatusOK, "base", gin.H{"page_template": "loans_content", "title": "Loans", "data": items, "search": "", "status": query.Status})
+}
+
 func (h *LoanHandler) Create(c *gin.Context) {
 	var request models.CreateLoanRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid loan request",
@@ -77,6 +95,18 @@ func (h *LoanHandler) Create(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
 				"message": "Loan duration must be greater than zero",
+			})
+
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid person ID",
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Person not found",
 			})
 
 		default:

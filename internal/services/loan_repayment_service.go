@@ -28,6 +28,10 @@ var (
 		"invalid repayment amount",
 	)
 
+	ErrInvalidRepaymentDueDate = errors.New(
+		"invalid repayment due date",
+	)
+
 	ErrInvalidInstallmentNumber = errors.New(
 		"invalid installment number",
 	)
@@ -107,9 +111,7 @@ func (s *LoanRepaymentService) Create(
 
 	dueDate, err := parseDateValue(request.DueDate)
 	if err != nil {
-		return nil, errors.New(
-			"invalid repayment due date",
-		)
+		return nil, ErrInvalidRepaymentDueDate
 	}
 
 	repayment := &models.LoanRepayment{
@@ -173,6 +175,9 @@ func (s *LoanRepaymentService) List(
 	pageSize := query.PageSize
 	if pageSize < 1 {
 		pageSize = 20
+	}
+	if pageSize > 100 {
+		pageSize = 100
 	}
 
 	query.Page = page

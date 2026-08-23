@@ -26,5 +26,25 @@ menuButton?.addEventListener("click", () => {
 overlay?.addEventListener("click", () => {
     closeSidebar();
 });
+let currentRole = "";
+function updateRoleVisibility() {
+    document.querySelectorAll("[data-roles]").forEach((element) => {
+        const roles = element.dataset.roles?.split(",") ?? [];
+        element.hidden = !currentRole || !roles.includes(currentRole);
+    });
+}
+async function applyRoleVisibility() {
+    const response = await fetch("/auth/me", { credentials: "same-origin" });
+    if (!response.ok)
+        return;
+    const result = (await response.json());
+    currentRole = result.role ?? "";
+    updateRoleVisibility();
+}
+void applyRoleVisibility();
+new MutationObserver(updateRoleVisibility).observe(document.body, {
+    childList: true,
+    subtree: true,
+});
 console.log("PWAMS TypeScript loaded successfully");
 //# sourceMappingURL=app.js.map

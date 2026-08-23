@@ -7,7 +7,7 @@
       <p>Track welfare services and assistance provided to beneficiaries.</p>
     </div>
 
-    <button class="btn btn-primary" type="button" onclick="openCareModal()">
+    <button class="btn btn-primary" type="button" onclick="openCareModal()" data-roles="Super Admin,Admin,Staff">
       + Add Care Record
     </button>
   </div>
@@ -222,10 +222,40 @@
   // Initialize on page load
   document.addEventListener("DOMContentLoaded", () => {
     loadCareRecords(1);
+    loadCareFormOptions();
     document.getElementById("careTypeFilter").addEventListener("change", () => {
       loadCareRecords(1);
     });
   });
+
+  async function loadCareFormOptions() {
+    const personSelect = document.getElementById("carePersonID");
+    const aidSelect = document.getElementById("careAidRequestID");
+
+    try {
+      const [peopleResponse, aidResponse] = await Promise.all([
+        fetch("/persons?page_size=100", { credentials: "same-origin" }),
+        fetch("/aid-requests?page_size=100", { credentials: "same-origin" }),
+      ]);
+      const people = peopleResponse.ok ? (await peopleResponse.json()).data || [] : [];
+      const aidRequests = aidResponse.ok ? (await aidResponse.json()).data || [] : [];
+
+      people.forEach((person) => {
+        const option = document.createElement("option");
+        option.value = person.id;
+        option.textContent = `${person.full_name} (${person.nic_passport})`;
+        personSelect.appendChild(option);
+      });
+      aidRequests.forEach((request) => {
+        const option = document.createElement("option");
+        option.value = request.id;
+        option.textContent = `${request.title} (${request.status})`;
+        aidSelect.appendChild(option);
+      });
+    } catch (error) {
+      console.error("Care form options loading error:", error);
+    }
+  }
 
   async function loadCareRecords(page = 1) {
     const loadingSpinner = document.getElementById("loadingSpinner");
@@ -282,8 +312,8 @@
         <td><span class="badge badge-${record.status?.toLowerCase() || "pending"}">${escapeHtml(record.status || "pending")}</span></td>
         <td class="actions">
           <button class="btn btn-small" onclick="viewCareRecord('${record.id}')">View</button>
-          <button class="btn btn-small" onclick="editCareRecord('${record.id}')">Edit</button>
-          <button class="btn btn-small btn-danger" onclick="deleteCareRecord('${record.id}')">Delete</button>
+          <button class="btn btn-small" data-roles="Super Admin,Admin,Staff" onclick="editCareRecord('${record.id}')">Edit</button>
+          <button class="btn btn-small btn-danger" data-roles="Super Admin,Admin" onclick="deleteCareRecord('${record.id}')">Delete</button>
         </td>
       </tr>
     `,
@@ -398,6 +428,7 @@ Description: ${record.description}
         aid_request_id: formData.get("aid_request_id"),
         person_id: formData.get("person_id"),
         care_type: formData.get("care_type"),
+        provided_by: formData.get("provided_by"),
         provided_at: formData.get("provided_at"),
         provided_by: formData.get("provided_by"),
         amount: parseFloat(formData.get("amount")),

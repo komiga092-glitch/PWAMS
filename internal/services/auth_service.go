@@ -60,5 +60,9 @@ func (s *AuthService) Login(
 		return nil, ErrInvalidCredentials
 	}
 
+	if err := s.userRepo.UpdateLastLogin(user.ID); err != nil {
+		return nil, fmt.Errorf("authentication service error: %w", err)
+	}
+
 	return user, nil
 }

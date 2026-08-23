@@ -26,7 +26,7 @@
           <div class="topbar-right">
             <a
               class="notification-btn"
-              href="/notifications"
+              href="/notifications/page"
               aria-label="Notifications"
               >🔔</a
             >
@@ -39,7 +39,6 @@
             </div>
           </div>
         </header>
-
         <main>
           {{ if eq .page_template "home_content" }} {{ template "home_content" .
           }} {{ else if eq .page_template "dashboard_content" }} {{ template
@@ -48,9 +47,17 @@
           "persons_content" }} {{ template "persons_content" . }} {{ else if eq
           .page_template "person_form_content" }} {{ template
           "person_form_content" . }} {{ else if eq .page_template
+          "person_view_content" }} {{ template "person_view_content" . }} {{
+          else if eq .page_template "person_edit_content" }} {{ template
+          "person_edit_content" . }} {{ else if eq .page_template
           "students_content" }} {{ template "students_content" . }} {{ else if
-          eq .page_template "donors_content" }} {{ template "donors_content" .
-          }} {{ else if eq .page_template "donations_content" }} {{ template
+          eq .page_template "student_view" }} {{ template "student_view" . }} {{
+          else if eq .page_template "student_edit" }} {{ template "student_edit"
+          . }} {{ else if eq .page_template "donor_view_content" }} {{ template
+          "donor_view_content" . }} {{ else if eq .page_template
+          "donor_edit_content" }} {{ template "donor_edit_content" . }} {{ else
+          if eq .page_template "donors_content" }} {{ template "donors_content"
+          . }} {{ else if eq .page_template "donations_content" }} {{ template
           "donations_content" . }} {{ else if eq .page_template
           "aid_requests_content" }} {{ template "aid_requests_content" . }} {{
           else if eq .page_template "care_provided_content" }} {{ template
@@ -58,10 +65,12 @@
           "loans_content" }} {{ template "loans_content" . }} {{ else if eq
           .page_template "loan_repayments_content" }} {{ template
           "loan_repayments_content" . }} {{ else if eq .page_template
-          "notifications_content" }} {{ template "notifications_content" . }} {{
-          else if eq .page_template "audit_logs_content" }} {{ template
-          "audit_logs_content" . }} {{ else if eq .page_template
-          "reports_content" }} {{ template "reports_content" . }} {{ end }}
+          "revenue_content" }} {{ template "revenue_content" . }} {{ else if eq
+          .page_template "notifications_content" }} {{ template
+          "notifications_content" . }} {{ else if eq .page_template
+          "audit_logs_content" }} {{ template "audit_logs_content" . }} {{ else
+          if eq .page_template "reports_content" }} {{ template
+          "reports_content" . }} {{ end }}
         </main>
       </div>
 

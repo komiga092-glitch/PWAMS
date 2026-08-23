@@ -12,19 +12,25 @@ import (
 )
 
 var (
-	ErrInvalidDonorType   = errors.New("invalid donor type")
+	ErrInvalidDonorType = errors.New("invalid donor type")
+
 	ErrDonorAlreadyExists = errors.New(
 		"a donor with this NIC, passport, or registration number already exists",
 	)
+
 	ErrIndividualDonorIdentityRequired = errors.New(
 		"NIC or passport is required for an individual donor",
 	)
+
 	ErrOrganizationDetailsRequired = errors.New(
 		"organization name and registration number are required",
 	)
+
 	ErrInvalidDonorID = errors.New("invalid donor id")
 
-	ErrInvalidDonorStatus = errors.New("selected donor status is invalid")
+	ErrInvalidDonorStatus = errors.New(
+		"selected donor status is invalid",
+	)
 )
 
 type DonorService struct {
@@ -39,15 +45,79 @@ func NewDonorService(
 	}
 }
 
+// normalizeDonorType converts all supported donor type inputs
+// into the application's canonical model values.
+//
+// Accepted:
+//   - individual
+//   - Individual
+//   - INDIVIDUAL
+//   - organization
+//   - Organization
+//   - ORGANIZATION
+func normalizeDonorType(value string) (string, error) {
+	value = strings.TrimSpace(value)
+
+	switch strings.ToLower(value) {
+	case "individual":
+		return models.DonorTypeIndividual, nil
+
+	case "organization":
+		return models.DonorTypeOrganization, nil
+
+	default:
+		return "", ErrInvalidDonorType
+	}
+}
+
+func isValidDonorStatus(status string) bool {
+	status = strings.TrimSpace(status)
+
+	switch status {
+	case models.DonorStatusActive,
+		models.DonorStatusInactive,
+		models.DonorStatusPending:
+		return true
+
+	default:
+		return false
+	}
+}
+
 func (s *DonorService) CreateDonor(
 	request models.CreateDonorRequest,
 	createdByID uuid.UUID,
 ) (*models.Donor, error) {
-	donorType := strings.TrimSpace(request.DonorType)
-	nicPassport := strings.ToUpper(strings.TrimSpace(request.NICPassport))
+	// =========================
+	// NORMALIZE DONOR TYPE
+	// =========================
+
+	donorType, err := normalizeDonorType(
+		request.DonorType,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	nicPassport := strings.ToUpper(
+		strings.TrimSpace(request.NICPassport),
+	)
+
 	registrationNumber := strings.ToUpper(
 		strings.TrimSpace(request.RegistrationNumber),
 	)
+
+	organizationName := strings.TrimSpace(
+		request.OrganizationName,
+	)
+	if !isValidPhone(strings.TrimSpace(request.Phone)) ||
+		!isValidPhone(strings.TrimSpace(request.ContactPersonPhone)) {
+		return nil, ErrInvalidPhone
+	}
+
+	// =========================
+	// TYPE-SPECIFIC VALIDATION
+	// =========================
 
 	switch donorType {
 	case models.DonorTypeIndividual:
@@ -55,20 +125,30 @@ func (s *DonorService) CreateDonor(
 			return nil, ErrIndividualDonorIdentityRequired
 		}
 
+		organizationName = ""
+		registrationNumber = ""
+
 	case models.DonorTypeOrganization:
-		if strings.TrimSpace(request.OrganizationName) == "" ||
+		if organizationName == "" ||
 			registrationNumber == "" {
 			return nil, ErrOrganizationDetailsRequired
 		}
+
+		nicPassport = ""
 
 	default:
 		return nil, ErrInvalidDonorType
 	}
 
+	// =========================
+	// DUPLICATE CHECK
+	// =========================
+
 	exists, err := s.donorRepo.ExistsByIdentity(
 		nicPassport,
 		registrationNumber,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -77,25 +157,63 @@ func (s *DonorService) CreateDonor(
 		return nil, ErrDonorAlreadyExists
 	}
 
+	// =========================
+	// CREATE DONOR
+	// =========================
+
 	donor := &models.Donor{
-		Name:                  strings.TrimSpace(request.Name),
-		DonorType:             donorType,
-		NICPassport:           nicPassport,
-		OrganizationName:      strings.TrimSpace(request.OrganizationName),
-		RegistrationNumber:    registrationNumber,
-		Phone:                 strings.TrimSpace(request.Phone),
-		Email:                 strings.ToLower(strings.TrimSpace(request.Email)),
-		Address:               strings.TrimSpace(request.Address),
-		ContactPersonName:     strings.TrimSpace(request.ContactPersonName),
-		ContactPersonPhone:    strings.TrimSpace(request.ContactPersonPhone),
-		PreferredDonationType: strings.TrimSpace(request.PreferredDonationType),
-		Notes:                 strings.TrimSpace(request.Notes),
-		Status:                models.DonorStatusActive,
-		CreatedByID:           createdByID,
+		Name: strings.TrimSpace(
+			request.Name,
+		),
+
+		DonorType: donorType,
+
+		NICPassport: nicPassport,
+
+		OrganizationName: organizationName,
+
+		RegistrationNumber: registrationNumber,
+
+		Phone: strings.TrimSpace(
+			request.Phone,
+		),
+
+		Email: strings.ToLower(
+			strings.TrimSpace(request.Email),
+		),
+
+		Address: strings.TrimSpace(
+			request.Address,
+		),
+
+		ContactPersonName: strings.TrimSpace(
+			request.ContactPersonName,
+		),
+
+		ContactPersonPhone: strings.TrimSpace(
+			request.ContactPersonPhone,
+		),
+
+		PreferredDonationType: strings.TrimSpace(
+			request.PreferredDonationType,
+		),
+
+		Notes: strings.TrimSpace(
+			request.Notes,
+		),
+
+		Status: models.DonorStatusActive,
+
+		CreatedByID: createdByID,
 	}
 
-	if err := s.donorRepo.Create(donor); err != nil {
-		return nil, fmt.Errorf("unable to create donor: %w", err)
+	if err := s.donorRepo.Create(
+		donor,
+	); err != nil {
+		return nil, fmt.Errorf(
+			"unable to create donor: %w",
+			err,
+		)
 	}
 
 	return donor, nil
@@ -104,12 +222,24 @@ func (s *DonorService) CreateDonor(
 func (s *DonorService) ListDonors(
 	query models.DonorListQuery,
 ) ([]models.Donor, int64, int, int, error) {
+	if strings.TrimSpace(query.Type) != "" {
+		if _, err := normalizeDonorType(query.Type); err != nil {
+			return nil, 0, 1, 10, err
+		}
+	}
+	if strings.TrimSpace(query.Status) != "" &&
+		!isValidDonorStatus(query.Status) {
+		return nil, 0, 1, 10, ErrInvalidDonorStatus
+	}
+
 	page := query.Page
+
 	if page < 1 {
 		page = 1
 	}
 
 	pageSize := query.PageSize
+
 	if pageSize < 1 {
 		pageSize = 10
 	}
@@ -125,6 +255,7 @@ func (s *DonorService) ListDonors(
 		page,
 		pageSize,
 	)
+
 	if err != nil {
 		return nil, 0, page, pageSize, err
 	}
@@ -142,50 +273,73 @@ func (s *DonorService) GetDonorByID(
 	}
 
 	donor, err := s.donorRepo.FindByID(id)
+
 	if err != nil {
 		return nil, err
 	}
 
 	return donor, nil
 }
-func isValidDonorStatus(status string) bool {
-	switch status {
-	case models.DonorStatusActive,
-		models.DonorStatusInactive,
-		models.DonorStatusPending:
-		return true
-
-	default:
-		return false
-	}
-}
 
 func (s *DonorService) UpdateDonor(
 	id string,
 	request models.UpdateDonorRequest,
 ) (*models.Donor, error) {
+	// =========================
+	// VALIDATE ID
+	// =========================
+
 	id = strings.TrimSpace(id)
 
 	if _, err := uuid.Parse(id); err != nil {
 		return nil, ErrInvalidDonorID
 	}
 
+	// =========================
+	// FIND DONOR
+	// =========================
+
 	donor, err := s.donorRepo.FindByID(id)
+
 	if err != nil {
 		return nil, err
 	}
 
-	donorType := strings.TrimSpace(request.DonorType)
+	// =========================
+	// NORMALIZE TYPE
+	// =========================
+
+	donorType, err := normalizeDonorType(
+		request.DonorType,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
 	nicPassport := strings.ToUpper(
 		strings.TrimSpace(request.NICPassport),
 	)
+
 	registrationNumber := strings.ToUpper(
 		strings.TrimSpace(request.RegistrationNumber),
 	)
+
 	organizationName := strings.TrimSpace(
 		request.OrganizationName,
 	)
-	status := strings.TrimSpace(request.Status)
+
+	status := strings.TrimSpace(
+		request.Status,
+	)
+	if !isValidPhone(strings.TrimSpace(request.Phone)) ||
+		!isValidPhone(strings.TrimSpace(request.ContactPersonPhone)) {
+		return nil, ErrInvalidPhone
+	}
+
+	// =========================
+	// TYPE-SPECIFIC VALIDATION
+	// =========================
 
 	switch donorType {
 	case models.DonorTypeIndividual:
@@ -193,29 +347,43 @@ func (s *DonorService) UpdateDonor(
 			return nil, ErrIndividualDonorIdentityRequired
 		}
 
+		// Individual donors must not keep
+		// organization-specific fields.
 		organizationName = ""
 		registrationNumber = ""
 
 	case models.DonorTypeOrganization:
-		if organizationName == "" || registrationNumber == "" {
+		if organizationName == "" ||
+			registrationNumber == "" {
 			return nil, ErrOrganizationDetailsRequired
 		}
 
+		// Organization donors must not keep
+		// individual identity field.
 		nicPassport = ""
 
 	default:
 		return nil, ErrInvalidDonorType
 	}
 
+	// =========================
+	// STATUS VALIDATION
+	// =========================
+
 	if !isValidDonorStatus(status) {
 		return nil, ErrInvalidDonorStatus
 	}
+
+	// =========================
+	// DUPLICATE CHECK
+	// =========================
 
 	exists, err := s.donorRepo.ExistsByIdentityExceptID(
 		nicPassport,
 		registrationNumber,
 		id,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -224,29 +392,59 @@ func (s *DonorService) UpdateDonor(
 		return nil, ErrDonorAlreadyExists
 	}
 
-	donor.Name = strings.TrimSpace(request.Name)
+	// =========================
+	// UPDATE DONOR
+	// =========================
+
+	donor.Name = strings.TrimSpace(
+		request.Name,
+	)
+
 	donor.DonorType = donorType
+
 	donor.NICPassport = nicPassport
+
 	donor.OrganizationName = organizationName
+
 	donor.RegistrationNumber = registrationNumber
-	donor.Phone = strings.TrimSpace(request.Phone)
+
+	donor.Phone = strings.TrimSpace(
+		request.Phone,
+	)
+
 	donor.Email = strings.ToLower(
 		strings.TrimSpace(request.Email),
 	)
-	donor.Address = strings.TrimSpace(request.Address)
+
+	donor.Address = strings.TrimSpace(
+		request.Address,
+	)
+
 	donor.ContactPersonName = strings.TrimSpace(
 		request.ContactPersonName,
 	)
+
 	donor.ContactPersonPhone = strings.TrimSpace(
 		request.ContactPersonPhone,
 	)
+
 	donor.PreferredDonationType = strings.TrimSpace(
 		request.PreferredDonationType,
 	)
-	donor.Notes = strings.TrimSpace(request.Notes)
+
+	donor.Notes = strings.TrimSpace(
+		request.Notes,
+	)
+
 	donor.Status = status
 
-	if err := s.donorRepo.Update(donor); err != nil {
+	// =========================
+	// SAVE
+	// =========================
+
+	if err := s.donorRepo.Update(
+		donor,
+	); err != nil {
 		return nil, err
 	}
 
@@ -254,7 +452,8 @@ func (s *DonorService) UpdateDonor(
 }
 
 func (s *DonorService) UpdateDonorStatus(
-	id, status string,
+	id string,
+	status string,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
@@ -267,14 +466,19 @@ func (s *DonorService) UpdateDonorStatus(
 		return ErrInvalidDonorStatus
 	}
 
-	if err := s.donorRepo.UpdateStatus(id, status); err != nil {
+	if err := s.donorRepo.UpdateStatus(
+		id,
+		status,
+	); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *DonorService) DeleteDonor(id string) error {
+func (s *DonorService) DeleteDonor(
+	id string,
+) error {
 	id = strings.TrimSpace(id)
 
 	if _, err := uuid.Parse(id); err != nil {
@@ -282,11 +486,14 @@ func (s *DonorService) DeleteDonor(id string) error {
 	}
 
 	donor, err := s.donorRepo.FindByID(id)
+
 	if err != nil {
 		return err
 	}
 
-	if err := s.donorRepo.SoftDelete(donor); err != nil {
+	if err := s.donorRepo.SoftDelete(
+		donor,
+	); err != nil {
 		return err
 	}
 

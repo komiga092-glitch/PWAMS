@@ -1,7 +1,7 @@
 package models
 
 type CreateStudentRequest struct {
-	PersonID      string `json:"person_id" binding:"required"`
+	PersonID      string `json:"person_id" binding:"required,uuid"`
 	FullName      string `json:"full_name" binding:"required,min=3,max=150"`
 	SchoolName    string `json:"school_name" binding:"required,min=2,max=150"`
 	Grade         string `json:"grade" binding:"required,max=30"`

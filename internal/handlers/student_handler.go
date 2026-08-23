@@ -72,6 +72,12 @@ func (h *StudentHandler) Create(c *gin.Context) {
 				"message": err.Error(),
 			})
 
+		case errors.Is(err, services.ErrInvalidPhone):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -221,6 +227,84 @@ func (h *StudentHandler) GetByID(c *gin.Context) {
 	})
 }
 
+func (h *StudentHandler) ViewPage(c *gin.Context) {
+	studentID := c.Param("id")
+
+	student, err := h.studentService.GetStudentByID(studentID)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidStudentID):
+			c.HTML(http.StatusBadRequest, "base", gin.H{
+				"page_template": "student_view",
+				"title":         "Invalid Student - PWAMS",
+				"error":         constants.ErrInvalidStudentID,
+			})
+
+		case errors.Is(err, repository.ErrStudentNotFound):
+			c.HTML(http.StatusNotFound, "base", gin.H{
+				"page_template": "student_view",
+				"title":         "Student Not Found - PWAMS",
+				"error":         constants.ErrStudentNotFound,
+			})
+
+		default:
+			c.HTML(http.StatusInternalServerError, "base", gin.H{
+				"page_template": "student_view",
+				"title":         "Student - PWAMS",
+				"error":         constants.ErrUnableToRetrieveStudent,
+			})
+		}
+
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "student_view",
+		"title":         "Student Details - PWAMS",
+		"student":       student,
+	})
+}
+
+func (h *StudentHandler) EditPage(c *gin.Context) {
+	studentID := c.Param("id")
+
+	student, err := h.studentService.GetStudentByID(studentID)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidStudentID):
+			c.HTML(http.StatusBadRequest, "base", gin.H{
+				"page_template": "student_edit",
+				"title":         "Invalid Student - PWAMS",
+				"error":         constants.ErrInvalidStudentID,
+			})
+
+		case errors.Is(err, repository.ErrStudentNotFound):
+			c.HTML(http.StatusNotFound, "base", gin.H{
+				"page_template": "student_edit",
+				"title":         "Student Not Found - PWAMS",
+				"error":         constants.ErrStudentNotFound,
+			})
+
+		default:
+			c.HTML(http.StatusInternalServerError, "base", gin.H{
+				"page_template": "student_edit",
+				"title":         "Edit Student - PWAMS",
+				"error":         constants.ErrUnableToRetrieveStudent,
+			})
+		}
+
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "student_edit",
+		"title":         "Edit Student - PWAMS",
+		"student":       student,
+	})
+}
+
 func (h *StudentHandler) Update(c *gin.Context) {
 	studentID := c.Param("id")
 
@@ -248,6 +332,7 @@ func (h *StudentHandler) Update(c *gin.Context) {
 			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: constants.ErrPersonNotFound},
 			errorResponseMapping{err: services.ErrStudentAlreadyExists, status: http.StatusConflict, message: constants.ErrStudentAlreadyExists},
 			errorResponseMapping{err: services.ErrInvalidStudentDateOfBirth, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidPhone, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidStudentStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return

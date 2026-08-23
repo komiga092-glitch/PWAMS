@@ -73,6 +73,12 @@ func (h *PersonHandler) Create(c *gin.Context) {
 				"message": err.Error(),
 			})
 
+		case errors.Is(err, services.ErrInvalidPhone):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -270,6 +276,7 @@ func (h *PersonHandler) Update(c *gin.Context) {
 			errorResponseMapping{err: repository.ErrPersonNotFound, status: http.StatusNotFound, message: constants.ErrPersonNotFound},
 			errorResponseMapping{err: services.ErrPersonAlreadyExists, status: http.StatusConflict, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidDateOfBirth, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidPhone, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidPersonStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return
@@ -407,5 +414,119 @@ func (h *PersonHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": constants.ErrPersonDeletedSuccessfully,
+	})
+}
+
+func (h *PersonHandler) Page(c *gin.Context) {
+	var query models.PersonListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.HTML(http.StatusBadRequest, "base", gin.H{
+			"page_template": "persons_content",
+			"title":         "Care Seekers - PWAMS",
+			"persons":       []models.Person{},
+			"search":        "",
+			"status":        "",
+			"error":         constants.ErrInvalidQueryParameters,
+		})
+		return
+	}
+
+	persons, _, _, _, err := h.personService.ListPersons(query)
+
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{
+			"page_template": "persons_content",
+			"title":         "Care Seekers - PWAMS",
+			"persons":       []models.Person{},
+			"search":        query.Search,
+			"status":        query.Status,
+			"error":         constants.ErrUnableToRetrievePersons,
+		})
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "persons_content",
+		"title":         "Care Seekers - PWAMS",
+		"persons":       persons,
+		"search":        query.Search,
+		"status":        query.Status,
+	})
+}
+func (h *PersonHandler) ViewPage(c *gin.Context) {
+	personID := c.Param("id")
+
+	person, err := h.personService.GetPersonByID(personID)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.HTML(http.StatusBadRequest, "base", gin.H{
+				"page_template": "person_view_content",
+				"title":         "Invalid Person - PWAMS",
+				"error":         constants.ErrInvalidPersonID,
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.HTML(http.StatusNotFound, "base", gin.H{
+				"page_template": "person_view_content",
+				"title":         "Person Not Found - PWAMS",
+				"error":         constants.ErrPersonNotFound,
+			})
+
+		default:
+			c.HTML(http.StatusInternalServerError, "base", gin.H{
+				"page_template": "person_view_content",
+				"title":         "Person - PWAMS",
+				"error":         constants.ErrUnableToRetrievePerson,
+			})
+		}
+
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "person_view_content",
+		"title":         "Care Seeker Details - PWAMS",
+		"person":        person,
+	})
+}
+func (h *PersonHandler) EditPage(c *gin.Context) {
+	personID := c.Param("id")
+
+	person, err := h.personService.GetPersonByID(personID)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.HTML(http.StatusBadRequest, "base", gin.H{
+				"page_template": "person_edit_content",
+				"title":         "Invalid Person - PWAMS",
+				"error":         constants.ErrInvalidPersonID,
+			})
+
+		case errors.Is(err, repository.ErrPersonNotFound):
+			c.HTML(http.StatusNotFound, "base", gin.H{
+				"page_template": "person_edit_content",
+				"title":         "Person Not Found - PWAMS",
+				"error":         constants.ErrPersonNotFound,
+			})
+
+		default:
+			c.HTML(http.StatusInternalServerError, "base", gin.H{
+				"page_template": "person_edit_content",
+				"title":         "Edit Person - PWAMS",
+				"error":         constants.ErrUnableToRetrievePerson,
+			})
+		}
+
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "person_edit_content",
+		"title":         "Edit Care Seeker - PWAMS",
+		"person":        person,
 	})
 }

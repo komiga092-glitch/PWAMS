@@ -24,6 +24,8 @@ type CareProvided struct {
 	Amount float64 `gorm:"type:numeric(12,2);not null" json:"amount"`
 
 	Description string `gorm:"type:text" json:"description"`
+	CareType    string `gorm:"size:50;not null;default:'other'" json:"care_type"`
+	ProvidedBy  string `gorm:"size:150" json:"provided_by"`
 
 	Status string `gorm:"size:20;not null;default:'Pending';index" json:"status"`
 

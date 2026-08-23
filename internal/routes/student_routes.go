@@ -25,16 +25,55 @@ func RegisterStudentRoutes(
 		),
 	)
 
-	// HTML page
+	// =========================
+	// HTML PAGES
+	// =========================
 
-	// API endpoints
-	students.GET("", studentHandler.List)
-	students.GET("/page", studentHandler.Page)
+	students.GET(
+		"/page",
+		studentHandler.Page,
+	)
 
-students.GET("/:id", studentHandler.GetByID)
-	students.POST("", studentHandler.Create)
-	students.PUT("/:id", studentHandler.Update)
-	students.PATCH("/:id/status", studentHandler.UpdateStatus)
+	students.GET(
+		"/:id/view",
+		studentHandler.ViewPage,
+	)
+
+	students.GET(
+		"/:id/edit",
+		studentHandler.EditPage,
+	)
+
+	// =========================
+	// API ENDPOINTS
+	// =========================
+
+	// HTML pages
+
+	students.GET(
+		"",
+		studentHandler.List,
+	)
+
+	students.GET(
+		"/:id",
+		studentHandler.GetByID,
+	)
+
+	students.POST(
+		"",
+		studentHandler.Create,
+	)
+
+	students.PUT(
+		"/:id",
+		studentHandler.Update,
+	)
+
+	students.PATCH(
+		"/:id/status",
+		studentHandler.UpdateStatus,
+	)
 
 	students.DELETE(
 		"/:id",

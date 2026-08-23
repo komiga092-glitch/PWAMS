@@ -1,0 +1,156 @@
+{{ define "donor_view_content" }}
+
+<section class="page">
+
+    <div class="page-heading">
+        <div>
+            <h1>Donor Details</h1>
+            <p>View donor information and records.</p>
+        </div>
+
+        <div class="table-actions">
+            <a
+                href="/donors/{{ .donor.ID }}/edit"
+                class="btn btn-primary">
+                Edit
+            </a>
+
+            <a
+                href="/donors/page"
+                class="btn btn-secondary">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <div class="panel">
+
+        <div class="panel-header">
+            <h2>Donor Information</h2>
+
+            {{ if eq .donor.Status "Active" }}
+
+                <span class="status-badge status-active">
+                    Active
+                </span>
+
+            {{ else if eq .donor.Status "Pending" }}
+
+                <span class="status-badge">
+                    Pending
+                </span>
+
+            {{ else }}
+
+                <span class="status-badge status-inactive">
+                    Inactive
+                </span>
+
+            {{ end }}
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Name</label>
+                <input
+                    type="text"
+                    value="{{ .donor.Name }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Donor Type</label>
+                <input
+                    type="text"
+                    value="{{ .donor.DonorType }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>NIC / Passport</label>
+                <input
+                    type="text"
+                    value="{{ .donor.NICPassport }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Organization Name</label>
+                <input
+                    type="text"
+                    value="{{ .donor.OrganizationName }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Registration Number</label>
+                <input
+                    type="text"
+                    value="{{ .donor.RegistrationNumber }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Phone</label>
+                <input
+                    type="text"
+                    value="{{ .donor.Phone }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input
+                    type="email"
+                    value="{{ .donor.Email }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Contact Person</label>
+                <input
+                    type="text"
+                    value="{{ .donor.ContactPersonName }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Contact Person Phone</label>
+                <input
+                    type="text"
+                    value="{{ .donor.ContactPersonPhone }}"
+                    readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Preferred Donation Type</label>
+                <input
+                    type="text"
+                    value="{{ .donor.PreferredDonationType }}"
+                    readonly>
+            </div>
+
+            <div class="form-group form-full">
+                <label>Address</label>
+
+                <textarea
+                    rows="3"
+                    readonly>{{ .donor.Address }}</textarea>
+            </div>
+
+            <div class="form-group form-full">
+                <label>Notes</label>
+
+                <textarea
+                    rows="3"
+                    readonly>{{ .donor.Notes }}</textarea>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{{ end }}

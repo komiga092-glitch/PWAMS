@@ -1,7 +1,7 @@
 package models
 
 type CreateLoanRequest struct {
-	PersonID       string  `json:"person_id" binding:"required"`
+	PersonID       string  `json:"person_id" binding:"required,uuid"`
 	LoanAmount     float64 `json:"loan_amount" binding:"required,gt=0"`
 	InterestRate   float64 `json:"interest_rate" binding:"gte=0"`
 	DurationMonths int     `json:"duration_months" binding:"required,gt=0"`

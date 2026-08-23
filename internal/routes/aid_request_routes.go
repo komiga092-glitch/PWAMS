@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
@@ -27,13 +25,7 @@ func RegisterAidRequestRoutes(
 		),
 	)
 
-	aidRequests.GET("/page", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "base", gin.H{
-			"page_template": "aid_requests_content",
-			"title":         "Aid Requests",
-			"data":          []interface{}{},
-		})
-	})
+	aidRequests.GET("/page", aidRequestHandler.Page)
 
 	aidRequests.GET("", aidRequestHandler.List)
 	aidRequests.GET("/:id", aidRequestHandler.GetByID)

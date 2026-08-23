@@ -1,7 +1,7 @@
 package models
 
 type UpdateAidRequest struct {
-	PersonID        string  `json:"person_id" binding:"required"`
+	PersonID        string  `json:"person_id" binding:"required,uuid"`
 	AidType         string  `json:"aid_type" binding:"required"`
 	Priority        string  `json:"priority" binding:"required"`
 	Title           string  `json:"title" binding:"required,min=3,max=200"`

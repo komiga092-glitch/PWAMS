@@ -15,6 +15,7 @@ import (
 type PasswordResetService struct {
 	passwordResetRepo *repository.PasswordResetRepository
 	userRepo          *repository.UserRepository
+	sessionRepo       *repository.SessionRepository
 	emailService      *email.EmailService
 }
 
@@ -22,10 +23,17 @@ func NewPasswordResetService(
 	passwordResetRepo *repository.PasswordResetRepository,
 	userRepo *repository.UserRepository,
 	emailService *email.EmailService,
+	sessionRepos ...*repository.SessionRepository,
 ) *PasswordResetService {
+	var sessionRepo *repository.SessionRepository
+	if len(sessionRepos) > 0 {
+		sessionRepo = sessionRepos[0]
+	}
+
 	return &PasswordResetService{
 		passwordResetRepo: passwordResetRepo,
 		userRepo:          userRepo,
+		sessionRepo:       sessionRepo,
 		emailService:      emailService,
 	}
 }
@@ -132,6 +140,12 @@ func (s *PasswordResetService) ResetPassword(
 		passwordHash,
 	); err != nil {
 		return err
+	}
+
+	if s.sessionRepo != nil {
+		if err := s.sessionRepo.RevokeAllByUserID(user.ID.String()); err != nil {
+			return fmt.Errorf("failed to revoke existing sessions: %w", err)
+		}
 	}
 
 	if err := s.passwordResetRepo.ConsumeOTP(token.ID); err != nil {

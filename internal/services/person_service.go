@@ -44,6 +44,9 @@ func (s *PersonService) CreatePerson(
 	nicPassport := strings.ToUpper(
 		strings.TrimSpace(request.NICPassport),
 	)
+	if !isValidPhone(strings.TrimSpace(request.Phone)) {
+		return nil, ErrInvalidPhone
+	}
 
 	exists, err := s.personRepo.ExistsByNICPassport(nicPassport)
 	if err != nil {
@@ -169,6 +172,9 @@ func (s *PersonService) UpdatePerson(
 		strings.TrimSpace(request.NICPassport),
 	)
 	status := strings.TrimSpace(request.Status)
+	if !isValidPhone(strings.TrimSpace(request.Phone)) {
+		return nil, ErrInvalidPhone
+	}
 
 	if !isValidPersonStatus(status) {
 		return nil, ErrInvalidPersonStatus

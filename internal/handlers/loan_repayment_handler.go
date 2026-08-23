@@ -25,11 +25,25 @@ func NewLoanRepaymentHandler(
 	}
 }
 
+func (h *LoanRepaymentHandler) Page(c *gin.Context) {
+	query := models.LoanRepaymentListQuery{LoanID: c.Query("loan_id"), Status: c.Query("status")}
+	repayments, _, _, _, err := h.repaymentService.List(query)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": []gin.H{}, "error": "Unable to retrieve repayments"})
+		return
+	}
+	items := make([]gin.H, 0, len(repayments))
+	for _, repayment := range repayments {
+		items = append(items, gin.H{"ID": repayment.ID, "LoanID": repayment.LoanID, "Amount": repayment.Amount, "DueDate": repayment.DueDate, "PaidAt": repayment.PaidAt})
+	}
+	c.HTML(http.StatusOK, "base", gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": items})
+}
+
 // Create creates a repayment schedule entry for a loan.
 func (h *LoanRepaymentHandler) Create(c *gin.Context) {
 	var request models.CreateLoanRepaymentRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid repayment request",
@@ -41,14 +55,16 @@ func (h *LoanRepaymentHandler) Create(c *gin.Context) {
 	repayment, err := h.repaymentService.Create(request)
 	if err != nil {
 		switch {
-		case errors.Is(err, services.ErrInvalidLoanID):
+		case errors.Is(err, services.ErrInvalidLoanID),
+			errors.Is(err, services.ErrInvalidLoanIDFormat):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
 				"message": "Invalid loan ID",
 			})
 
 		case errors.Is(err, services.ErrInvalidInstallmentNumber),
-			errors.Is(err, services.ErrInvalidRepaymentAmount):
+			errors.Is(err, services.ErrInvalidRepaymentAmount),
+			errors.Is(err, services.ErrInvalidRepaymentDueDate):
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
 				"message": "Invalid repayment details",

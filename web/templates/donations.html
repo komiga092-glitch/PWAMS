@@ -43,14 +43,14 @@
 
             <td>{{ .DonationDate }}</td>
 
-            <td>{{ .Purpose }}</td>
+            <td>{{ .Description }}</td>
 
             <td>
-              {{ if eq .Status "completed" }}
+              {{ if eq .Status "Confirmed" }}
 
               <span class="status-badge status-active"> Completed </span>
 
-              {{ else if eq .Status "cancelled" }}
+              {{ else if eq .Status "Cancelled" }}
 
               <span class="status-badge status-inactive"> Cancelled </span>
 
@@ -96,15 +96,18 @@
       </button>
     </div>
 
-    <form method="POST" action="/donations" class="form">
+    <form
+      id="donation-form"
+      method="POST"
+      action="/donations"
+      class="form"
+      onsubmit="submitDonation(event)"
+    >
       <div class="form-grid">
         <div class="form-group">
           <label for="donorID">Donor ID *</label>
 
-<input
-    id="donorID"
-    name="donor_id"
-    placeholder="Donor ID">
+          <input id="donorID" name="donor_id" placeholder="Donor ID" required />
         </div>
         <div class="form-group">
           <label for="donationType">Donation Type *</label>
@@ -135,19 +138,45 @@
         </div>
 
         <div class="form-group">
+          <label for="donationItemName"> Item Name </label>
+          <input
+            id="donationItemName"
+            type="text"
+            name="item_name"
+            maxlength="150"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="donationQuantity"> Quantity </label>
+          <input
+            id="donationQuantity"
+            type="number"
+            name="quantity"
+            min="0"
+            step="0.01"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="donationUnit"> Unit </label>
+          <input id="donationUnit" type="text" name="unit" maxlength="30" />
+        </div>
+
+        <div class="form-group">
           <label for="donationDate"> Donation Date * </label>
 
           <input id="donationDate" type="date" name="donation_date" required />
         </div>
 
         <div class="form-group">
-          <label for="donationPurpose"> Purpose </label>
+          <label for="donationDescription"> Description </label>
 
           <input
-            id="donationPurpose"
+            id="donationDescription"
             type="text"
-            name="purpose"
-            placeholder="Donation purpose"
+            name="description"
+            placeholder="Donation description"
           />
         </div>
       </div>
@@ -167,22 +196,6 @@
   </div>
 </div>
 
-<script>
-  function openDonationModal() {
-    const modal = document.getElementById("donationModal");
-
-    if (modal) {
-      modal.classList.remove("hidden");
-    }
-  }
-
-  function closeDonationModal() {
-    const modal = document.getElementById("donationModal");
-
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-  }
-</script>
+<script src="/static/js/donations.js"></script>
 
 {{ end }}

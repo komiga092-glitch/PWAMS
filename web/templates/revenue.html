@@ -1,0 +1,210 @@
+{{ define "revenue_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Revenue Management</h1>
+      <p>Manage income and expenses.</p>
+    </div>
+    <button class="btn btn-primary" type="button" onclick="openRevenueModal()">
+      + Add Record
+    </button>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-header"><h2>Income and Expenses</h2></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>TYPE</th>
+            <th>CATEGORY</th>
+            <th>AMOUNT</th>
+            <th>DATE</th>
+            <th>DESCRIPTION</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .records }}
+          <tr>
+            <td>{{ .RecordType }}</td>
+            <td>{{ .Category }}</td>
+            <td>{{ .Currency }} {{ printf "%.2f" .Amount }}</td>
+            <td>{{ .RecordDate }}</td>
+            <td>{{ .Description }}</td>
+            <td>
+              <button
+                class="btn btn-small btn-danger"
+                type="button"
+                onclick="deleteRevenueRecord('{{ .ID }}')"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td colspan="6" class="empty">No revenue records found.</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Revenue Summaries</h2></div>
+    <div id="revenue-summaries" class="panel-body">Loading summaries...</div>
+  </div>
+</section>
+
+<div id="revenueModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeRevenueModal()"></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Add Revenue Record</h2>
+      <button type="button" class="modal-close" onclick="closeRevenueModal()">
+        ×
+      </button>
+    </div>
+    <form id="revenue-form" class="form" onsubmit="submitRevenue(event)">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="revenue-type">Type *</label
+          ><select id="revenue-type" name="record_type" required>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="revenue-category">Category *</label
+          ><select id="revenue-category" name="category" required>
+            <option>Donations</option>
+            <option>Loan Repayments</option>
+            <option>Grants</option>
+            <option>Administrative Expenses</option>
+            <option>Welfare Expenses</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="revenue-amount">Amount *</label
+          ><input
+            id="revenue-amount"
+            name="amount"
+            type="number"
+            min="0.01"
+            step="0.01"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="revenue-date">Date *</label
+          ><input id="revenue-date" name="record_date" type="date" required />
+        </div>
+        <div class="form-group form-full">
+          <label for="revenue-description">Description</label
+          ><textarea
+            id="revenue-description"
+            name="description"
+            maxlength="1000"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="revenue-reference">Reference</label
+          ><input id="revenue-reference" name="reference_no" maxlength="100" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeRevenueModal()"
+        >
+          Cancel</button
+        ><button type="submit" class="btn btn-primary">Save Record</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script>
+  function openRevenueModal() {
+    document.getElementById("revenueModal")?.classList.remove("hidden");
+  }
+  function closeRevenueModal() {
+    document.getElementById("revenueModal")?.classList.add("hidden");
+  }
+  async function submitRevenue(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = Object.fromEntries(new FormData(form));
+    data.amount = Number(data.amount);
+    try {
+      const response = await fetch("/revenue", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Unable to save revenue record");
+      alert(result.message || "Revenue record created successfully");
+      window.location.reload();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Unable to save revenue record",
+      );
+    }
+  }
+  async function deleteRevenueRecord(id) {
+    if (!confirm("Delete this revenue record?")) return;
+    try {
+      const response = await fetch("/revenue/" + id, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Unable to delete revenue record");
+      alert(result.message || "Revenue record deleted successfully");
+      window.location.reload();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete revenue record",
+      );
+    }
+  }
+  async function loadRevenueSummaries() {
+    const target = document.getElementById("revenue-summaries");
+    try {
+      const response = await fetch("/revenue/summaries", {
+        credentials: "same-origin",
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Unable to load summaries");
+      target.innerHTML = result.data
+        .map(
+          (summary) =>
+            `<div><strong>${summary.period}</strong>: ${summary.income.toFixed(2)} income, ${summary.expenses.toFixed(2)} expenses, ${summary.net.toFixed(2)} net</div>`,
+        )
+        .join("");
+    } catch (error) {
+      target.textContent =
+        error instanceof Error ? error.message : "Unable to load summaries";
+    }
+  }
+  document.addEventListener("DOMContentLoaded", loadRevenueSummaries);
+</script>
+{{ end }}

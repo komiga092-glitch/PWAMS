@@ -1,0 +1,41 @@
+"use strict";
+function closeDonationModal() {
+    document.getElementById("donationModal")?.classList.add("hidden");
+}
+function openDonationModal() {
+    document.getElementById("donationModal")?.classList.remove("hidden");
+}
+async function submitDonation(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = Object.fromEntries(new FormData(form));
+    data.amount = String(Number(data.amount || 0));
+    data.quantity = String(Number(data.quantity || 0));
+    try {
+        const response = await fetch(form.action, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                ...data,
+                amount: Number(data.amount),
+                quantity: Number(data.quantity),
+            }),
+        });
+        const result = await response.json();
+        if (!response.ok)
+            throw new Error(result.message || result.error || "Unable to save donation.");
+        alert(result.message || "Donation registered successfully.");
+        window.location.reload();
+    }
+    catch (error) {
+        alert(error instanceof Error ? error.message : "Unable to save donation.");
+    }
+}
+window.openDonationModal = openDonationModal;
+window.closeDonationModal = closeDonationModal;
+window.submitDonation = submitDonation;
+//# sourceMappingURL=donations.js.map

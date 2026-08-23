@@ -51,6 +51,7 @@ func (h *DonorHandler) Create(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidDonorType, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrIndividualDonorIdentityRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrOrganizationDetailsRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidPhone, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrDonorAlreadyExists, status: http.StatusConflict, message: err.Error()},
 		)
 		return
@@ -78,6 +79,57 @@ func (h *DonorHandler) Create(c *gin.Context) {
 		},
 	})
 }
+func (h *DonorHandler) Page(c *gin.Context) {
+	var query models.DonorListQuery
+
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.HTML(http.StatusBadRequest, "base", gin.H{
+			"page_template": "donors_content",
+			"title":         "Donors - PWAMS",
+			"data":          []gin.H{},
+			"search":        "",
+			"status":        "",
+			"error":         "Invalid query parameters",
+		})
+		return
+	}
+
+	donors, _, _, _, err :=
+		h.donorService.ListDonors(query)
+
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{
+			"page_template": "donors_content",
+			"title":         "Donors - PWAMS",
+			"data":          []gin.H{},
+			"search":        query.Search,
+			"status":        query.Status,
+			"error":         "Unable to retrieve donors",
+		})
+		return
+	}
+
+	items := make([]gin.H, 0, len(donors))
+
+	for _, donor := range donors {
+		items = append(items, gin.H{
+			"ID":     donor.ID,
+			"Name":   donor.Name,
+			"Phone":  donor.Phone,
+			"Email":  donor.Email,
+			"Type":   donor.DonorType,
+			"Status": donor.Status,
+		})
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "donors_content",
+		"title":         "Donors - PWAMS",
+		"data":          items,
+		"search":        query.Search,
+		"status":        query.Status,
+	})
+}
 
 func (h *DonorHandler) List(c *gin.Context) {
 	var query models.DonorListQuery
@@ -94,6 +146,14 @@ func (h *DonorHandler) List(c *gin.Context) {
 		h.donorService.ListDonors(query)
 
 	if err != nil {
+		if errors.Is(err, services.ErrInvalidDonorType) ||
+			errors.Is(err, services.ErrInvalidDonorStatus) {
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"message": "Unable to retrieve donors",
@@ -212,6 +272,7 @@ func (h *DonorHandler) Update(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidDonorType, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrIndividualDonorIdentityRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrOrganizationDetailsRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidPhone, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidDonorStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrDonorAlreadyExists, status: http.StatusConflict, message: err.Error()},
 		)
@@ -292,6 +353,82 @@ func (h *DonorHandler) UpdateStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Donor status updated successfully",
+	})
+}
+
+func (h *DonorHandler) ViewPage(c *gin.Context) {
+	donorID := c.Param("id")
+
+	donor, err := h.donorService.GetDonorByID(donorID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.HTML(http.StatusBadRequest, "base", gin.H{
+				"page_template": "donors_content",
+				"title":         "Donors - PWAMS",
+				"error":         constants.ErrInvalidDonorID,
+			})
+
+		case errors.Is(err, repository.ErrDonorNotFound):
+			c.HTML(http.StatusNotFound, "base", gin.H{
+				"page_template": "donors_content",
+				"title":         "Donors - PWAMS",
+				"error":         constants.ErrDonorNotFound,
+			})
+
+		default:
+			c.HTML(http.StatusInternalServerError, "base", gin.H{
+				"page_template": "donors_content",
+				"title":         "Donors - PWAMS",
+				"error":         constants.ErrUnableToRetrieveDonor,
+			})
+		}
+
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "donor_view_content",
+		"title":         "View Donor - PWAMS",
+		"donor":         donor,
+	})
+}
+
+func (h *DonorHandler) EditPage(c *gin.Context) {
+	donorID := c.Param("id")
+
+	donor, err := h.donorService.GetDonorByID(donorID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidDonorID):
+			c.HTML(http.StatusBadRequest, "base", gin.H{
+				"page_template": "donors_content",
+				"title":         "Donors - PWAMS",
+				"error":         constants.ErrInvalidDonorID,
+			})
+
+		case errors.Is(err, repository.ErrDonorNotFound):
+			c.HTML(http.StatusNotFound, "base", gin.H{
+				"page_template": "donors_content",
+				"title":         "Donors - PWAMS",
+				"error":         constants.ErrDonorNotFound,
+			})
+
+		default:
+			c.HTML(http.StatusInternalServerError, "base", gin.H{
+				"page_template": "donors_content",
+				"title":         "Donors - PWAMS",
+				"error":         constants.ErrUnableToRetrieveDonor,
+			})
+		}
+
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "donor_edit_content",
+		"title":         "Edit Donor - PWAMS",
+		"donor":         donor,
 	})
 }
 

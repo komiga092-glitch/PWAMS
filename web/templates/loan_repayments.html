@@ -44,7 +44,7 @@
 
             <td>{{ .Amount }}</td>
 
-            <td>{{ .PaymentDate }}</td>
+            <td>{{ .DueDate }}</td>
 
             <td>
               {{ if .PaidAt }}
@@ -117,7 +117,13 @@
       </button>
     </div>
 
-    <form method="POST" action="/loan-repayments" class="form">
+    <form
+      id="repayment-form"
+      method="POST"
+      action="/loan-repayments"
+      class="form"
+      onsubmit="submitRepayment(event)"
+    >
       <div class="form-grid">
         <div class="form-group">
           <label for="installmentNumber"> Installment Number * </label>
@@ -134,13 +140,9 @@
         <div class="form-group">
           <label for="repaymentLoanID"> Loan ID * </label>
 
-          <select
-            id="repaymentLoanID"
-            type="text"
-            name="loan_id"
-            required>
-            <options value="">Load ID</options>
-        </select>
+          <select id="repaymentLoanID" type="text" name="loan_id" required>
+            <option value="">Select Loan</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -179,22 +181,6 @@
   </div>
 </div>
 
-<script>
-  function openRepaymentModal() {
-    const modal = document.getElementById("repaymentModal");
-
-    if (modal) {
-      modal.classList.remove("hidden");
-    }
-  }
-
-  function closeRepaymentModal() {
-    const modal = document.getElementById("repaymentModal");
-
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-  }
-</script>
+<script src="/static/js/loan-repayments.js"></script>
 
 {{ end }}

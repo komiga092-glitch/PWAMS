@@ -1,8 +1,8 @@
 package models
 
 type CreateDonationRequest struct {
-	DonorID  string `json:"donor_id" binding:"required"`
-	PersonID string `json:"person_id"`
+	DonorID  string `json:"donor_id" binding:"required,uuid"`
+	PersonID string `json:"person_id" binding:"omitempty,uuid"`
 
 	DonationType string  `json:"donation_type" binding:"required"`
 	Amount       float64 `json:"amount" binding:"gte=0"`

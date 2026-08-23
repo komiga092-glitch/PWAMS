@@ -72,6 +72,7 @@ func RegisterAuthRoutes(
 
 	protected.GET(
 		"/dashboard",
+		middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin, models.RoleStaff),
 		dashboardHandler.Page,
 	)
 
@@ -79,6 +80,20 @@ func RegisterAuthRoutes(
 		"/logout",
 		authHandler.Logout,
 	)
+
+	protected.GET("/auth/me", func(c *gin.Context) {
+		user, ok := c.Get("current_user")
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"success": false, "message": "Authentication required"})
+			return
+		}
+		currentUser, ok := user.(*models.User)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "Invalid authentication context"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"success": true, "role": currentUser.Role.Name})
+	})
 
 	// Admin-level test route.
 	protected.GET(

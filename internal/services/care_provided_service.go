@@ -15,7 +15,26 @@ var (
 	ErrInvalidCareProvidedID     = errors.New("invalid care provided ID")
 	ErrInvalidCareProvidedStatus = errors.New("invalid care provided status")
 	ErrCareAlreadyCompleted      = errors.New("care provided record is already completed")
+	ErrInvalidCareType           = errors.New("invalid care type")
 )
+
+func isValidCareType(value string) bool {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "medical", "food", "education", "financial", "counselling", "other":
+		return true
+	default:
+		return false
+	}
+}
+
+func parseCareDate(value string) (time.Time, error) {
+	value = strings.TrimSpace(value)
+	if parsed, err := time.Parse(time.RFC3339, value); err == nil {
+		return parsed, nil
+	}
+
+	return time.Parse("2006-01-02", value)
+}
 
 type CareProvidedService struct {
 	careProvidedRepo *repository.CareProvidedRepository
@@ -63,12 +82,12 @@ func (s *CareProvidedService) CreateCareProvided(
 		return nil, errors.New("invalid created by user ID")
 	}
 
-	providedAt, err := time.Parse(
-		time.RFC3339,
-		strings.TrimSpace(request.ProvidedAt),
-	)
+	providedAt, err := parseCareDate(request.ProvidedAt)
 	if err != nil {
 		return nil, errors.New("invalid provided date")
+	}
+	if !isValidCareType(request.CareType) {
+		return nil, ErrInvalidCareType
 	}
 
 	careProvided := &models.CareProvided{
@@ -77,6 +96,8 @@ func (s *CareProvidedService) CreateCareProvided(
 		PersonID:     personID,
 		Amount:       request.Amount,
 		Description:  strings.TrimSpace(request.Description),
+		CareType:     strings.TrimSpace(request.CareType),
+		ProvidedBy:   strings.TrimSpace(request.ProvidedBy),
 		Status:       models.CareProvidedStatusPending,
 		ProvidedAt:   providedAt,
 		CreatedByID:  userID,
@@ -156,17 +177,19 @@ func (s *CareProvidedService) UpdateCareProvided(
 		return nil, ErrCareAlreadyCompleted
 	}
 
-	providedAt, err := time.Parse(
-		time.RFC3339,
-		strings.TrimSpace(request.ProvidedAt),
-	)
+	providedAt, err := parseCareDate(request.ProvidedAt)
 	if err != nil {
 		return nil, errors.New("invalid provided date")
 	}
 
 	careProvided.Amount = request.Amount
 	careProvided.Description = strings.TrimSpace(request.Description)
+	careProvided.CareType = strings.TrimSpace(request.CareType)
+	careProvided.ProvidedBy = strings.TrimSpace(request.ProvidedBy)
 	careProvided.ProvidedAt = providedAt
+	if !isValidCareType(careProvided.CareType) {
+		return nil, ErrInvalidCareType
+	}
 
 	if err := s.careProvidedRepo.Update(careProvided); err != nil {
 		return nil, err

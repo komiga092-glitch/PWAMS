@@ -131,6 +131,9 @@ func (s *LoanService) ListLoans(
 	if pageSize < 1 {
 		pageSize = 20
 	}
+	if pageSize > 100 {
+		pageSize = 100
+	}
 
 	query.Page = page
 	query.PageSize = pageSize

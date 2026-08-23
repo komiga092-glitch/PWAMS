@@ -5,7 +5,12 @@
       <h1>Dashboard</h1>
       <p>Overview of PWAMS operations</p>
     </div>
-    <a href="/reports/dashboard" class="btn btn-primary">View Reports</a>
+    <a
+      href="/reports/dashboard"
+      class="btn btn-primary"
+      data-roles="Super Admin,Admin"
+      >View Reports</a
+    >
   </div>
 
   {{ if .error }}
@@ -14,31 +19,50 @@
   <section class="stats-grid">
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Total Users</span
+        <span class="stat-label">Total Beneficiaries</span
         ><span class="stat-icon">♟</span>
       </div>
-      <div class="stat-value">{{ .stats.TotalUsers }}</div>
+      <div class="stat-value">{{ .stats.TotalBeneficiaries }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Active Users</span
-        ><span class="stat-icon">✓</span>
+        <span class="stat-label">Students</span><span class="stat-icon">✓</span>
       </div>
-      <div class="stat-value">{{ .stats.ActiveUsers }}</div>
+      <div class="stat-value">{{ .stats.TotalStudents }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Pending Users</span
-        ><span class="stat-icon">◷</span>
+        <span class="stat-label">Donors</span><span class="stat-icon">◷</span>
       </div>
-      <div class="stat-value">{{ .stats.PendingUsers }}</div>
+      <div class="stat-value">{{ .stats.TotalDonors }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Disabled Users</span
+        <span class="stat-label">Active Loans</span
         ><span class="stat-icon">⊘</span>
       </div>
-      <div class="stat-value">{{ .stats.DisabledUsers }}</div>
+      <div class="stat-value">{{ .stats.ActiveLoans }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Pending Aid Requests</span>
+        <span class="stat-icon">◷</span>
+      </div>
+      <div class="stat-value">{{ .stats.PendingAidRequests }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Revenue Summary</span>
+        <span class="stat-icon">◈</span>
+      </div>
+      <div class="stat-value">{{ printf "%.2f" .stats.RevenueSummary }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Notifications</span>
+        <span class="stat-icon">♢</span>
+      </div>
+      <div class="stat-value">{{ .stats.UnreadNotifications }}</div>
     </div>
   </section>
 

@@ -21,6 +21,9 @@ var ErrInvalidUserStatus = errors.New("selected user status is invalid")
 var ErrCannotDeleteSelf = errors.New(
 	"you cannot delete your own account",
 )
+var ErrCannotModifySuperAdmin = errors.New(
+	"only a Super Admin can modify a Super Admin account",
+)
 
 type UserService struct {
 	userRepo    *repository.UserRepository
@@ -152,6 +155,7 @@ func isValidUserStatus(status string) bool {
 func (s *UserService) UpdateUser(
 	id string,
 	request models.UpdateUserRequest,
+	actorRoles ...string,
 ) (*models.User, error) {
 	id = strings.TrimSpace(id)
 
@@ -162,6 +166,10 @@ func (s *UserService) UpdateUser(
 	user, err := s.userRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+	if user.Role.Name == models.RoleSuperAdmin &&
+		(len(actorRoles) == 0 || actorRoles[0] != models.RoleSuperAdmin) {
+		return nil, ErrCannotModifySuperAdmin
 	}
 
 	username := strings.ToLower(strings.TrimSpace(request.Username))
@@ -231,6 +239,7 @@ func (s *UserService) UpdateUserStatus(
 
 func (s *UserService) ResetPassword(
 	id, newPassword string,
+	actorRoles ...string,
 ) error {
 	id = strings.TrimSpace(id)
 	newPassword = strings.TrimSpace(newPassword)
@@ -243,9 +252,13 @@ func (s *UserService) ResetPassword(
 		return ErrInvalidPassword
 	}
 
-	_, err := s.userRepo.FindByID(id)
+	user, err := s.userRepo.FindByID(id)
 	if err != nil {
 		return err
+	}
+	if user.Role.Name == models.RoleSuperAdmin &&
+		(len(actorRoles) == 0 || actorRoles[0] != models.RoleSuperAdmin) {
+		return ErrCannotModifySuperAdmin
 	}
 
 	passwordHash, err := utils.HashPassword(newPassword)

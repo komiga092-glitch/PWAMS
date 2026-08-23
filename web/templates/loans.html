@@ -16,7 +16,7 @@
 
   <div class="panel">
     <div class="panel-body">
-      <form class="search-bar" method="GET" action="/loans">
+      <form class="search-bar" method="GET" action="/loans/page">
         <input
           type="text"
           name="search"
@@ -144,18 +144,20 @@
       </button>
     </div>
 
-    <form method="POST" action="/loans" class="form">
+    <form
+      id="loan-form"
+      method="POST"
+      action="/loans"
+      class="form"
+      onsubmit="submitLoan(event)"
+    >
       <div class="form-grid">
         <div class="form-group">
           <label for="loanPersonID"> Person ID * </label>
 
-          <select
-            id="loanPersonID"
-            type="text"
-            name="person_id"
-            required>
-           <option value="" >Select Donor</oprion>
-           </select>
+          <select id="loanPersonID" type="text" name="person_id" required>
+            <option value="">Select Person</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -226,22 +228,6 @@
   </div>
 </div>
 
-<script>
-  function openLoanModal() {
-    const modal = document.getElementById("loanModal");
-
-    if (modal) {
-      modal.classList.remove("hidden");
-    }
-  }
-
-  function closeLoanModal() {
-    const modal = document.getElementById("loanModal");
-
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-  }
-</script>
+<script src="/static/js/loans.js"></script>
 
 {{ end }}

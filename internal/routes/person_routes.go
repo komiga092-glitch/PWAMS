@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
@@ -27,20 +25,53 @@ func RegisterPersonRoutes(
 		),
 	)
 
-	// Persons UI page
-	persons.GET("/page", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "base", gin.H{
-			"page_template": "persons_content",
-			"title":         "Care Seekers",
-		})
-	})
+	// =========================
+	// HTML PAGES
+	// =========================
 
-	// Persons API
-	persons.GET("", personHandler.List)
-	persons.GET("/:id", personHandler.GetByID)
-	persons.POST("", personHandler.Create)
-	persons.PUT("/:id", personHandler.Update)
-	persons.PATCH("/:id/status", personHandler.UpdateStatus)
+	persons.GET(
+		"/page",
+		personHandler.Page,
+	)
+
+	persons.GET(
+		"/:id/view",
+		personHandler.ViewPage,
+	)
+
+	persons.GET(
+		"/:id/edit",
+		personHandler.EditPage,
+	)
+
+	// =========================
+	// API ENDPOINTS
+	// =========================
+
+	persons.GET(
+		"",
+		personHandler.List,
+	)
+
+	persons.GET(
+		"/:id",
+		personHandler.GetByID,
+	)
+
+	persons.POST(
+		"",
+		personHandler.Create,
+	)
+
+	persons.PUT(
+		"/:id",
+		personHandler.Update,
+	)
+
+	persons.PATCH(
+		"/:id/status",
+		personHandler.UpdateStatus,
+	)
 
 	persons.DELETE(
 		"/:id",

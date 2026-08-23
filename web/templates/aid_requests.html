@@ -19,7 +19,7 @@
 
   <div class="panel">
     <div class="panel-body">
-      <form class="search-bar" method="GET" action="/aid-requests">
+      <form class="search-bar" method="GET" action="/aid-requests/page">
         <input
           type="text"
           name="search"
@@ -78,19 +78,19 @@
             <td>{{ .RequestedAt }}</td>
 
             <td>
-              {{ if eq .Status "approved" }}
+              {{ if eq .Status "Approved" }}
 
               <span class="status-badge status-active"> Approved </span>
 
-              {{ else if eq .Status "rejected" }}
+              {{ else if eq .Status "Rejected" }}
 
               <span class="status-badge status-inactive"> Rejected </span>
 
-              {{ else if eq .Status "cancelled" }}
+              {{ else if eq .Status "Cancelled" }}
 
               <span class="status-badge status-inactive"> Cancelled </span>
 
-              {{ else if eq .Status "completed" }}
+              {{ else if eq .Status "Completed" }}
 
               <span class="status-badge status-active"> Completed </span>
 
@@ -140,17 +140,20 @@
       </button>
     </div>
 
-    <form method="POST" action="/aid-requests" class="form">
+    <form
+      id="aid-request-form"
+      method="POST"
+      action="/aid-requests"
+      class="form"
+      onsubmit="submitAidRequest(event)"
+    >
       <div class="form-grid">
         <div class="form-group">
           <label for="personID">Beneficiary *</label>
 
-<select
-    id="personID"
-    name="person_id"
-    required>
-    <option value="">Select Person</option>
-</select>
+          <select id="personID" name="person_id" required>
+            <option value="">Select Person</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -159,17 +162,17 @@
           <select id="requestType" name="aid_type" required>
             <option value="">Select request type</option>
 
-            <option value="medical">Medical</option>
+            <option value="Medical">Medical</option>
 
-            <option value="food">Food</option>
+            <option value="Food">Food</option>
 
-            <option value="education">Education</option>
+            <option value="Education">Education</option>
 
-            <option value="housing">Housing</option>
+            <option value="Housing">Housing</option>
 
-            <option value="financial">Financial</option>
+            <option value="Emergency">Emergency</option>
 
-            <option value="other">Other</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
@@ -190,11 +193,11 @@
           <label for="priority"> Priority </label>
 
           <select id="priority" name="priority">
-            <option value="normal">Normal</option>
+            <option value="Medium">Medium</option>
 
-            <option value="high">High</option>
+            <option value="High">High</option>
 
-            <option value="urgent">Urgent</option>
+            <option value="Critical">Critical</option>
           </select>
         </div>
         <div class="form-group form-full">
@@ -238,22 +241,6 @@
   </div>
 </div>
 
-<script>
-  function openAidRequestModal() {
-    const modal = document.getElementById("aidRequestModal");
-
-    if (modal) {
-      modal.classList.remove("hidden");
-    }
-  }
-
-  function closeAidRequestModal() {
-    const modal = document.getElementById("aidRequestModal");
-
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-  }
-</script>
+<script src="/static/js/aid-requests.js"></script>
 
 {{ end }}

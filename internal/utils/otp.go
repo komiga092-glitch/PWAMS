@@ -3,17 +3,14 @@ package utils
 import (
 	"crypto/rand"
 	"fmt"
+	"math/big"
 )
 
 func GenerateOTP() (string, error) {
-	var number [1]byte
-
-	_, err := rand.Read(number[:])
+	number, err := rand.Int(rand.Reader, big.NewInt(1000000))
 	if err != nil {
 		return "", err
 	}
 
-	otpNumber := int(number[0]) % 1000000
-
-	return fmt.Sprintf("%06d", otpNumber), nil
+	return fmt.Sprintf("%06d", number.Int64()), nil
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
 	"github.com/komiga092-glitch/pwams/internal/middleware"
+	"github.com/komiga092-glitch/pwams/internal/models"
 )
 
 func RegisterNotificationRoutes(
@@ -27,7 +28,11 @@ func RegisterNotificationRoutes(
 
 	notifications.GET("", notificationHandler.List)
 	notifications.GET("/:id", notificationHandler.GetByID)
-	notifications.POST("", notificationHandler.Create)
+	notifications.POST("", middleware.RequireAnyRole(
+		models.RoleSuperAdmin,
+		models.RoleAdmin,
+		models.RoleStaff,
+	), notificationHandler.Create)
 	notifications.PATCH("/:id/read", notificationHandler.MarkAsRead)
 	notifications.DELETE("/:id", notificationHandler.Delete)
 }

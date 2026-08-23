@@ -7,6 +7,7 @@ import (
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
 	"github.com/komiga092-glitch/pwams/internal/middleware"
+	"github.com/komiga092-glitch/pwams/internal/models"
 )
 
 func RegisterAuditLogRoutes(
@@ -17,6 +18,7 @@ func RegisterAuditLogRoutes(
 	protected := router.Group("/")
 	protected.Use(
 		authMiddleware.RequireAuth(),
+		middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin),
 	)
 
 	protected.GET(

@@ -88,9 +88,13 @@ func (s *DonationService) CreateDonation(
 		return nil, err
 	}
 
-	parsedPersonID, err := s.validatePerson(request.PersonID)
-	if err != nil {
-		return nil, err
+	var parsedPersonID *uuid.UUID
+	if strings.TrimSpace(request.PersonID) != "" {
+		personID, err := s.validatePerson(request.PersonID)
+		if err != nil {
+			return nil, err
+		}
+		parsedPersonID = &personID
 	}
 
 	donationType, err := s.validateDonationDetails(request)
@@ -115,7 +119,7 @@ func (s *DonationService) CreateDonation(
 
 	donation := &models.Donation{
 		DonorID:      parsedDonorID,
-		PersonID:     &parsedPersonID,
+		PersonID:     parsedPersonID,
 		DonationType: donationType,
 		Amount:       request.Amount,
 		Currency:     currency,

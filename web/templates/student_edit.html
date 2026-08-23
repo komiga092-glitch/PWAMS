@@ -1,0 +1,291 @@
+{{ define "student_edit" }}
+
+
+<section class="page">
+
+    <div class="page-heading">
+
+        <div>
+            <h1>Edit Student</h1>
+            <p>Update student information.</p>
+        </div>
+
+        <a
+            href="/students/{{ .student.ID }}/view"
+            class="btn btn-light">
+            Cancel
+        </a>
+
+    </div>
+
+
+    {{ if .error }}
+
+    <div class="alert alert-danger">
+        {{ .error }}
+    </div>
+
+    {{ end }}
+
+
+    <div class="panel">
+
+        <div class="panel-header">
+            <h2>Student Information</h2>
+        </div>
+
+        <div class="panel-body">
+
+            <form
+                id="student-edit-form"
+                data-student-id="{{ .student.ID }}">
+
+                <input
+    type="hidden"
+    name="person_id"
+    value="{{ .student.PersonID }}">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Full Name
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="full_name"
+                            value="{{ .student.FullName }}"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Student Code
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="student_code"
+                            value="{{ .student.StudentCode }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            School / Institution
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="school_name"
+                            value="{{ .student.SchoolName }}"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Grade
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="grade"
+                            value="{{ .student.Grade }}"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Date of Birth
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="date"
+                            name="date_of_birth"
+                            value="{{ .student.DateOfBirth }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Gender
+                        </label>
+
+                        <select
+                            class="form-control"
+                            name="gender">
+
+                            <option
+                                value=""
+                                {{ if eq .student.Gender "" }}selected{{ end }}>
+                                Select Gender
+                            </option>
+
+                            <option
+                                value="Male"
+                                {{ if eq .student.Gender "Male" }}selected{{ end }}>
+                                Male
+                            </option>
+
+                            <option
+                                value="Female"
+                                {{ if eq .student.Gender "Female" }}selected{{ end }}>
+                                Female
+                            </option>
+
+                            <option
+                                value="Other"
+                                {{ if eq .student.Gender "Other" }}selected{{ end }}>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Guardian Name
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="guardian_name"
+                            value="{{ .student.GuardianName }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Guardian Phone
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="text"
+                            name="guardian_phone"
+                            value="{{ .student.GuardianPhone }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Academic Year
+                        </label>
+
+                        <input
+                            class="form-control"
+                            type="number"
+                            name="academic_year"
+                            value="{{ .student.AcademicYear }}"
+                            min="2000"
+                            max="2100"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Status
+                        </label>
+
+                        <select
+                            class="form-control"
+                            name="status">
+
+                            <option
+                                value="Active"
+                                {{ if eq .student.Status "Active" }}selected{{ end }}>
+                                Active
+                            </option>
+
+                            <option
+                                value="Inactive"
+                                {{ if eq .student.Status "Inactive" }}selected{{ end }}>
+                                Inactive
+                            </option>
+
+                            <option
+                                value="Pending"
+                                {{ if eq .student.Status "Pending" }}selected{{ end }}>
+                                Pending
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label class="form-label">
+                            Remarks
+                        </label>
+
+                        <textarea
+                            class="form-control"
+                            name="remarks"
+                            rows="4">{{ .student.Remarks }}</textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <a
+                        href="/students/{{ .student.ID }}/view"
+                        class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary">
+                        Update Student
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script src="/static/js/student-edit.js"></script>
+<script src ="/static/js/app.js"></script>
+
+{{ end }}

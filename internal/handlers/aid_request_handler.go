@@ -23,10 +23,28 @@ func NewAidRequestHandler(
 	}
 }
 
+func (h *AidRequestHandler) Page(c *gin.Context) {
+	var query models.AidRequestListQuery
+	if err := c.ShouldBindQuery(&query); err != nil {
+		c.HTML(http.StatusBadRequest, "base", gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": []gin.H{}, "error": "Invalid query parameters"})
+		return
+	}
+	requests, _, _, _, err := h.aidRequestService.ListAidRequests(query)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": []gin.H{}, "error": "Unable to retrieve aid requests"})
+		return
+	}
+	items := make([]gin.H, 0, len(requests))
+	for _, request := range requests {
+		items = append(items, gin.H{"ID": request.ID, "PersonID": request.PersonID, "RequestType": request.AidType, "Amount": request.RequestedAmount, "RequestedAt": request.RequestDate, "Status": request.Status})
+	}
+	c.HTML(http.StatusOK, "base", gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": items, "search": query.Search, "status": query.Status})
+}
+
 func (h *AidRequestHandler) Create(c *gin.Context) {
 	var request models.CreateAidRequest
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBind(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidAidRequestInfo,

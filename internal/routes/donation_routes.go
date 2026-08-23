@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
@@ -27,13 +25,7 @@ func RegisterDonationRoutes(
 		),
 	)
 
-	donations.GET("/page", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "base", gin.H{
-			"page_template": "donations_content",
-			"title":         "Donations",
-			"data":          []interface{}{},
-		})
-	})
+	donations.GET("/page", donationHandler.Page)
 
 	donations.GET("", donationHandler.List)
 	donations.GET("/:id", donationHandler.GetByID)

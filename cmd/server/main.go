@@ -75,10 +75,12 @@ func main() {
 	reportRepo := repository.NewReportRepository(db)
 	auditLogRepo := repository.NewAuditLogRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
+	dashboardRepo := repository.NewDashboardRepository(db)
 	fileUploadRepo := repository.NewFileUploadRepository(db)
 
 	loanRepo := repository.NewLoanRepository(db)
 	loanRepaymentRepo := repository.NewLoanRepaymentRepository(db)
+	revenueRepo := repository.NewRevenueRepository(db)
 
 	// =========================
 	// Services
@@ -112,6 +114,7 @@ func main() {
 		passwordResetRepository,
 		userRepo,
 		emailService,
+		sessionRepo,
 	)
 
 	userService := services.NewUserService(
@@ -122,6 +125,7 @@ func main() {
 
 	dashboardService := services.NewDashboardService(
 		userRepo,
+		dashboardRepo,
 	)
 
 	personService := services.NewPersonService(
@@ -172,6 +176,8 @@ func main() {
 		loanRepaymentRepo,
 		loanRepo,
 	)
+
+	revenueService := services.NewRevenueService(revenueRepo)
 
 	// =========================
 	// Cookie configuration
@@ -239,6 +245,8 @@ func main() {
 		loanRepaymentService,
 	)
 
+	revenueHandler := handlers.NewRevenueHandler(revenueService)
+
 	careProvidedHandler := handlers.NewCareProvidedHandler(
 		careProvidedService,
 	)
@@ -280,27 +288,37 @@ func main() {
 	router.LoadHTMLFiles(
 		"web/templates/layouts/base.html",
 		"web/templates/layouts/header.html",
+
 		"web/templates/home.html",
 		"web/templates/login.html",
 		"web/templates/forgot_password.html",
 		"web/templates/verify_reset_otp.html",
 		"web/templates/reset_password.html",
+
 		"web/templates/dashboard.html",
 		"web/templates/users.html",
+
 		"web/templates/persons.html",
 		"web/templates/person_form.html",
+		"web/templates/person_view.html",
+		"web/templates/person_edit.html",
+
 		"web/templates/students.html",
+		"web/templates/student_view.html",
+		"web/templates/student_edit.html",
+
 		"web/templates/donors.html",
+		"web/templates/donor_view.html",
+		"web/templates/donor_edit.html",
 		"web/templates/donations.html",
 		"web/templates/aid_requests.html",
 		"web/templates/care_provided.html",
 		"web/templates/loans.html",
 		"web/templates/loan_repayments.html",
+		"web/templates/revenue.html",
 		"web/templates/notifications.html",
 		"web/templates/reports.html",
 		"web/templates/audit_logs.html",
-		"web/templates/students.html",
-		"web/templates/students_table.html",
 	)
 	router.Static("/static", "web/static")
 	// =========================
@@ -421,6 +439,12 @@ func main() {
 	routes.RegisterLoanRepaymentRoutes(
 		router,
 		loanRepaymentHandler,
+		authMiddleware,
+	)
+
+	routes.RegisterRevenueRoutes(
+		router,
+		revenueHandler,
 		authMiddleware,
 	)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

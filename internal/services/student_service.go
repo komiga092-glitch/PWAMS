@@ -49,6 +49,9 @@ func (s *StudentService) CreateStudent(
 	if err != nil {
 		return nil, ErrInvalidPersonID
 	}
+	if !isValidPhone(strings.TrimSpace(request.GuardianPhone)) {
+		return nil, ErrInvalidPhone
+	}
 
 	_, err = s.personRepo.FindByID(personID)
 	if err != nil {
@@ -223,6 +226,9 @@ func (s *StudentService) UpdateStudent(
 
 	if !isValidStudentStatus(status) {
 		return nil, ErrInvalidStudentStatus
+	}
+	if !isValidPhone(strings.TrimSpace(request.GuardianPhone)) {
+		return nil, ErrInvalidPhone
 	}
 
 	var dateOfBirth *time.Time

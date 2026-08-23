@@ -1,20 +1,38 @@
 {{ define "donors_content" }}
+
 <section class="page">
+
+  <!-- =========================
+       PAGE HEADER
+  ========================== -->
   <div class="page-heading">
     <div>
       <h1>Donors</h1>
       <p>Manage donor information and contribution records.</p>
     </div>
 
-    <button class="btn btn-primary" type="button" onclick="openDonorModal()">
+    <button
+      id="add-donor-btn"
+      class="btn btn-primary"
+      type="button"
+    >
       + Add Donor
     </button>
   </div>
 
-  <!-- Search -->
+
+  <!-- =========================
+       SEARCH
+  ========================== -->
   <div class="panel">
     <div class="panel-body">
-      <form class="search-bar" method="GET" action="/donors">
+
+      <form
+        class="search-bar"
+        method="GET"
+        action="/donors"
+      >
+
         <input
           type="text"
           name="search"
@@ -24,27 +42,59 @@
 
         <select name="status">
           <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+
+          <option
+            value="active"
+            {{ if eq .Status "Active" }}selected{{ end }}
+          >
+            Active
+          </option>
+
+          <option
+            value="inactive"
+            {{ if eq .status "inactive" }}selected{{ end }}
+          >
+            Inactive
+          </option>
         </select>
 
-        <button class="btn btn-secondary" type="submit">Search</button>
+        <button
+          class="btn btn-secondary"
+          type="submit"
+        >
+          Search
+        </button>
+
       </form>
+
     </div>
   </div>
 
-  <!-- Donor List -->
+
+  <!-- =========================
+       DONOR LIST
+  ========================== -->
   <div class="panel">
+
     <div class="panel-header">
+
       <h2>Donor List</h2>
 
       <span class="badge">
-        {{ if .data }} {{ len .data }} Records {{ else }} 0 Records {{ end }}
+        {{ if .data }}
+          {{ len .data }} Records
+        {{ else }}
+          0 Records
+        {{ end }}
       </span>
+
     </div>
 
+
     <div class="table-wrap">
+
       <table class="data-table">
+
         <thead>
           <tr>
             <th>NAME</th>
@@ -56,65 +106,163 @@
           </tr>
         </thead>
 
+
         <tbody>
+
           {{ range .data }}
 
           <tr>
-            <td>{{ .Name }}</td>
-
-            <td>{{ .Phone }}</td>
-
-            <td>{{ .Email }}</td>
-
-            <td>{{ .DonorType }}</td>
 
             <td>
-              {{ if eq .Status "active" }}
-              <span class="status-badge status-active"> Active </span>
-              {{ else }}
-              <span class="status-badge status-inactive"> Inactive </span>
-              {{ end }}
+              {{ .Name }}
             </td>
 
-            <td class="actions">
-              <a class="btn btn-small" href="/donors/{{ .ID }}"> View </a>
+            <td>
+              {{ .Phone }}
             </td>
+
+            <td>
+              {{ .Email }}
+            </td>
+
+            <td>
+              {{ .DonorType }}
+            </td>
+<td>
+
+  {{ if eq .Status "Active" }}
+
+    <span class="status-badge status-active">
+      Active
+    </span>
+
+  {{ else if eq .Status "Pending" }}
+
+    <span class="status-badge">
+      Pending
+    </span>
+
+  {{ else }}
+
+    <span class="status-badge status-inactive">
+      Inactive
+    </span>
+
+  {{ end }}
+
+</td>
+
+            <td class="actions">
+
+          <a
+  class="btn btn-small"
+  href="/donors/{{ .ID }}/view"
+>
+  View
+</a>
+
+              <a
+                class="btn btn-small"
+                href="/donors/{{ .ID }}/edit"
+              >
+                Edit
+              </a>
+
+            </td>
+
           </tr>
 
           {{ else }}
 
           <tr>
-            <td colspan="6" class="empty">No donor records found.</td>
+
+            <td
+              colspan="6"
+              class="empty"
+            >
+              No donor records found.
+            </td>
+
           </tr>
 
           {{ end }}
+
         </tbody>
+
       </table>
+
     </div>
+
   </div>
+
 </section>
 
-<!-- Add Donor Modal -->
 
-<div id="donorModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeDonorModal()"></div>
+<!-- =========================================================
+     ADD DONOR MODAL
+========================================================= -->
 
+<div
+  id="donorModal"
+  class="modal hidden"
+>
+
+  <!-- BACKDROP -->
+  <div
+    class="modal-backdrop"
+    data-donor-modal-close
+  ></div>
+
+
+  <!-- MODAL CARD -->
   <div class="modal-card">
+
+    <!-- MODAL HEADER -->
     <div class="modal-header">
+
       <div>
+
         <h2>Add Donor</h2>
-        <p>Create a new donor record.</p>
+
+        <p>
+          Create a new donor record.
+        </p>
+
       </div>
 
-      <button type="button" class="modal-close" onclick="closeDonorModal()">
+
+      <button
+        type="button"
+        class="modal-close"
+        data-donor-modal-close
+        aria-label="Close"
+      >
         ×
       </button>
+
     </div>
 
-    <form method="POST" action="/donors" class="form">
+
+    <!-- =====================================================
+         DONOR FORM
+    ====================================================== -->
+
+    <form
+      id="donor-create-form"
+      method="POST"
+      action="/donors"
+      class="form"
+    >
+
       <div class="form-grid">
+
+
+        <!-- NAME -->
         <div class="form-group">
-          <label for="donorName"> Name * </label>
+
+          <label for="donorName">
+            Name *
+          </label>
 
           <input
             id="donorName"
@@ -123,21 +271,111 @@
             required
             placeholder="Donor name"
           />
+
         </div>
 
+
+        <!-- DONOR TYPE -->
         <div class="form-group">
-          <label for="donorPhone"> Phone </label>
+
+          <label for="donorType">
+            Donor Type *
+          </label>
+<select
+  id="donorType"
+  name="donor_type"
+  required
+>
+  <option value="">
+    Select donor type
+  </option>
+
+  <option value="Individual">
+    Individual
+  </option>
+
+  <option value="Organization">
+    Organization
+  </option>
+</select>
+
+        </div>
+
+
+        <!-- NIC / PASSPORT -->
+        <div class="form-group">
+
+          <label for="donorNicPassport">
+            NIC / Passport
+          </label>
+
+          <input
+            id="donorNicPassport"
+            type="text"
+            name="nic_passport"
+            placeholder="NIC or Passport number"
+          />
+
+        </div>
+
+
+        <!-- ORGANIZATION NAME -->
+        <div class="form-group">
+
+          <label for="donorOrganizationName">
+            Organization Name
+          </label>
+
+          <input
+            id="donorOrganizationName"
+            type="text"
+            name="organization_name"
+            placeholder="Organization name"
+          />
+
+        </div>
+
+
+        <!-- REGISTRATION NUMBER -->
+        <div class="form-group">
+
+          <label for="donorRegistrationNumber">
+            Registration Number
+          </label>
+
+          <input
+            id="donorRegistrationNumber"
+            type="text"
+            name="registration_number"
+            placeholder="Registration number"
+          />
+
+        </div>
+
+
+        <!-- PHONE -->
+        <div class="form-group">
+
+          <label for="donorPhone">
+            Phone
+          </label>
 
           <input
             id="donorPhone"
-            type="text"
+            type="tel"
             name="phone"
             placeholder="Phone number"
           />
+
         </div>
 
+
+        <!-- EMAIL -->
         <div class="form-group">
-          <label for="donorEmail"> Email </label>
+
+          <label for="donorEmail">
+            Email
+          </label>
 
           <input
             id="donorEmail"
@@ -145,22 +383,91 @@
             name="email"
             placeholder="Email address"
           />
+
         </div>
 
+
+        <!-- CONTACT PERSON NAME -->
         <div class="form-group">
-          <label for="donorType"> Donor Type </label>
 
-          <select id="donorType" name="donor_type">
-            <option value="individual">Individual</option>
+          <label for="donorContactPersonName">
+            Contact Person Name
+          </label>
 
-            <option value="organization">Organization</option>
+          <input
+            id="donorContactPersonName"
+            type="text"
+            name="contact_person_name"
+            placeholder="Contact person name"
+          />
 
-            <option value="company">Company</option>
-          </select>
         </div>
 
+
+        <!-- CONTACT PERSON PHONE -->
+        <div class="form-group">
+
+          <label for="donorContactPersonPhone">
+            Contact Person Phone
+          </label>
+
+          <input
+            id="donorContactPersonPhone"
+            type="tel"
+            name="contact_person_phone"
+            placeholder="Contact person phone"
+          />
+
+        </div>
+
+
+        <!-- PREFERRED DONATION TYPE -->
+        <div class="form-group">
+
+          <label for="preferredDonationType">
+            Preferred Donation Type
+          </label>
+
+          <select
+            id="preferredDonationType"
+            name="preferred_donation_type"
+          >
+
+            <option value="">
+              Select donation type
+            </option>
+
+            <option value="cash">
+              Cash
+            </option>
+
+            <option value="bank_transfer">
+              Bank Transfer
+            </option>
+
+            <option value="goods">
+              Goods
+            </option>
+
+            <option value="services">
+              Services
+            </option>
+
+            <option value="other">
+              Other
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- ADDRESS -->
         <div class="form-group form-full">
-          <label for="donorAddress"> Address </label>
+
+          <label for="donorAddress">
+            Address
+          </label>
 
           <textarea
             id="donorAddress"
@@ -168,40 +475,66 @@
             rows="3"
             placeholder="Donor address"
           ></textarea>
+
         </div>
+
+
+        <!-- NOTES -->
+        <div class="form-group form-full">
+
+          <label for="donorNotes">
+            Notes
+          </label>
+
+          <textarea
+            id="donorNotes"
+            name="notes"
+            rows="3"
+            placeholder="Additional notes"
+          ></textarea>
+
+        </div>
+
       </div>
 
+
+      <!-- ===================================================
+           MODAL FOOTER
+      ==================================================== -->
+
       <div class="modal-footer">
+
         <button
+          id="donor-cancel"
           type="button"
           class="btn btn-secondary"
-          onclick="closeDonorModal()"
+          data-donor-modal-close
         >
           Cancel
         </button>
 
-        <button type="submit" class="btn btn-primary">Save Donor</button>
+
+        <button
+          id="donor-save-btn"
+          type="submit"
+          class="btn btn-primary"
+        >
+          Save Donor
+        </button>
+
       </div>
+
     </form>
+
   </div>
+
 </div>
 
-<script>
-  function openDonorModal() {
-    const modal = document.getElementById("donorModal");
 
-    if (modal) {
-      modal.classList.remove("hidden");
-    }
-  }
+<!-- =========================================================
+     DONOR JAVASCRIPT
+========================================================= -->
 
-  function closeDonorModal() {
-    const modal = document.getElementById("donorModal");
-
-    if (modal) {
-      modal.classList.add("hidden");
-    }
-  }
-</script>
+<script src="/static/js/donors.js"></script>
 
 {{ end }}

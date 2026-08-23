@@ -1,0 +1,112 @@
+{{ define "student_view" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Student Details</h1>
+      <p>View student information and records.</p>
+    </div>
+
+    <div style="display: flex; gap: 10px">
+      <a href="/students/{{ .student.ID }}/edit" class="btn btn-primary">
+        Edit Student
+      </a>
+
+      <a href="/students/page" class="btn btn-secondary"> Back </a>
+    </div>
+  </div>
+
+  {{ if .error }}
+
+  <div class="alert alert-danger">{{ .error }}</div>
+
+  {{ else }}
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Student Information</h2>
+
+      {{ if eq .student.Status "Active" }}
+
+      <span class="badge badge-success"> Active </span>
+
+      {{ else if eq .student.Status "Pending" }}
+
+      <span class="badge badge-warning"> Pending </span>
+
+      {{ else }}
+
+      <span class="badge badge-danger"> Inactive </span>
+
+      {{ end }}
+    </div>
+
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label"> Full Name </label>
+
+          <div class="form-control">{{ .student.FullName }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Student Code </label>
+
+          <div class="form-control">{{ .student.StudentCode }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> School / Institution </label>
+
+          <div class="form-control">{{ .student.SchoolName }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Grade </label>
+
+          <div class="form-control">{{ .student.Grade }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Date of Birth </label>
+
+          <div class="form-control">{{ .student.DateOfBirth }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Gender </label>
+
+          <div class="form-control">{{ .student.Gender }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Guardian Name </label>
+
+          <div class="form-control">{{ .student.GuardianName }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Guardian Phone </label>
+
+          <div class="form-control">{{ .student.GuardianPhone }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"> Academic Year </label>
+
+          <div class="form-control">{{ .student.AcademicYear }}</div>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label"> Remarks </label>
+
+          <div class="form-control">{{ .student.Remarks }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{ end }}
+</section>
+
+{{ end }}
