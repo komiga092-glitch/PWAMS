@@ -269,6 +269,32 @@
     paginationContainer.style.display = "none";
 
     try {
+      if (!navigator.onLine && window.pwamsOfflineReadStore) {
+        const localRecords = await window.pwamsOfflineReadStore("care_provided");
+        const records = localRecords.filter((record) => !record.is_deleted);
+        loadingSpinner.style.display = "none";
+        if (records.length === 0) {
+          emptyState.textContent = "No offline data available.";
+          emptyState.style.display = "block";
+          return;
+        }
+        const tbody = document.getElementById("careTableBody");
+        tbody.innerHTML = records.map((record) => `
+          <tr>
+            <td>${escapeHtml(record.person_id || "-")}</td>
+            <td>${escapeHtml(record.care_type || "-")}</td>
+            <td>${escapeHtml(record.description || "-")}</td>
+            <td>${formatCurrency(record.amount)}</td>
+            <td>${formatDate(record.provided_at)}</td>
+            <td>${escapeHtml(record.provided_by || "-")}</td>
+            <td>${escapeHtml(record.status || "pending")}</td>
+            <td></td>
+          </tr>`).join("");
+        document.getElementById("recordCount").textContent = `${records.length} Records`;
+        careTable.style.display = "table";
+        return;
+      }
+
       const response = await fetch(
         `/care-provided?page=${page}&page_size=${pageSize}`,
         {

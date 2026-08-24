@@ -135,6 +135,19 @@ async function loadPersons() {
      */
     personSelect.innerHTML = '<option value="">Loading persons...</option>';
     personSelect.disabled = true;
+    if (!navigator.onLine) {
+        const { readOfflineStore } = await import("./offline-data.js");
+        const people = await readOfflineStore("persons");
+        personSelect.innerHTML = '<option value="">Select Person</option>';
+        for (const person of people.filter((item) => !item.is_deleted)) {
+            const option = document.createElement("option");
+            option.value = person.id;
+            option.textContent = `${person.full_name} (${person.phone})`;
+            personSelect.appendChild(option);
+        }
+        personSelect.disabled = false;
+        return;
+    }
     try {
         const response = await fetch("/persons", {
             method: "GET",

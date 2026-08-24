@@ -9,6 +9,17 @@ async function loadRepaymentLoans() {
     const select = document.getElementById("repaymentLoanID");
     if (!select || select.options.length > 1)
         return;
+    if (!navigator.onLine) {
+        const { readOfflineStore } = await import("./offline-data.js");
+        const loans = await readOfflineStore("loans");
+        for (const loan of loans.filter((item) => !item.is_deleted)) {
+            const option = document.createElement("option");
+            option.value = loan.id;
+            option.textContent = `${loan.id} - ${loan.loan_amount}`;
+            select.appendChild(option);
+        }
+        return;
+    }
     const response = await fetch("/loans?page_size=100", {
         credentials: "same-origin",
     });

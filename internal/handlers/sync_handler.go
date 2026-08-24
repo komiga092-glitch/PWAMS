@@ -118,8 +118,6 @@ func (h *SyncHandler) Push(c *gin.Context) {
 		return entityOrder[strings.ToLower(strings.TrimSpace(request.Operations[left].EntityType))] < entityOrder[strings.ToLower(strings.TrimSpace(request.Operations[right].EntityType))]
 	})
 
-	// Actual entity synchronization will be implemented
-	// in the next step.
 	results := make([]models.SyncResult, 0, len(request.Operations))
 	hasConflict := false
 

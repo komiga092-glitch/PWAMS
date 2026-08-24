@@ -1,0 +1,1 @@
+{"version":3,"file":"offline-data.js","sourceRoot":"","sources":["../ts/offline-data.ts"],"names":[],"mappings":"AAUA,MAAM,CAAC,KAAK,UAAU,gBAAgB,CACpC,KAAuB;IAEvB,MAAM,QAAQ,GAAG,MAAM,MAAM,CAAC,MAAM,CAAC,0BAA0B,CAAC,CAAC,CAAC;IAClE,MAAM,kBAAkB,GAAG,QAAQ,CAAC,kBAEnB,CAAC;IAClB,OAAO,kBAAkB,CAAI,KAAK,CAAC,CAAC;AACtC,CAAC"}

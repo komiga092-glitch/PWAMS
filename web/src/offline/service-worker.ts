@@ -8,6 +8,9 @@ const STATIC_ASSETS = [
   "/static/js/offline/mutations.js",
   "/static/js/offline/sync.js",
   "/static/js/offline/conflicts.js",
+  "/static/js/offline/pull.js",
+  "/static/js/offline/pages.js",
+  "/static/js/offline-data.js",
   "/static/js/offline/service-worker.js",
   "/static/manifest.webmanifest",
 ];

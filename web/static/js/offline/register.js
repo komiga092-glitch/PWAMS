@@ -2,7 +2,8 @@ import { openOfflineDatabase } from "./db.js";
 import { subscribeConnectivity } from "./connectivity.js";
 import { syncPendingMutations } from "./sync.js";
 import { renderConflictStatus } from "./conflicts.js";
-window.addEventListener("online", async () => {
+import { pullSync } from "./pull.js";
+async function synchronizeOfflineChanges() {
     try {
         await syncPendingMutations();
     }
@@ -10,11 +11,20 @@ window.addEventListener("online", async () => {
         console.error("Offline sync failed:", error);
     }
     try {
+        await pullSync();
+    }
+    catch (error) {
+        console.error("Offline pull sync failed:", error);
+    }
+    try {
         await renderConflictStatus();
     }
     catch (error) {
         console.error("Offline conflict status refresh failed:", error);
     }
+}
+window.addEventListener("online", () => {
+    void synchronizeOfflineChanges();
 });
 window.addEventListener("pwams:sync-conflict", () => {
     void renderConflictStatus();
@@ -49,12 +59,7 @@ async function initializeOfflineFoundation() {
         console.error("Offline conflict status initialization failed:", error);
     }
     if (navigator.onLine) {
-        try {
-            await syncPendingMutations();
-        }
-        catch (error) {
-            console.error("Offline sync initialization failed:", error);
-        }
+        await synchronizeOfflineChanges();
     }
     if ("serviceWorker" in navigator) {
         try {

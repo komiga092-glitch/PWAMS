@@ -9,6 +9,17 @@ async function loadAidRequestPeople() {
     const select = document.getElementById("personID");
     if (!select || select.options.length > 1)
         return;
+    if (!navigator.onLine) {
+        const { readOfflineStore } = await import("./offline-data.js");
+        const people = await readOfflineStore("persons");
+        for (const person of people.filter((item) => !item.is_deleted)) {
+            const option = document.createElement("option");
+            option.value = person.id;
+            option.textContent = `${person.full_name} (${person.nic_passport})`;
+            select.appendChild(option);
+        }
+        return;
+    }
     const response = await fetch("/persons?page_size=100", {
         credentials: "same-origin",
     });

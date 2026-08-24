@@ -1,5 +1,5 @@
 export const OFFLINE_DB_NAME = "pwams-offline";
-export const OFFLINE_DB_VERSION = 3;
+export const OFFLINE_DB_VERSION = 4;
 export const OFFLINE_STORES = {
     persons: "persons",
     students: "students",
@@ -11,6 +11,7 @@ export const OFFLINE_STORES = {
     careProvided: "care_provided",
     revenue: "revenue",
     outbox: "outbox",
+    metadata: "metadata",
 };
 let databasePromise;
 export function openOfflineDatabase() {
@@ -27,7 +28,8 @@ export function openOfflineDatabase() {
                         keyPath: "id",
                         autoIncrement: store === OFFLINE_STORES.outbox,
                     });
-                    if (store !== OFFLINE_STORES.outbox)
+                    if (store !== OFFLINE_STORES.outbox &&
+                        store !== OFFLINE_STORES.metadata)
                         objectStore.createIndex("updatedAt", "updatedAt", {
                             unique: false,
                         });
@@ -40,6 +42,73 @@ export function openOfflineDatabase() {
 }
 export function createOfflineId() {
     return crypto.randomUUID();
+}
+export async function getSyncCursor() {
+    const database = await openOfflineDatabase();
+    return new Promise((resolve, reject) => {
+        const request = database
+            .transaction(OFFLINE_STORES.metadata, "readonly")
+            .objectStore(OFFLINE_STORES.metadata)
+            .get("sync_cursor");
+        request.onsuccess = () => resolve(request.result?.value ?? "");
+        request.onerror = () => reject(request.error ?? new Error("Unable to read sync cursor"));
+    });
+}
+const STORE_BY_ENTITY = {
+    person: OFFLINE_STORES.persons,
+    student: OFFLINE_STORES.students,
+    donor: OFFLINE_STORES.donors,
+    aid_request: OFFLINE_STORES.aidRequests,
+    care_provided: OFFLINE_STORES.careProvided,
+    loan: OFFLINE_STORES.loans,
+    loan_repayment: OFFLINE_STORES.loanRepayments,
+};
+export async function mergePulledRecords(records, cursor) {
+    const database = await openOfflineDatabase();
+    await new Promise((resolve, reject) => {
+        const stores = [
+            ...new Set(records
+                .map((record) => STORE_BY_ENTITY[record.entity_type])
+                .filter((store) => Boolean(store))),
+            OFFLINE_STORES.outbox,
+            OFFLINE_STORES.metadata,
+        ];
+        const transaction = database.transaction(stores, "readwrite");
+        const outboxRequest = transaction
+            .objectStore(OFFLINE_STORES.outbox)
+            .getAll();
+        outboxRequest.onsuccess = () => {
+            const protectedRecords = new Set(outboxRequest.result
+                .filter((entry) => entry.status === "PENDING" || entry.status === "CONFLICT")
+                .map((entry) => `${entry.entityType}:${entry.recordId}`));
+            for (const pulled of records) {
+                const storeName = STORE_BY_ENTITY[pulled.entity_type];
+                if (!storeName ||
+                    protectedRecords.has(`${pulled.entity_type}:${pulled.record_id}`))
+                    continue;
+                const store = transaction.objectStore(storeName);
+                const existingRequest = store.get(pulled.record_id);
+                existingRequest.onsuccess = () => {
+                    const existing = existingRequest.result;
+                    if ((existing?.version ?? 0) >= pulled.version)
+                        return;
+                    store.put({
+                        ...pulled.payload,
+                        id: pulled.record_id,
+                        version: pulled.version,
+                        updatedAt: pulled.updated_at,
+                        is_deleted: pulled.is_deleted,
+                    });
+                };
+            }
+            transaction
+                .objectStore(OFFLINE_STORES.metadata)
+                .put({ id: "sync_cursor", value: cursor });
+        };
+        outboxRequest.onerror = () => reject(outboxRequest.error ?? new Error("Unable to inspect offline mutations"));
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ?? new Error("Unable to merge pulled records"));
+    });
 }
 export async function saveOfflineMutation(store, record, mutation) {
     const database = await openOfflineDatabase();

@@ -188,6 +188,9 @@ func (r *SyncRepository) PullEntities(
 
 	sort.SliceStable(result, func(left, right int) bool {
 		if result[left].UpdatedAt.Equal(result[right].UpdatedAt) {
+			if result[left].EntityType == result[right].EntityType {
+				return result[left].RecordID.String() < result[right].RecordID.String()
+			}
 			return result[left].EntityType < result[right].EntityType
 		}
 		return result[left].UpdatedAt.Before(result[right].UpdatedAt)
@@ -212,6 +215,9 @@ func syncUUID(value any) (uuid.UUID, error) {
 	case string:
 		return uuid.Parse(typed)
 	case []byte:
+		if len(typed) == 16 {
+			return uuid.FromBytes(typed)
+		}
 		return uuid.Parse(string(typed))
 	default:
 		return uuid.Nil, fmt.Errorf("invalid synchronized record id")
