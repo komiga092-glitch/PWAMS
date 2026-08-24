@@ -32,6 +32,15 @@ function getPersonFormData(form) {
     };
 }
 async function createPerson(data) {
+    if (!navigator.onLine) {
+        const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+        const id = await savePendingMutation("person", "CREATE", data);
+        return {
+            success: true,
+            message: offlineSuccessMessage("person", "CREATE"),
+            person: { id, full_name: data.full_name },
+        };
+    }
     const response = await fetch("/persons", {
         method: "POST",
         headers: {
@@ -72,9 +81,11 @@ personForm?.addEventListener("submit", async (event) => {
             submitButton.textContent = "Saving...";
         }
         const data = getPersonFormData(personForm);
-        await createPerson(data);
-        alert("Care seeker created successfully.");
+        const result = await createPerson(data);
+        alert(result.message ?? "Care seeker created successfully.");
         closePersonModal();
+        if (!navigator.onLine)
+            return;
         window.location.reload();
     }
     catch (error) {

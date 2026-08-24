@@ -20,31 +20,27 @@ interface DonorResponse {
   donor?: unknown;
 }
 
-
 /* =========================
    DOM ELEMENTS
    ========================= */
 
-const donorModal =
-  document.getElementById("donorModal") as HTMLDivElement | null;
+const donorModal = document.getElementById(
+  "donorModal",
+) as HTMLDivElement | null;
 
-const donorForm =
-  document.getElementById(
-    "donor-create-form",
-  ) as HTMLFormElement | null;
+const donorForm = document.getElementById(
+  "donor-create-form",
+) as HTMLFormElement | null;
 
-const addDonorButton =
-  document.getElementById("add-donor-btn");
+const addDonorButton = document.getElementById("add-donor-btn");
 
-const closeDonorButton =
-  document.getElementById("donor-modal-close");
+const closeDonorButton = document.getElementById("donor-modal-close");
 
-const cancelDonorButton =
-  document.getElementById("donor-cancel");
+const cancelDonorButton = document.getElementById("donor-cancel");
 
-const donorSaveButton =
-  document.getElementById("donor-save-btn") as HTMLButtonElement | null;
-
+const donorSaveButton = document.getElementById(
+  "donor-save-btn",
+) as HTMLButtonElement | null;
 
 /* =========================
    OPEN MODAL
@@ -61,7 +57,6 @@ function openDonorModal(): void {
   document.body.style.overflow = "hidden";
 }
 
-
 /* =========================
    CLOSE MODAL
    ========================= */
@@ -76,275 +71,166 @@ function closeDonorModal(): void {
   document.body.style.overflow = "";
 }
 
-
 /* =========================
    BUTTON EVENTS
    ========================= */
 
-addDonorButton?.addEventListener(
-  "click",
-  openDonorModal,
-);
+addDonorButton?.addEventListener("click", openDonorModal);
 
-closeDonorButton?.addEventListener(
-  "click",
-  closeDonorModal,
-);
+closeDonorButton?.addEventListener("click", closeDonorModal);
 
-cancelDonorButton?.addEventListener(
-  "click",
-  closeDonorModal,
-);
-
+cancelDonorButton?.addEventListener("click", closeDonorModal);
 
 /* =========================
    CLICK OUTSIDE MODAL
    ========================= */
 
-donorModal?.addEventListener(
-  "click",
-  (event: MouseEvent) => {
-
-    if (event.target === donorModal) {
-      closeDonorModal();
-    }
-
-  },
-);
-
+donorModal?.addEventListener("click", (event: MouseEvent) => {
+  if (event.target === donorModal) {
+    closeDonorModal();
+  }
+});
 
 /* =========================
    ESC KEY
    ========================= */
 
-document.addEventListener(
-  "keydown",
-  (event: KeyboardEvent) => {
-
-    if (event.key === "Escape") {
-
-      if (
-        donorModal &&
-        donorModal.style.display === "flex"
-      ) {
-        closeDonorModal();
-      }
-
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    if (donorModal && donorModal.style.display === "flex") {
+      closeDonorModal();
     }
-
-  },
-);
-
+  }
+});
 
 /* =========================
    FORM DATA
    ========================= */
 
-function getDonorFormData(
-  form: HTMLFormElement,
-): CreateDonorRequest {
-
-  const formData =
-    new FormData(form);
+function getDonorFormData(form: HTMLFormElement): CreateDonorRequest {
+  const formData = new FormData(form);
 
   return {
+    name: String(formData.get("name") ?? ""),
 
-    name: String(
-      formData.get("name") ?? "",
-    ),
+    donor_type: String(formData.get("donor_type") ?? ""),
 
-    donor_type: String(
-      formData.get("donor_type") ?? "",
-    ),
+    nic_passport: String(formData.get("nic_passport") ?? ""),
 
-    nic_passport: String(
-      formData.get("nic_passport") ?? "",
-    ),
+    organization_name: String(formData.get("organization_name") ?? ""),
 
-    organization_name: String(
-      formData.get("organization_name") ?? "",
-    ),
+    registration_number: String(formData.get("registration_number") ?? ""),
 
-    registration_number: String(
-      formData.get("registration_number") ?? "",
-    ),
+    phone: String(formData.get("phone") ?? ""),
 
-    phone: String(
-      formData.get("phone") ?? "",
-    ),
+    email: String(formData.get("email") ?? ""),
 
-    email: String(
-      formData.get("email") ?? "",
-    ),
+    address: String(formData.get("address") ?? ""),
 
-    address: String(
-      formData.get("address") ?? "",
-    ),
+    contact_person_name: String(formData.get("contact_person_name") ?? ""),
 
-    contact_person_name: String(
-      formData.get("contact_person_name") ?? "",
-    ),
-
-    contact_person_phone: String(
-      formData.get("contact_person_phone") ?? "",
-    ),
+    contact_person_phone: String(formData.get("contact_person_phone") ?? ""),
 
     preferred_donation_type: String(
-      formData.get(
-        "preferred_donation_type",
-      ) ?? "",
+      formData.get("preferred_donation_type") ?? "",
     ),
 
-    notes: String(
-      formData.get("notes") ?? "",
-    ),
-
+    notes: String(formData.get("notes") ?? ""),
   };
 }
-
 
 /* =========================
    CREATE DONOR
    ========================= */
 
-async function createDonor(
-  data: CreateDonorRequest,
-): Promise<DonorResponse> {
-
-  const response =
-    await fetch(
-      "/donors",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-
-          Accept:
-            "application/json",
-        },
-
-        body:
-          JSON.stringify(data),
-      },
+async function createDonor(data: CreateDonorRequest): Promise<DonorResponse> {
+  if (!navigator.onLine) {
+    const { savePendingMutation, offlineSuccessMessage } = await import(
+      String("/static/js/offline/mutations.js")
     );
+    const id = await savePendingMutation(
+      "donor",
+      "CREATE",
+      data as unknown as Record<string, unknown>,
+    );
+    return {
+      success: true,
+      message: offlineSuccessMessage("donor", "CREATE"),
+      donor: id,
+    };
+  }
 
+  const response = await fetch("/donors", {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+
+      Accept: "application/json",
+    },
+
+    body: JSON.stringify(data),
+  });
 
   let result: DonorResponse;
 
   try {
-
-    result =
-      await response.json();
-
+    result = await response.json();
   } catch {
-
-    throw new Error(
-      "Invalid server response.",
-    );
-
+    throw new Error("Invalid server response.");
   }
-
 
   if (!response.ok) {
-
     throw new Error(
-      result.message ??
-      result.error ??
-      "Failed to create donor.",
+      result.message ?? result.error ?? "Failed to create donor.",
     );
-
   }
-
 
   return result;
 }
-
 
 /* =========================
    FORM SUBMIT
    ========================= */
 
-donorForm?.addEventListener(
-  "submit",
-  async (event: SubmitEvent) => {
+donorForm?.addEventListener("submit", async (event: SubmitEvent) => {
+  event.preventDefault();
 
-    event.preventDefault();
+  const data = getDonorFormData(donorForm);
 
+  if (!data.name.trim()) {
+    alert("Donor name is required.");
 
-    const data =
-      getDonorFormData(donorForm);
+    return;
+  }
 
+  try {
+    if (donorSaveButton) {
+      donorSaveButton.disabled = true;
 
-    if (!data.name.trim()) {
-
-      alert(
-        "Donor name is required.",
-      );
-
-      return;
-
+      donorSaveButton.textContent = "Saving...";
     }
 
+    const result = await createDonor(data);
 
-    try {
+    alert(result.message ?? "Donor registered successfully.");
 
-      if (donorSaveButton) {
+    donorForm.reset();
 
-        donorSaveButton.disabled =
-          true;
+    closeDonorModal();
 
-        donorSaveButton.textContent =
-          "Saving...";
+    if (!navigator.onLine) return;
 
-      }
+    window.location.reload();
+  } catch (error) {
+    console.error("Donor creation failed:", error);
 
+    alert(error instanceof Error ? error.message : "Failed to create donor.");
+  } finally {
+    if (donorSaveButton) {
+      donorSaveButton.disabled = false;
 
-      await createDonor(data);
-
-
-      alert(
-        "Donor registered successfully.",
-      );
-
-
-      donorForm.reset();
-
-      closeDonorModal();
-
-
-      window.location.reload();
-
-
-    } catch (error) {
-
-      console.error(
-        "Donor creation failed:",
-        error,
-      );
-
-
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Failed to create donor.",
-      );
-
-
-    } finally {
-
-      if (donorSaveButton) {
-
-        donorSaveButton.disabled =
-          false;
-
-        donorSaveButton.textContent =
-          "Save Donor";
-
-      }
-
+      donorSaveButton.textContent = "Save Donor";
     }
-
-  },
-);
+  }
+});

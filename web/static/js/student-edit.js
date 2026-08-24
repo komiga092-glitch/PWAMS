@@ -1,6 +1,12 @@
 "use strict";
 const editForm = document.getElementById("student-edit-form");
 async function updateStudent(studentID, data) {
+    if (!navigator.onLine) {
+        const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+        await savePendingMutation("student", "UPDATE", data, studentID);
+        alert(offlineSuccessMessage("student", "UPDATE"));
+        return;
+    }
     const response = await fetch(`/students/${studentID}`, {
         method: "PUT",
         headers: {
@@ -64,6 +70,8 @@ editForm?.addEventListener("submit", async (event) => {
         }
         await updateStudent(studentID, data);
         alert("Student updated successfully.");
+        if (!navigator.onLine)
+            return;
         window.location.href = `/students/${studentID}/view`;
     }
     catch (error) {

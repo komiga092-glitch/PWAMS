@@ -1,6 +1,14 @@
 "use strict";
 const personEditForm = document.getElementById("person-edit-form");
 async function updatePerson(id, data) {
+    if (!navigator.onLine) {
+        const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+        await savePendingMutation("person", "UPDATE", data, id);
+        return {
+            success: true,
+            message: offlineSuccessMessage("person", "UPDATE"),
+        };
+    }
     const response = await fetch(`/persons/${id}`, {
         method: "PUT",
         headers: {
@@ -45,6 +53,8 @@ personEditForm?.addEventListener("submit", async (event) => {
         }
         await updatePerson(personID, data);
         alert("Care seeker updated successfully.");
+        if (!navigator.onLine)
+            return;
         window.location.href = `/persons/${personID}/view`;
     }
     catch (error) {

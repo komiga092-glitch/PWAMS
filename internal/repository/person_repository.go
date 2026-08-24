@@ -9,6 +9,16 @@ import (
 	"gorm.io/gorm"
 )
 
+// Sync support requirements:
+// 1. Normal Person queries must exclude is_deleted = true records.
+// 2. Delete must use soft delete semantics by setting is_deleted = true.
+// 3. Sync updates must preserve optimistic-lock versioning.
+// 4. Every successful update must increment version.
+// 5. updated_at must be updated on every mutation.
+// 6. updated_by must be stored when the modifying user is available.
+// 7. Do not physically delete Person records.
+// 8. Preserve all existing repository behavior and method signatures unless a change is required for sync support.
+
 var (
 	ErrPersonNotFound = errors.New("person not found")
 )

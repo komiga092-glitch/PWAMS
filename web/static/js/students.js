@@ -40,8 +40,7 @@ function resetStudentForm() {
     }
     studentForm.reset();
     if (personSelect) {
-        personSelect.innerHTML =
-            '<option value="">Select Person</option>';
+        personSelect.innerHTML = '<option value="">Select Person</option>';
     }
 }
 /* =========================================================
@@ -60,7 +59,7 @@ function getStudentFormData(form) {
         guardian_name: String(formData.get("guardian_name") ?? "").trim(),
         guardian_phone: String(formData.get("guardian_phone") ?? "").trim(),
         academic_year: Number(formData.get("academic_year") ?? 0),
-        remarks: String(formData.get("remarks") ?? "").trim()
+        remarks: String(formData.get("remarks") ?? "").trim(),
     };
 }
 /* =========================================================
@@ -82,8 +81,7 @@ function validateStudentData(data) {
     if (!data.academic_year) {
         return "Academic year is required.";
     }
-    if (data.academic_year < 2000 ||
-        data.academic_year > 2100) {
+    if (data.academic_year < 2000 || data.academic_year > 2100) {
         return "Please enter a valid academic year.";
     }
     return null;
@@ -92,18 +90,23 @@ function validateStudentData(data) {
    CREATE STUDENT
    ========================================================= */
 async function createStudent(data) {
+    if (!navigator.onLine) {
+        const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+        await savePendingMutation("student", "CREATE", data);
+        alert(offlineSuccessMessage("student", "CREATE"));
+        return;
+    }
     const response = await fetch("/students", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Accept": "application/json"
+            Accept: "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
     });
     let result = {};
     try {
-        result =
-            await response.json();
+        result = (await response.json());
     }
     catch {
         /*
@@ -112,14 +115,11 @@ async function createStudent(data) {
          */
     }
     if (!response.ok) {
-        const message = result.message ||
-            result.error ||
-            "Failed to create student.";
+        const message = result.message || result.error || "Failed to create student.";
         throw new Error(message);
     }
     if (result.success === false) {
-        throw new Error(result.message ||
-            "Failed to create student.");
+        throw new Error(result.message || "Failed to create student.");
     }
 }
 /* =========================================================
@@ -133,39 +133,34 @@ async function loadPersons() {
     /*
      * Loading state
      */
-    personSelect.innerHTML =
-        '<option value="">Loading persons...</option>';
+    personSelect.innerHTML = '<option value="">Loading persons...</option>';
     personSelect.disabled = true;
     try {
         const response = await fetch("/persons", {
             method: "GET",
             headers: {
-                "Accept": "application/json"
-            }
+                Accept: "application/json",
+            },
         });
         if (!response.ok) {
             throw new Error(`Failed to load persons (${response.status})`);
         }
-        const result = await response.json();
+        const result = (await response.json());
         /*
          * Clear existing options
          */
-        personSelect.innerHTML =
-            '<option value="">Select Person</option>';
+        personSelect.innerHTML = '<option value="">Select Person</option>';
         /*
          * Check response
          */
-        if (!result.success ||
-            !Array.isArray(result.data)) {
-            throw new Error(result.message ||
-                "Invalid persons response.");
+        if (!result.success || !Array.isArray(result.data)) {
+            throw new Error(result.message || "Invalid persons response.");
         }
         /*
          * No persons available
          */
         if (result.data.length === 0) {
-            personSelect.innerHTML =
-                '<option value="">No persons available</option>';
+            personSelect.innerHTML = '<option value="">No persons available</option>';
             return;
         }
         /*
@@ -174,25 +169,21 @@ async function loadPersons() {
         for (const person of result.data) {
             const option = document.createElement("option");
             option.value = person.id;
-            option.textContent =
-                person.full_name;
+            option.textContent = person.full_name;
             /*
              * Store phone if needed later
              */
-            option.dataset.phone =
-                person.phone;
+            option.dataset.phone = person.phone;
             /*
              * Store status if needed later
              */
-            option.dataset.status =
-                person.status;
+            option.dataset.status = person.status;
             personSelect.appendChild(option);
         }
     }
     catch (error) {
         console.error("Unable to load persons:", error);
-        personSelect.innerHTML =
-            '<option value="">Failed to load persons</option>';
+        personSelect.innerHTML = '<option value="">Failed to load persons</option>';
     }
     finally {
         personSelect.disabled = false;
@@ -228,8 +219,7 @@ studentModal?.addEventListener("click", (event) => {
    ESC KEY
    ========================================================= */
 document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" &&
-        studentModal?.style.display === "flex") {
+    if (event.key === "Escape" && studentModal?.style.display === "flex") {
         closeStudentModal();
     }
 });
@@ -257,8 +247,7 @@ studentForm?.addEventListener("submit", async (event) => {
          */
         if (submitButton) {
             submitButton.disabled = true;
-            submitButton.textContent =
-                "Saving...";
+            submitButton.textContent = "Saving...";
         }
         /*
          * Create student
@@ -272,6 +261,8 @@ studentForm?.addEventListener("submit", async (event) => {
          * Close modal
          */
         closeStudentModal();
+        if (!navigator.onLine)
+            return;
         /*
          * Reload student list
          *
@@ -283,9 +274,7 @@ studentForm?.addEventListener("submit", async (event) => {
     }
     catch (error) {
         console.error("Student creation failed:", error);
-        const message = error instanceof Error
-            ? error.message
-            : "Failed to create student.";
+        const message = error instanceof Error ? error.message : "Failed to create student.";
         alert(message);
     }
     finally {
@@ -294,8 +283,7 @@ studentForm?.addEventListener("submit", async (event) => {
          */
         if (submitButton) {
             submitButton.disabled = false;
-            submitButton.textContent =
-                "Save Student";
+            submitButton.textContent = "Save Student";
         }
     }
 });

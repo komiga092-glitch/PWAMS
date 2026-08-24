@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/database"
 	"github.com/komiga092-glitch/pwams/internal/handlers"
 	"github.com/komiga092-glitch/pwams/internal/middleware"
+	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/routes"
 	"github.com/komiga092-glitch/pwams/internal/services"
@@ -82,6 +84,66 @@ func main() {
 	loanRepaymentRepo := repository.NewLoanRepaymentRepository(db)
 	revenueRepo := repository.NewRevenueRepository(db)
 
+	syncRepository := repository.NewSyncRepository(db)
+
+	personSyncService := services.NewPersonSyncService(
+		personRepository,
+	)
+
+	entitySyncServices := map[string]*services.EntitySyncService{
+		"student": services.NewEntitySyncService(services.SyncEntityAdapter{
+			Entity: "student", New: func() any { return &models.Student{} },
+			Find:     func(id uuid.UUID) (any, error) { return studentRepository.FindByID(id.String()) },
+			Create:   func(value any) error { return studentRepository.Create(value.(*models.Student)) },
+			Update:   func(value any) error { return studentRepository.Update(value.(*models.Student)) },
+			Validate: func(any) error { return nil },
+		}),
+		"donor": services.NewEntitySyncService(services.SyncEntityAdapter{
+			Entity: "donor", New: func() any { return &models.Donor{} },
+			Find:     func(id uuid.UUID) (any, error) { return donorRepository.FindByID(id.String()) },
+			Create:   func(value any) error { return donorRepository.Create(value.(*models.Donor)) },
+			Update:   func(value any) error { return donorRepository.Update(value.(*models.Donor)) },
+			Validate: func(any) error { return nil },
+		}),
+		"aid_request": services.NewEntitySyncService(services.SyncEntityAdapter{
+			Entity: "aid_request", New: func() any { return &models.AidRequest{} },
+			Find:     func(id uuid.UUID) (any, error) { return aidRequestRepository.FindByID(id.String()) },
+			Create:   func(value any) error { return aidRequestRepository.Create(value.(*models.AidRequest)) },
+			Update:   func(value any) error { return aidRequestRepository.Update(value.(*models.AidRequest)) },
+			Validate: func(any) error { return nil },
+		}),
+		"care_provided": services.NewEntitySyncService(services.SyncEntityAdapter{
+			Entity: "care_provided", New: func() any { return &models.CareProvided{} },
+			Find:     func(id uuid.UUID) (any, error) { return careProvidedRepo.FindByID(id) },
+			Create:   func(value any) error { return careProvidedRepo.Create(value.(*models.CareProvided)) },
+			Update:   func(value any) error { return careProvidedRepo.Update(value.(*models.CareProvided)) },
+			Validate: func(any) error { return nil },
+		}),
+		"loan": services.NewEntitySyncService(services.SyncEntityAdapter{
+			Entity: "loan", New: func() any { return &models.Loan{} },
+			Find:     func(id uuid.UUID) (any, error) { return loanRepo.FindByID(id.String()) },
+			Create:   func(value any) error { return loanRepo.Create(value.(*models.Loan)) },
+			Update:   func(value any) error { return loanRepo.Update(value.(*models.Loan)) },
+			Validate: func(any) error { return nil },
+		}),
+		"loan_repayment": services.NewEntitySyncService(services.SyncEntityAdapter{
+			Entity: "loan_repayment", New: func() any { return &models.LoanRepayment{} },
+			Find:     func(id uuid.UUID) (any, error) { return loanRepaymentRepo.FindByID(id.String()) },
+			Create:   func(value any) error { return loanRepaymentRepo.Create(value.(*models.LoanRepayment)) },
+			Update:   func(value any) error { return loanRepaymentRepo.Update(value.(*models.LoanRepayment)) },
+			Validate: func(any) error { return nil },
+		}),
+	}
+
+	syncService := services.NewSyncService(
+		syncRepository,
+		personSyncService,
+		entitySyncServices,
+	)
+
+	syncHandler := handlers.NewSyncHandler(
+		syncService,
+	)
 	// =========================
 	// Services
 	// =========================
@@ -439,6 +501,12 @@ func main() {
 	routes.RegisterLoanRepaymentRoutes(
 		router,
 		loanRepaymentHandler,
+		authMiddleware,
+	)
+
+	routes.RegisterSyncRoutes(
+		router,
+		syncHandler,
 		authMiddleware,
 	)
 

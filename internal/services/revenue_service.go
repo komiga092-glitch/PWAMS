@@ -24,10 +24,14 @@ func validRevenueType(value string) bool {
 }
 
 func validRevenueCategory(value string) bool {
-	switch value {
-	case models.RevenueCategoryDonations, models.RevenueCategoryLoanRepayments,
-		models.RevenueCategoryGrants, models.RevenueCategoryAdministrativeExpense,
-		models.RevenueCategoryWelfareExpense:
+	normalized := strings.ToLower(strings.TrimSpace(value))
+
+	switch normalized {
+	case strings.ToLower(models.RevenueCategoryDonations),
+		strings.ToLower(models.RevenueCategoryLoanRepayments),
+		strings.ToLower(models.RevenueCategoryGrants),
+		strings.ToLower(models.RevenueCategoryAdministrativeExpense),
+		strings.ToLower(models.RevenueCategoryWelfareExpense):
 		return true
 	default:
 		return false

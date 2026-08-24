@@ -44,7 +44,11 @@ type Loan struct {
 
 	CreatedAt time.Time `json:"created_at"`
 
-	UpdatedAt time.Time `json:"updated_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	Version   int        `gorm:"not null;default:1" json:"version"`
+	UpdatedBy *uuid.UUID `gorm:"type:uuid" json:"updated_by"`
+	IsDeleted bool       `gorm:"not null;default:false;index" json:"is_deleted"`
+	TenantID  *uuid.UUID `gorm:"type:uuid;index" json:"tenant_id"`
 
 	Person Person `gorm:"foreignKey:PersonID" json:"person,omitempty"`
 }

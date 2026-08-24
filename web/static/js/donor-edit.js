@@ -22,8 +22,7 @@ donorEditForm?.addEventListener("submit", async (event) => {
         alert("Donor name is required.");
         return;
     }
-    if (donorType !== "individual" &&
-        donorType !== "organization") {
+    if (donorType !== "individual" && donorType !== "organization") {
         alert("Please select a valid donor type.");
         return;
     }
@@ -54,6 +53,12 @@ donorEditForm?.addEventListener("submit", async (event) => {
             updateButton.disabled = true;
             updateButton.textContent = "Updating...";
         }
+        if (!navigator.onLine) {
+            const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+            await savePendingMutation("donor", "UPDATE", data, donorID);
+            alert(offlineSuccessMessage("donor", "UPDATE"));
+            return;
+        }
         const response = await fetch(`/donors/${donorID}`, {
             method: "PUT",
             headers: {
@@ -73,28 +78,22 @@ donorEditForm?.addEventListener("submit", async (event) => {
             throw new Error("Invalid server response.");
         }
         if (!response.ok) {
-            throw new Error(result.message ??
-                result.error ??
-                "Failed to update donor.");
+            throw new Error(result.message ?? result.error ?? "Failed to update donor.");
         }
         // =========================
         // SUCCESS
         // =========================
         alert("Donor updated successfully.");
-        window.location.href =
-            `/donors/${donorID}/view`;
+        window.location.href = `/donors/${donorID}/view`;
     }
     catch (error) {
         console.error("Donor update failed:", error);
-        alert(error instanceof Error
-            ? error.message
-            : "Failed to update donor.");
+        alert(error instanceof Error ? error.message : "Failed to update donor.");
     }
     finally {
         if (updateButton) {
             updateButton.disabled = false;
-            updateButton.textContent =
-                "Update Donor";
+            updateButton.textContent = "Update Donor";
         }
     }
 });

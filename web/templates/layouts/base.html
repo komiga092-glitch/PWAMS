@@ -4,6 +4,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1f2937" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <link rel="manifest" href="/static/manifest.webmanifest" />
     <title>{{ block "title" . }}PWAMS{{ end }}</title>
     <link rel="stylesheet" href="/static/css/app.css" />
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
@@ -40,6 +43,13 @@
           </div>
         </header>
         <main>
+          <div
+            class="sync-conflicts"
+            data-sync-conflicts
+            hidden
+            role="status"
+            aria-live="polite"
+          ></div>
           {{ if eq .page_template "home_content" }} {{ template "home_content" .
           }} {{ else if eq .page_template "dashboard_content" }} {{ template
           "dashboard_content" . }} {{ else if eq .page_template "users_content"
@@ -78,6 +88,16 @@
     </div>
 
     <script src="/static/js/app.js"></script>
+    <div
+      class="offline-status"
+      data-offline-status
+      data-state="online"
+      role="status"
+      aria-live="polite"
+    >
+      Online
+    </div>
+    <script type="module" src="/static/js/offline/register.js"></script>
   </body>
 </html>
 {{ end }}

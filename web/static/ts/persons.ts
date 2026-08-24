@@ -76,6 +76,22 @@ function getPersonFormData(form: HTMLFormElement): CreatePersonRequest {
 async function createPerson(
   data: CreatePersonRequest,
 ): Promise<PersonResponse> {
+  if (!navigator.onLine) {
+    const { savePendingMutation, offlineSuccessMessage } = await import(
+      String("/static/js/offline/mutations.js")
+    );
+    const id = await savePendingMutation(
+      "person",
+      "CREATE",
+      data as unknown as Record<string, unknown>,
+    );
+    return {
+      success: true,
+      message: offlineSuccessMessage("person", "CREATE"),
+      person: { id, full_name: data.full_name },
+    };
+  }
+
   const response = await fetch("/persons", {
     method: "POST",
 
@@ -134,11 +150,13 @@ personForm?.addEventListener("submit", async (event: SubmitEvent) => {
 
     const data = getPersonFormData(personForm);
 
-    await createPerson(data);
+    const result = await createPerson(data);
 
-    alert("Care seeker created successfully.");
+    alert(result.message ?? "Care seeker created successfully.");
 
     closePersonModal();
+
+    if (!navigator.onLine) return;
 
     window.location.reload();
   } catch (error) {

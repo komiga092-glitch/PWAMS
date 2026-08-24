@@ -41,6 +41,10 @@ type Student struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Version   int            `gorm:"not null;default:1" json:"version"`
+	UpdatedBy *uuid.UUID     `gorm:"type:uuid" json:"updated_by"`
+	IsDeleted bool           `gorm:"not null;default:false;index" json:"is_deleted"`
+	TenantID  *uuid.UUID     `gorm:"type:uuid;index" json:"tenant_id"`
 }
 
 func (student *Student) BeforeCreate(_ *gorm.DB) error {

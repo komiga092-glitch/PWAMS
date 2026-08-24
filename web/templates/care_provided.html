@@ -435,6 +435,22 @@ Description: ${record.description}
         description: formData.get("description"),
       };
 
+      if (!navigator.onLine) {
+        const { savePendingMutation, offlineSuccessMessage } = await import("/static/js/offline/mutations.js");
+        const operation: "CREATE" | "UPDATE" = editingId ? "UPDATE" : "CREATE";
+        await savePendingMutation("care_provided", operation, requestBody, editingId || undefined);
+        formMessage.className = "form-message success";
+        formMessage.textContent = offlineSuccessMessage("care_provided", operation);
+        formMessage.style.display = "block";
+        setTimeout(() => {
+          closeCareModal();
+          document.getElementById("careForm").reset();
+          editingId = null;
+          loadCareRecords(1);
+        }, 1500);
+        return;
+      }
+
       let response;
       if (editingId) {
         // Update existing record

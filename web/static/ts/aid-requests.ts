@@ -38,6 +38,15 @@ async function submitAidRequest(event: SubmitEvent): Promise<void> {
     requested_amount: Number(data.requested_amount || 0),
   };
 
+  if (!navigator.onLine) {
+    const { savePendingMutation, offlineSuccessMessage } = await import(
+      String("/static/js/offline/mutations.js")
+    );
+    await savePendingMutation("aid_request", "CREATE", requestBody);
+    alert(offlineSuccessMessage("aid_request", "CREATE"));
+    return;
+  }
+
   try {
     const response = await fetch(form.action, {
       method: "POST",

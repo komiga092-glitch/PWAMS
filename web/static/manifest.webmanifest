@@ -1,0 +1,10 @@
+{
+  "name": "PWAMS",
+  "short_name": "PWAMS",
+  "description": "People Welfare Association Management System",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f2937",
+  "icons": []
+}

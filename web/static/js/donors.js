@@ -48,8 +48,7 @@ donorModal?.addEventListener("click", (event) => {
    ========================= */
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-        if (donorModal &&
-            donorModal.style.display === "flex") {
+        if (donorModal && donorModal.style.display === "flex") {
             closeDonorModal();
         }
     }
@@ -78,6 +77,15 @@ function getDonorFormData(form) {
    CREATE DONOR
    ========================= */
 async function createDonor(data) {
+    if (!navigator.onLine) {
+        const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+        const id = await savePendingMutation("donor", "CREATE", data);
+        return {
+            success: true,
+            message: offlineSuccessMessage("donor", "CREATE"),
+            donor: id,
+        };
+    }
     const response = await fetch("/donors", {
         method: "POST",
         headers: {
@@ -88,16 +96,13 @@ async function createDonor(data) {
     });
     let result;
     try {
-        result =
-            await response.json();
+        result = await response.json();
     }
     catch {
         throw new Error("Invalid server response.");
     }
     if (!response.ok) {
-        throw new Error(result.message ??
-            result.error ??
-            "Failed to create donor.");
+        throw new Error(result.message ?? result.error ?? "Failed to create donor.");
     }
     return result;
 }
@@ -113,29 +118,25 @@ donorForm?.addEventListener("submit", async (event) => {
     }
     try {
         if (donorSaveButton) {
-            donorSaveButton.disabled =
-                true;
-            donorSaveButton.textContent =
-                "Saving...";
+            donorSaveButton.disabled = true;
+            donorSaveButton.textContent = "Saving...";
         }
-        await createDonor(data);
-        alert("Donor registered successfully.");
+        const result = await createDonor(data);
+        alert(result.message ?? "Donor registered successfully.");
         donorForm.reset();
         closeDonorModal();
+        if (!navigator.onLine)
+            return;
         window.location.reload();
     }
     catch (error) {
         console.error("Donor creation failed:", error);
-        alert(error instanceof Error
-            ? error.message
-            : "Failed to create donor.");
+        alert(error instanceof Error ? error.message : "Failed to create donor.");
     }
     finally {
         if (donorSaveButton) {
-            donorSaveButton.disabled =
-                false;
-            donorSaveButton.textContent =
-                "Save Donor";
+            donorSaveButton.disabled = false;
+            donorSaveButton.textContent = "Save Donor";
         }
     }
 });
