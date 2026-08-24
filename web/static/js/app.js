@@ -34,12 +34,19 @@ function updateRoleVisibility() {
     });
 }
 async function applyRoleVisibility() {
-    const response = await fetch("/auth/me", { credentials: "same-origin" });
-    if (!response.ok)
+    try {
+        const response = await fetch("/auth/me", {
+            credentials: "same-origin",
+        });
+        if (!response.ok)
+            return;
+        const result = (await response.json());
+        currentRole = result.role ?? "";
+        updateRoleVisibility();
+    }
+    catch {
         return;
-    const result = (await response.json());
-    currentRole = result.role ?? "";
-    updateRoleVisibility();
+    }
 }
 void applyRoleVisibility();
 new MutationObserver(updateRoleVisibility).observe(document.body, {

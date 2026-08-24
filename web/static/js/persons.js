@@ -43,6 +43,7 @@ async function createPerson(data) {
     }
     const response = await fetch("/persons", {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -50,7 +51,7 @@ async function createPerson(data) {
         body: JSON.stringify(data),
     });
     const result = await response.json().catch(() => null);
-    if (!response.ok) {
+    if (!response.ok || result?.success === false) {
         throw new Error(result?.message ?? "Failed to create care seeker");
     }
     return result;

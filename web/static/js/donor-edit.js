@@ -61,6 +61,7 @@ donorEditForm?.addEventListener("submit", async (event) => {
         }
         const response = await fetch(`/donors/${donorID}`, {
             method: "PUT",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -77,7 +78,7 @@ donorEditForm?.addEventListener("submit", async (event) => {
         catch {
             throw new Error("Invalid server response.");
         }
-        if (!response.ok) {
+        if (!response.ok || result.success === false) {
             throw new Error(result.message ?? result.error ?? "Failed to update donor.");
         }
         // =========================

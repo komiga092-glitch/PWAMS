@@ -24,7 +24,7 @@ async function submitDonation(event) {
         }
         const response = await fetch(form.action, {
             method: "POST",
-            credentials: "same-origin",
+            credentials: "include",
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",

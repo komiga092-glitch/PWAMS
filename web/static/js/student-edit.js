@@ -9,6 +9,7 @@ async function updateStudent(studentID, data) {
     }
     const response = await fetch(`/students/${studentID}`, {
         method: "PUT",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",

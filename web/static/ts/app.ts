@@ -45,12 +45,18 @@ function updateRoleVisibility(): void {
 }
 
 async function applyRoleVisibility(): Promise<void> {
-  const response = await fetch("/auth/me", { credentials: "same-origin" });
-  if (!response.ok) return;
+  try {
+    const response = await fetch("/auth/me", {
+      credentials: "same-origin",
+    });
+    if (!response.ok) return;
 
-  const result = (await response.json()) as { role?: string };
-  currentRole = result.role ?? "";
-  updateRoleVisibility();
+    const result = (await response.json()) as { role?: string };
+    currentRole = result.role ?? "";
+    updateRoleVisibility();
+  } catch {
+    return;
+  }
 }
 
 void applyRoleVisibility();

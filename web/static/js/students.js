@@ -98,6 +98,7 @@ async function createStudent(data) {
     }
     const response = await fetch("/students", {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",

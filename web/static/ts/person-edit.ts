@@ -42,6 +42,7 @@ async function updatePerson(
 
   const response = await fetch(`/persons/${id}`, {
     method: "PUT",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -54,7 +55,10 @@ async function updatePerson(
     | { message?: string }
     | null;
 
-  if (!response.ok) {
+  if (
+    !response.ok ||
+    (result && "success" in result && result.success === false)
+  ) {
     throw new Error(
       result && "message" in result && result.message
         ? result.message

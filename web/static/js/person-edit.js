@@ -11,6 +11,7 @@ async function updatePerson(id, data) {
     }
     const response = await fetch(`/persons/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
@@ -18,7 +19,8 @@ async function updatePerson(id, data) {
         body: JSON.stringify(data),
     });
     const result = (await response.json().catch(() => null));
-    if (!response.ok) {
+    if (!response.ok ||
+        (result && "success" in result && result.success === false)) {
         throw new Error(result && "message" in result && result.message
             ? result.message
             : "Failed to update care seeker");

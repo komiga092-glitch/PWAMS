@@ -162,6 +162,7 @@ async function createDonor(data: CreateDonorRequest): Promise<DonorResponse> {
 
   const response = await fetch("/donors", {
     method: "POST",
+    credentials: "include",
 
     headers: {
       "Content-Type": "application/json",
@@ -180,7 +181,7 @@ async function createDonor(data: CreateDonorRequest): Promise<DonorResponse> {
     throw new Error("Invalid server response.");
   }
 
-  if (!response.ok) {
+  if (!response.ok || result.success === false) {
     throw new Error(
       result.message ?? result.error ?? "Failed to create donor.",
     );

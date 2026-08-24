@@ -192,6 +192,7 @@ async function createStudent(data: CreateStudentRequest): Promise<void> {
 
   const response = await fetch("/students", {
     method: "POST",
+    credentials: "include",
 
     headers: {
       "Content-Type": "application/json",
