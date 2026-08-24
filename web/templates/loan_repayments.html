@@ -64,8 +64,10 @@
               <form
                 method="POST"
                 action="/loan-repayments/{{ .ID }}/pay"
+                onsubmit="submitRepaymentAction(event, this, 'pay')"
                 style="display: inline"
               >
+                <input type="hidden" name="paid_amount" value="{{ .Amount }}" />
                 <button class="btn btn-small btn-primary" type="submit">
                   Mark Paid
                 </button>
@@ -74,6 +76,7 @@
               <form
                 method="POST"
                 action="/loan-repayments/{{ .ID }}/cancel"
+                onsubmit="submitRepaymentAction(event, this, 'cancel')"
                 style="display: inline"
               >
                 <button class="btn btn-small" type="submit">Cancel</button>
@@ -182,5 +185,32 @@
 </div>
 
 <script src="/static/js/loan-repayments.js"></script>
+<script>
+  async function submitRepaymentAction(event, form, action) {
+    event.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    if (action === "pay") data.paid_amount = Number(data.paid_amount);
+    try {
+      const response = await fetch(form.action, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: action === "pay" ? JSON.stringify(data) : "{}",
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.message || "Unable to update repayment.");
+      alert(result.message || "Repayment updated successfully.");
+      window.location.reload();
+    } catch (error) {
+      alert(
+        error instanceof Error ? error.message : "Unable to update repayment.",
+      );
+    }
+  }
+</script>
 
 {{ end }}

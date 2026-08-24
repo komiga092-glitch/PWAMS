@@ -3,8 +3,21 @@ import { subscribeConnectivity } from "./connectivity.js";
 import { syncPendingMutations } from "./sync.js";
 import { renderConflictStatus } from "./conflicts.js";
 import { pullSync } from "./pull.js";
+import { syncPendingMediaUploads } from "./media.js";
+import { revalidateOnlineSession } from "./session.js";
 
 async function synchronizeOfflineChanges(): Promise<void> {
+  if (!(await revalidateOnlineSession())) {
+    const indicator = document.querySelector<HTMLElement>(
+      "[data-offline-status]",
+    );
+    if (indicator) {
+      indicator.textContent = "Authentication required";
+      indicator.dataset.state = "offline";
+    }
+    return;
+  }
+
   try {
     await syncPendingMutations();
   } catch (error) {
@@ -14,6 +27,11 @@ async function synchronizeOfflineChanges(): Promise<void> {
     await pullSync();
   } catch (error) {
     console.error("Offline pull sync failed:", error);
+  }
+  try {
+    await syncPendingMediaUploads();
+  } catch (error) {
+    console.error("Offline media sync failed:", error);
   }
   try {
     await renderConflictStatus();

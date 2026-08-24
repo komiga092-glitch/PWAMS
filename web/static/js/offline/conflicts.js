@@ -7,6 +7,9 @@ const ENTITY_LABELS = {
     care_provided: "Care record",
     loan: "Loan",
     loan_repayment: "Loan repayment",
+    donation: "Donation",
+    revenue: "Revenue record",
+    media: "Media file",
 };
 export function getConflictMessage(conflict) {
     const entity = ENTITY_LABELS[conflict.entityType] ?? conflict.entityType;

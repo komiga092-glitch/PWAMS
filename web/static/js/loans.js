@@ -46,13 +46,13 @@ async function submitLoan(event) {
         interest_rate: Number(data.interest_rate || 0),
         duration_months: Number(data.duration_months || 0),
     };
-    if (!navigator.onLine) {
-        const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
-        await savePendingMutation("loan", "CREATE", requestBody);
-        alert(offlineSuccessMessage("loan", "CREATE"));
-        return;
-    }
     try {
+        if (!navigator.onLine) {
+            const { savePendingMutation, offlineSuccessMessage } = await import(String("/static/js/offline/mutations.js"));
+            await savePendingMutation("loan", "CREATE", requestBody);
+            alert(offlineSuccessMessage("loan", "CREATE"));
+            return;
+        }
         const response = await fetch(form.action, {
             method: "POST",
             credentials: "same-origin",

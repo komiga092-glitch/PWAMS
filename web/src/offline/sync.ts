@@ -45,12 +45,12 @@ async function runSyncPendingMutations(): Promise<void> {
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          "Idempotency-Key": String(mutation.id),
+          "Idempotency-Key": mutation.operationId,
         },
         body: JSON.stringify({
           operations: [
             {
-              id: mutation.id,
+              id: mutation.operationId,
               entity_type: mutation.entityType,
               operation: mutation.operation,
               record_id: mutation.recordId,

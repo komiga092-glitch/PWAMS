@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/handlers"
@@ -23,12 +21,7 @@ func RegisterReportRoutes(
 
 	protected.GET(
 		"/reports/dashboard/page",
-		func(c *gin.Context) {
-			c.HTML(http.StatusOK, "base", gin.H{
-				"page_template": "reports_content",
-				"title":         "Reports",
-			})
-		},
+		handler.Page,
 	)
 
 	protected.GET(

@@ -1,5 +1,6 @@
 import { listOfflineRecords, OFFLINE_STORES, } from "./db.js";
 import { isOnline } from "./connectivity.js";
+import { isOfflineSessionValid, OFFLINE_SESSION_EXPIRED_MESSAGE, } from "./session.js";
 window.pwamsOfflineReadStore = listOfflineRecords;
 const PAGE_CONFIGS = {
     persons: {
@@ -53,6 +54,17 @@ const PAGE_CONFIGS = {
             String(record.donation_date ?? "-"),
             String(record.description ?? "-"),
             String(record.status ?? "-"),
+        ],
+    },
+    revenue: {
+        store: OFFLINE_STORES.revenue,
+        columns: ["Type", "Category", "Amount", "Date", "Description"],
+        values: (record) => [
+            String(record.record_type ?? "-"),
+            String(record.category ?? "-"),
+            `${String(record.currency ?? "LKR")} ${String(record.amount ?? "-")}`,
+            String(record.record_date ?? "-"),
+            String(record.description ?? "-"),
         ],
     },
     aid_requests: {
@@ -130,6 +142,8 @@ function pageEntity() {
         return "donors";
     if (path.startsWith("/donations"))
         return "donations";
+    if (path.startsWith("/revenue"))
+        return "revenue";
     if (path.startsWith("/aid-requests"))
         return "aid_requests";
     if (path.startsWith("/care-provided"))
@@ -207,6 +221,23 @@ function renderOfflineDetail(record) {
 async function renderOfflinePage() {
     if (isOnline())
         return;
+    if (!(await isOfflineSessionValid())) {
+        const indicator = document.querySelector("[data-offline-status]");
+        if (indicator) {
+            indicator.textContent = "Offline session expired";
+            indicator.dataset.state = "offline";
+            indicator.setAttribute("aria-label", OFFLINE_SESSION_EXPIRED_MESSAGE);
+        }
+        document
+            .querySelectorAll("main > *:not([data-sync-conflicts])")
+            .forEach((element) => {
+            element.hidden = true;
+        });
+        document
+            .querySelector("main")
+            ?.insertAdjacentHTML("afterbegin", `<div class="alert alert-danger" data-offline-session-expired>${OFFLINE_SESSION_EXPIRED_MESSAGE}</div>`);
+        return;
+    }
     const entity = pageEntity();
     const config = entity ? PAGE_CONFIGS[entity] : undefined;
     if (!config)

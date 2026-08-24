@@ -4,6 +4,10 @@ import {
   type OfflineStoreName,
 } from "./db.js";
 import { isOnline } from "./connectivity.js";
+import {
+  isOfflineSessionValid,
+  OFFLINE_SESSION_EXPIRED_MESSAGE,
+} from "./session.js";
 
 type OfflineRecord = Record<string, unknown> & {
   id?: string;
@@ -77,6 +81,17 @@ const PAGE_CONFIGS: Record<string, PageConfig> = {
       String(record.donation_date ?? "-"),
       String(record.description ?? "-"),
       String(record.status ?? "-"),
+    ],
+  },
+  revenue: {
+    store: OFFLINE_STORES.revenue,
+    columns: ["Type", "Category", "Amount", "Date", "Description"],
+    values: (record) => [
+      String(record.record_type ?? "-"),
+      String(record.category ?? "-"),
+      `${String(record.currency ?? "LKR")} ${String(record.amount ?? "-")}`,
+      String(record.record_date ?? "-"),
+      String(record.description ?? "-"),
     ],
   },
   aid_requests: {
@@ -154,6 +169,7 @@ function pageEntity(): string | undefined {
   if (path.startsWith("/students")) return "students";
   if (path.startsWith("/donors")) return "donors";
   if (path.startsWith("/donations")) return "donations";
+  if (path.startsWith("/revenue")) return "revenue";
   if (path.startsWith("/aid-requests")) return "aid_requests";
   if (path.startsWith("/care-provided")) return "care_provided";
   if (path.startsWith("/loans")) return "loans";
@@ -244,6 +260,28 @@ function renderOfflineDetail(record: OfflineRecord): void {
 
 async function renderOfflinePage(): Promise<void> {
   if (isOnline()) return;
+  if (!(await isOfflineSessionValid())) {
+    const indicator = document.querySelector<HTMLElement>(
+      "[data-offline-status]",
+    );
+    if (indicator) {
+      indicator.textContent = "Offline session expired";
+      indicator.dataset.state = "offline";
+      indicator.setAttribute("aria-label", OFFLINE_SESSION_EXPIRED_MESSAGE);
+    }
+    document
+      .querySelectorAll<HTMLElement>("main > *:not([data-sync-conflicts])")
+      .forEach((element) => {
+        element.hidden = true;
+      });
+    document
+      .querySelector("main")
+      ?.insertAdjacentHTML(
+        "afterbegin",
+        `<div class="alert alert-danger" data-offline-session-expired>${OFFLINE_SESSION_EXPIRED_MESSAGE}</div>`,
+      );
+    return;
+  }
   const entity = pageEntity();
   const config = entity ? PAGE_CONFIGS[entity] : undefined;
   if (!config) return;

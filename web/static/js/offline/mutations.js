@@ -1,4 +1,5 @@
 import { createOfflineId, saveOfflineMutation, } from "./db.js";
+import { isOfflineSessionValid, OFFLINE_SESSION_EXPIRED_MESSAGE, } from "./session.js";
 const STORE_BY_ENTITY = {
     person: "persons",
     student: "students",
@@ -7,6 +8,9 @@ const STORE_BY_ENTITY = {
     care_provided: "care_provided",
     loan: "loans",
     loan_repayment: "loan_repayments",
+    donation: "donations",
+    revenue: "revenue",
+    media: "outbox",
 };
 const ENDPOINT_BY_ENTITY = {
     person: "persons",
@@ -16,14 +20,22 @@ const ENDPOINT_BY_ENTITY = {
     care_provided: "care-provided",
     loan: "loans",
     loan_repayment: "loan-repayments",
+    donation: "donations",
+    revenue: "revenue",
+    media: "files/upload",
 };
 export function offlineMutationsEnabled() {
     return !navigator.onLine;
 }
 export async function savePendingMutation(entityType, operation, payload, recordId = typeof payload.id === "string" ? payload.id : createOfflineId()) {
+    if (!(await isOfflineSessionValid())) {
+        throw new Error(OFFLINE_SESSION_EXPIRED_MESSAGE);
+    }
     const now = new Date().toISOString();
+    const operationId = createOfflineId();
     const record = { ...payload, id: recordId, updatedAt: now };
     await saveOfflineMutation(STORE_BY_ENTITY[entityType], record, {
+        operationId,
         entityType,
         operation,
         recordId,
@@ -49,6 +61,9 @@ export function offlineSuccessMessage(entityType, operation) {
         care_provided: "Care record",
         loan: "Loan",
         loan_repayment: "Loan repayment",
+        donation: "Donation",
+        revenue: "Revenue record",
+        media: "Media file",
     };
     return `${names[entityType]} ${operation === "CREATE" ? "saved" : "updated"} offline. It is queued for later synchronization.`;
 }

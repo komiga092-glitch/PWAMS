@@ -11,6 +11,8 @@ const STATIC_ASSETS = [
     "/static/js/offline/conflicts.js",
     "/static/js/offline/pull.js",
     "/static/js/offline/pages.js",
+    "/static/js/offline/session.js",
+    "/static/js/offline/media.js",
     "/static/js/offline-data.js",
     "/static/js/offline/service-worker.js",
     "/static/manifest.webmanifest",

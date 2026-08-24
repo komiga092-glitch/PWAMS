@@ -52,6 +52,11 @@ func RegisterCareProvidedRoutes(
 		handler.Update,
 	)
 
+	protected.PATCH(
+		"/care-provided/:id/status",
+		handler.UpdateStatus,
+	)
+
 	protected.DELETE(
 		"/care-provided/:id",
 		handler.Delete,

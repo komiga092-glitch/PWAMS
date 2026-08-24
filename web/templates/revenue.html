@@ -102,6 +102,15 @@
           />
         </div>
         <div class="form-group">
+          <label for="revenue-currency">Currency</label>
+          <input
+            id="revenue-currency"
+            name="currency"
+            value="LKR"
+            maxlength="10"
+          />
+        </div>
+        <div class="form-group">
           <label for="revenue-date">Date *</label
           ><input id="revenue-date" name="record_date" type="date" required />
         </div>
@@ -130,81 +139,5 @@
     </form>
   </div>
 </div>
-<script>
-  function openRevenueModal() {
-    document.getElementById("revenueModal")?.classList.remove("hidden");
-  }
-  function closeRevenueModal() {
-    document.getElementById("revenueModal")?.classList.add("hidden");
-  }
-  async function submitRevenue(event) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form));
-    data.amount = Number(data.amount);
-    try {
-      const response = await fetch("/revenue", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message || "Unable to save revenue record");
-      alert(result.message || "Revenue record created successfully");
-      window.location.reload();
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Unable to save revenue record",
-      );
-    }
-  }
-  async function deleteRevenueRecord(id) {
-    if (!confirm("Delete this revenue record?")) return;
-    try {
-      const response = await fetch("/revenue/" + id, {
-        method: "DELETE",
-        credentials: "same-origin",
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message || "Unable to delete revenue record");
-      alert(result.message || "Revenue record deleted successfully");
-      window.location.reload();
-    } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Unable to delete revenue record",
-      );
-    }
-  }
-  async function loadRevenueSummaries() {
-    const target = document.getElementById("revenue-summaries");
-    try {
-      const response = await fetch("/revenue/summaries", {
-        credentials: "same-origin",
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message || "Unable to load summaries");
-      target.innerHTML = result.data
-        .map(
-          (summary) =>
-            `<div><strong>${summary.period}</strong>: ${summary.income.toFixed(2)} income, ${summary.expenses.toFixed(2)} expenses, ${summary.net.toFixed(2)} net</div>`,
-        )
-        .join("");
-    } catch (error) {
-      target.textContent =
-        error instanceof Error ? error.message : "Unable to load summaries";
-    }
-  }
-  document.addEventListener("DOMContentLoaded", loadRevenueSummaries);
-</script>
+<script src="/static/js/revenue.js"></script>
 {{ end }}

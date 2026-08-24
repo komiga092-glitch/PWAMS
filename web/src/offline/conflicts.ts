@@ -10,6 +10,9 @@ const ENTITY_LABELS: Record<ConflictEntry["entityType"], string> = {
   care_provided: "Care record",
   loan: "Loan",
   loan_repayment: "Loan repayment",
+  donation: "Donation",
+  revenue: "Revenue record",
+  media: "Media file",
 };
 
 export function getConflictMessage(conflict: ConflictEntry): string {

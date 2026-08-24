@@ -78,7 +78,7 @@ func (s *DashboardService) GetStats() (
 	if stats.TotalDonors, err = s.dashboardRepo.Count("donors", ""); err != nil {
 		return nil, err
 	}
-	if stats.ActiveLoans, err = s.dashboardRepo.Count("loans", "status = ?", models.LoanStatusActive); err != nil {
+	if stats.ActiveLoans, err = s.dashboardRepo.CountWithoutDeleted("loans", "status = ?", models.LoanStatusActive); err != nil {
 		return nil, err
 	}
 	if stats.PendingAidRequests, err = s.dashboardRepo.Count("aid_requests", "status = ?", models.AidStatusPending); err != nil {
@@ -87,7 +87,7 @@ func (s *DashboardService) GetStats() (
 	if stats.RevenueSummary, err = s.dashboardRepo.NetRevenue(); err != nil {
 		return nil, err
 	}
-	if stats.UnreadNotifications, err = s.dashboardRepo.Count("notifications", "is_read = ?", false); err != nil {
+	if stats.UnreadNotifications, err = s.dashboardRepo.CountWithoutDeleted("notifications", "is_read = ?", false); err != nil {
 		return nil, err
 	}
 

@@ -16,6 +16,19 @@ async function submitDonation(event: SubmitEvent): Promise<void> {
   data.quantity = String(Number(data.quantity || 0));
 
   try {
+    if (!navigator.onLine) {
+      const { savePendingMutation, offlineSuccessMessage } = await import(
+        String("/static/js/offline/mutations.js")
+      );
+      await savePendingMutation("donation", "CREATE", {
+        ...data,
+        amount: Number(data.amount),
+        quantity: Number(data.quantity),
+      } as Record<string, unknown>);
+      alert(offlineSuccessMessage("donation", "CREATE"));
+      return;
+    }
+
     const response = await fetch(form.action, {
       method: "POST",
       credentials: "same-origin",

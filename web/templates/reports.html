@@ -12,17 +12,17 @@
   <div class="panel">
     <div class="panel-body">
       <div class="quick-grid">
-        <a class="quick-card" href="/reports/dashboard">
+        <a class="quick-card" href="/reports/dashboard/page">
           <div class="quick-icon">▥</div>
           <div class="quick-title">Dashboard Stats</div>
           <div class="quick-text">View system summary report</div>
         </a>
-        <a class="quick-card" href="/reports/donations">
+        <a class="quick-card" href="/reports/dashboard/page">
           <div class="quick-icon">◈</div>
           <div class="quick-title">Donations Report</div>
           <div class="quick-text">Review donor contribution summaries</div>
         </a>
-        <a class="quick-card" href="/reports/aid-requests">
+        <a class="quick-card" href="/reports/dashboard/page">
           <div class="quick-icon">▣</div>
           <div class="quick-title">Aid Request Report</div>
           <div class="quick-text">Track assistance demand by type</div>
@@ -30,5 +30,23 @@
       </div>
     </div>
   </div>
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ else if .dashboard }}
+  <div class="panel">
+    <div class="panel-header"><h2>Report Summary</h2></div>
+    <div class="panel-body">
+      <p>Persons: {{ .dashboard.TotalPersons }}</p>
+      <p>Students: {{ .dashboard.TotalStudents }}</p>
+      <p>Donors: {{ .dashboard.TotalDonors }}</p>
+      <p>Donations: {{ .dashboard.TotalDonations }}</p>
+      <p>Aid Requests: {{ .dashboard.TotalAidRequests }}</p>
+      <p>Donation Amount: {{ printf "%.2f" .donations.TotalAmount }}</p>
+      <p>Pending Aid Requests: {{ .aid_requests.PendingRequests }}</p>
+    </div>
+  </div>
+  {{ else }}
+  <div class="empty">No report data available.</div>
+  {{ end }}
 </section>
 {{ end }}

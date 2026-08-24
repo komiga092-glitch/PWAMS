@@ -26,6 +26,18 @@ func (r *DashboardRepository) Count(table, where string, args ...any) (int64, er
 	return count, nil
 }
 
+func (r *DashboardRepository) CountWithoutDeleted(table, where string, args ...any) (int64, error) {
+	var count int64
+	query := fmt.Sprintf("SELECT COUNT(*) FROM %s", table)
+	if where != "" {
+		query += " WHERE " + where
+	}
+	if err := r.db.Raw(query, args...).Scan(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func (r *DashboardRepository) Sum(table, column, where string, args ...any) (float64, error) {
 	var total float64
 	query := fmt.Sprintf("SELECT COALESCE(SUM(%s), 0) FROM %s WHERE deleted_at IS NULL", column, table)

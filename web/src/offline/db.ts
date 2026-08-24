@@ -20,10 +20,11 @@ export type OfflineStoreName =
 
 export interface OutboxEntry<T = unknown> {
   id?: number;
+  operationId: string;
   entityType: OfflineEntityType;
   operation: "CREATE" | "UPDATE";
   recordId: string;
-  status: "PENDING" | "SYNCED" | "CONFLICT" | "FAILED";
+  status: "PENDING" | "UPLOADING" | "SYNCED" | "CONFLICT" | "FAILED";
   error?: string;
   version?: number;
   method: string;
@@ -31,6 +32,7 @@ export interface OutboxEntry<T = unknown> {
   body?: T;
   headers?: Record<string, string>;
   createdAt: string;
+  retryable?: boolean;
 }
 
 export interface SyncPullRecord {
@@ -42,6 +44,8 @@ export interface SyncPullRecord {
   payload: Record<string, unknown>;
 }
 
+const OFFLINE_SESSION_METADATA_ID = "offline_session";
+
 export type OfflineEntityType =
   | "person"
   | "student"
@@ -49,7 +53,10 @@ export type OfflineEntityType =
   | "aid_request"
   | "care_provided"
   | "loan"
-  | "loan_repayment";
+  | "loan_repayment"
+  | "donation"
+  | "revenue"
+  | "media";
 
 let databasePromise: Promise<IDBDatabase> | undefined;
 
@@ -102,6 +109,72 @@ export async function getSyncCursor(): Promise<string> {
   });
 }
 
+export async function getOfflineSessionLastAuthenticatedAt(): Promise<
+  number | null
+> {
+  const database = await openOfflineDatabase();
+  return new Promise<number | null>((resolve, reject) => {
+    const request = database
+      .transaction(OFFLINE_STORES.metadata, "readonly")
+      .objectStore(OFFLINE_STORES.metadata)
+      .get(OFFLINE_SESSION_METADATA_ID);
+    request.onsuccess = () => {
+      const value = request.result as
+        | { lastAuthenticatedAt?: number }
+        | undefined;
+      resolve(
+        typeof value?.lastAuthenticatedAt === "number"
+          ? value.lastAuthenticatedAt
+          : null,
+      );
+    };
+    request.onerror = () =>
+      reject(
+        request.error ?? new Error("Unable to read offline session metadata"),
+      );
+  });
+}
+
+export async function setOfflineSessionLastAuthenticatedAt(
+  timestamp: number,
+): Promise<void> {
+  const database = await openOfflineDatabase();
+  await new Promise<void>((resolve, reject) => {
+    const transaction = database.transaction(
+      OFFLINE_STORES.metadata,
+      "readwrite",
+    );
+    transaction
+      .objectStore(OFFLINE_STORES.metadata)
+      .put({ id: OFFLINE_SESSION_METADATA_ID, lastAuthenticatedAt: timestamp });
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(
+        transaction.error ??
+          new Error("Unable to store offline session metadata"),
+      );
+  });
+}
+
+export async function clearOfflineSessionLastAuthenticatedAt(): Promise<void> {
+  const database = await openOfflineDatabase();
+  await new Promise<void>((resolve, reject) => {
+    const transaction = database.transaction(
+      OFFLINE_STORES.metadata,
+      "readwrite",
+    );
+    transaction
+      .objectStore(OFFLINE_STORES.metadata)
+      .delete(OFFLINE_SESSION_METADATA_ID);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(
+        transaction.error ??
+          new Error("Unable to clear offline session metadata"),
+      );
+  });
+}
+
 const STORE_BY_ENTITY: Record<OfflineEntityType, OfflineStoreName> = {
   person: OFFLINE_STORES.persons,
   student: OFFLINE_STORES.students,
@@ -110,6 +183,9 @@ const STORE_BY_ENTITY: Record<OfflineEntityType, OfflineStoreName> = {
   care_provided: OFFLINE_STORES.careProvided,
   loan: OFFLINE_STORES.loans,
   loan_repayment: OFFLINE_STORES.loanRepayments,
+  donation: OFFLINE_STORES.donations,
+  revenue: OFFLINE_STORES.revenue,
+  media: OFFLINE_STORES.outbox,
 };
 
 export async function mergePulledRecords(
@@ -229,15 +305,15 @@ export async function listOfflineRecords<T>(
 
 export async function enqueueOfflineRequest<T>(
   entry: OutboxEntry<T>,
-): Promise<void> {
+): Promise<number> {
   const database = await openOfflineDatabase();
-  await new Promise<void>((resolve, reject) => {
+  return new Promise<number>((resolve, reject) => {
     const transaction = database.transaction(
       OFFLINE_STORES.outbox,
       "readwrite",
     );
-    transaction.objectStore(OFFLINE_STORES.outbox).add(entry);
-    transaction.oncomplete = () => resolve();
+    const request = transaction.objectStore(OFFLINE_STORES.outbox).add(entry);
+    transaction.oncomplete = () => resolve(Number(request.result));
     transaction.onerror = () =>
       reject(transaction.error ?? new Error("Unable to queue offline request"));
   });
@@ -246,7 +322,24 @@ export async function enqueueOfflineRequest<T>(
 export async function getPendingMutations(): Promise<OutboxEntry[]> {
   const entries = await listOfflineRecords<OutboxEntry>(OFFLINE_STORES.outbox);
   return entries
-    .filter((entry) => entry.status === "PENDING" || !entry.status)
+    .filter(
+      (entry) =>
+        entry.entityType !== "media" &&
+        (entry.status === "PENDING" || !entry.status),
+    )
+    .sort((left, right) => (left.id ?? 0) - (right.id ?? 0));
+}
+
+export async function getPendingMediaMutations(): Promise<OutboxEntry[]> {
+  const entries = await listOfflineRecords<OutboxEntry>(OFFLINE_STORES.outbox);
+  return entries
+    .filter(
+      (entry) =>
+        entry.entityType === "media" &&
+        (entry.status === "PENDING" ||
+          entry.status === "UPLOADING" ||
+          (entry.status === "FAILED" && entry.retryable)),
+    )
     .sort((left, right) => (left.id ?? 0) - (right.id ?? 0));
 }
 
@@ -254,6 +347,7 @@ export async function updateMutationStatus(
   id: number,
   status: OutboxEntry["status"],
   error?: string,
+  retryable = false,
 ): Promise<void> {
   const database = await openOfflineDatabase();
   await new Promise<void>((resolve, reject) => {
@@ -271,6 +365,7 @@ export async function updateMutationStatus(
       }
       entry.status = status;
       entry.error = error;
+      entry.retryable = retryable;
       store.put(entry);
     };
     request.onerror = () =>
@@ -280,5 +375,31 @@ export async function updateMutationStatus(
       reject(
         transaction.error ?? new Error("Unable to update offline mutation"),
       );
+  });
+}
+
+export async function clearMutationBody(id: number): Promise<void> {
+  const database = await openOfflineDatabase();
+  await new Promise<void>((resolve, reject) => {
+    const transaction = database.transaction(
+      OFFLINE_STORES.outbox,
+      "readwrite",
+    );
+    const store = transaction.objectStore(OFFLINE_STORES.outbox);
+    const request = store.get(id);
+    request.onsuccess = () => {
+      const entry = request.result as OutboxEntry | undefined;
+      if (!entry) {
+        reject(new Error("Offline mutation not found"));
+        return;
+      }
+      delete entry.body;
+      store.put(entry);
+    };
+    request.onerror = () =>
+      reject(request.error ?? new Error("Unable to read offline mutation"));
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(transaction.error ?? new Error("Unable to clear temporary media"));
   });
 }

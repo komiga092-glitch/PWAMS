@@ -55,16 +55,16 @@ async function submitRepayment(event: SubmitEvent): Promise<void> {
     amount: Number(data.amount || 0),
   };
 
-  if (!navigator.onLine) {
-    const { savePendingMutation, offlineSuccessMessage } = await import(
-      String("/static/js/offline/mutations.js")
-    );
-    await savePendingMutation("loan_repayment", "CREATE", requestBody);
-    alert(offlineSuccessMessage("loan_repayment", "CREATE"));
-    return;
-  }
-
   try {
+    if (!navigator.onLine) {
+      const { savePendingMutation, offlineSuccessMessage } = await import(
+        String("/static/js/offline/mutations.js")
+      );
+      await savePendingMutation("loan_repayment", "CREATE", requestBody);
+      alert(offlineSuccessMessage("loan_repayment", "CREATE"));
+      return;
+    }
+
     const response = await fetch(form.action, {
       method: "POST",
       credentials: "same-origin",

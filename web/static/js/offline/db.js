@@ -13,6 +13,7 @@ export const OFFLINE_STORES = {
     outbox: "outbox",
     metadata: "metadata",
 };
+const OFFLINE_SESSION_METADATA_ID = "offline_session";
 let databasePromise;
 export function openOfflineDatabase() {
     if (databasePromise)
@@ -54,6 +55,46 @@ export async function getSyncCursor() {
         request.onerror = () => reject(request.error ?? new Error("Unable to read sync cursor"));
     });
 }
+export async function getOfflineSessionLastAuthenticatedAt() {
+    const database = await openOfflineDatabase();
+    return new Promise((resolve, reject) => {
+        const request = database
+            .transaction(OFFLINE_STORES.metadata, "readonly")
+            .objectStore(OFFLINE_STORES.metadata)
+            .get(OFFLINE_SESSION_METADATA_ID);
+        request.onsuccess = () => {
+            const value = request.result;
+            resolve(typeof value?.lastAuthenticatedAt === "number"
+                ? value.lastAuthenticatedAt
+                : null);
+        };
+        request.onerror = () => reject(request.error ?? new Error("Unable to read offline session metadata"));
+    });
+}
+export async function setOfflineSessionLastAuthenticatedAt(timestamp) {
+    const database = await openOfflineDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(OFFLINE_STORES.metadata, "readwrite");
+        transaction
+            .objectStore(OFFLINE_STORES.metadata)
+            .put({ id: OFFLINE_SESSION_METADATA_ID, lastAuthenticatedAt: timestamp });
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ??
+            new Error("Unable to store offline session metadata"));
+    });
+}
+export async function clearOfflineSessionLastAuthenticatedAt() {
+    const database = await openOfflineDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(OFFLINE_STORES.metadata, "readwrite");
+        transaction
+            .objectStore(OFFLINE_STORES.metadata)
+            .delete(OFFLINE_SESSION_METADATA_ID);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ??
+            new Error("Unable to clear offline session metadata"));
+    });
+}
 const STORE_BY_ENTITY = {
     person: OFFLINE_STORES.persons,
     student: OFFLINE_STORES.students,
@@ -62,6 +103,9 @@ const STORE_BY_ENTITY = {
     care_provided: OFFLINE_STORES.careProvided,
     loan: OFFLINE_STORES.loans,
     loan_repayment: OFFLINE_STORES.loanRepayments,
+    donation: OFFLINE_STORES.donations,
+    revenue: OFFLINE_STORES.revenue,
+    media: OFFLINE_STORES.outbox,
 };
 export async function mergePulledRecords(records, cursor) {
     const database = await openOfflineDatabase();
@@ -142,20 +186,30 @@ export async function listOfflineRecords(store) {
 }
 export async function enqueueOfflineRequest(entry) {
     const database = await openOfflineDatabase();
-    await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const transaction = database.transaction(OFFLINE_STORES.outbox, "readwrite");
-        transaction.objectStore(OFFLINE_STORES.outbox).add(entry);
-        transaction.oncomplete = () => resolve();
+        const request = transaction.objectStore(OFFLINE_STORES.outbox).add(entry);
+        transaction.oncomplete = () => resolve(Number(request.result));
         transaction.onerror = () => reject(transaction.error ?? new Error("Unable to queue offline request"));
     });
 }
 export async function getPendingMutations() {
     const entries = await listOfflineRecords(OFFLINE_STORES.outbox);
     return entries
-        .filter((entry) => entry.status === "PENDING" || !entry.status)
+        .filter((entry) => entry.entityType !== "media" &&
+        (entry.status === "PENDING" || !entry.status))
         .sort((left, right) => (left.id ?? 0) - (right.id ?? 0));
 }
-export async function updateMutationStatus(id, status, error) {
+export async function getPendingMediaMutations() {
+    const entries = await listOfflineRecords(OFFLINE_STORES.outbox);
+    return entries
+        .filter((entry) => entry.entityType === "media" &&
+        (entry.status === "PENDING" ||
+            entry.status === "UPLOADING" ||
+            (entry.status === "FAILED" && entry.retryable)))
+        .sort((left, right) => (left.id ?? 0) - (right.id ?? 0));
+}
+export async function updateMutationStatus(id, status, error, retryable = false) {
     const database = await openOfflineDatabase();
     await new Promise((resolve, reject) => {
         const transaction = database.transaction(OFFLINE_STORES.outbox, "readwrite");
@@ -169,11 +223,32 @@ export async function updateMutationStatus(id, status, error) {
             }
             entry.status = status;
             entry.error = error;
+            entry.retryable = retryable;
             store.put(entry);
         };
         request.onerror = () => reject(request.error ?? new Error("Unable to read offline mutation"));
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error ?? new Error("Unable to update offline mutation"));
+    });
+}
+export async function clearMutationBody(id) {
+    const database = await openOfflineDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(OFFLINE_STORES.outbox, "readwrite");
+        const store = transaction.objectStore(OFFLINE_STORES.outbox);
+        const request = store.get(id);
+        request.onsuccess = () => {
+            const entry = request.result;
+            if (!entry) {
+                reject(new Error("Offline mutation not found"));
+                return;
+            }
+            delete entry.body;
+            store.put(entry);
+        };
+        request.onerror = () => reject(request.error ?? new Error("Unable to read offline mutation"));
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ?? new Error("Unable to clear temporary media"));
     });
 }
 //# sourceMappingURL=db.js.map
