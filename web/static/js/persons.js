@@ -8,7 +8,8 @@ function openPersonModal() {
     if (!personModal) {
         return;
     }
-    personModal.style.display = "flex";
+    personModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
     const firstInput = document.getElementById("person_full_name");
     firstInput?.focus();
 }
@@ -16,7 +17,8 @@ function closePersonModal() {
     if (!personModal) {
         return;
     }
-    personModal.style.display = "none";
+    personModal.classList.add("hidden");
+    document.body.style.overflow = "";
     personForm?.reset();
 }
 function getPersonFormData(form) {
@@ -67,6 +69,13 @@ cancelPersonButton?.addEventListener("click", () => {
 });
 personModal?.addEventListener("click", (event) => {
     if (event.target === personModal) {
+        closePersonModal();
+    }
+});
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" &&
+        personModal &&
+        !personModal.classList.contains("hidden")) {
         closePersonModal();
     }
 });

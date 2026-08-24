@@ -1,10 +1,24 @@
 "use strict";
 function closeDonationModal() {
     document.getElementById("donationModal")?.classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("donation-form")?.reset();
 }
 function openDonationModal() {
     document.getElementById("donationModal")?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
 }
+document
+    .getElementById("donationModal")
+    ?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget)
+        closeDonationModal();
+});
+document.addEventListener("keydown", (event) => {
+    const modal = document.getElementById("donationModal");
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+        closeDonationModal();
+});
 async function submitDonation(event) {
     event.preventDefault();
     const form = event.currentTarget;

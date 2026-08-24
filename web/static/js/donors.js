@@ -16,7 +16,7 @@ function openDonorModal() {
         console.error("Donor modal not found.");
         return;
     }
-    donorModal.style.display = "flex";
+    donorModal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
 }
 /* =========================
@@ -26,8 +26,9 @@ function closeDonorModal() {
     if (!donorModal) {
         return;
     }
-    donorModal.style.display = "none";
+    donorModal.classList.add("hidden");
     document.body.style.overflow = "";
+    donorForm?.reset();
 }
 /* =========================
    BUTTON EVENTS
@@ -48,7 +49,7 @@ donorModal?.addEventListener("click", (event) => {
    ========================= */
 document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
-        if (donorModal && donorModal.style.display === "flex") {
+        if (donorModal && !donorModal.classList.contains("hidden")) {
             closeDonorModal();
         }
     }

@@ -69,7 +69,7 @@ function openStudentModal(): void {
     return;
   }
 
-  studentModal.style.display = "flex";
+  studentModal.classList.remove("hidden");
 
   document.body.style.overflow = "hidden";
 
@@ -85,7 +85,7 @@ function closeStudentModal(): void {
     return;
   }
 
-  studentModal.style.display = "none";
+  studentModal.classList.add("hidden");
 
   document.body.style.overflow = "";
 
@@ -254,18 +254,25 @@ async function loadPersons(): Promise<void> {
       option.textContent = `${person.full_name} (${person.phone})`;
       personSelect.appendChild(option);
     }
+    if (personSelect.options.length === 1) {
+      personSelect.innerHTML = '<option value="">No persons available</option>';
+    }
     personSelect.disabled = false;
     return;
   }
 
   try {
-    const response = await fetch("/persons", {
-      method: "GET",
+    const response = await fetch(
+      "/persons?page=1&page_size=100&status=Active",
+      {
+        method: "GET",
+        credentials: "same-origin",
 
-      headers: {
-        Accept: "application/json",
+        headers: {
+          Accept: "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to load persons (${response.status})`);
@@ -282,7 +289,7 @@ async function loadPersons(): Promise<void> {
      * Check response
      */
     if (!result.success || !Array.isArray(result.data)) {
-      throw new Error(result.message || "Invalid persons response.");
+      throw new Error("Failed to load persons");
     }
 
     /*
@@ -364,7 +371,11 @@ studentModal?.addEventListener("click", (event: MouseEvent) => {
    ========================================================= */
 
 document.addEventListener("keydown", (event: KeyboardEvent) => {
-  if (event.key === "Escape" && studentModal?.style.display === "flex") {
+  if (
+    event.key === "Escape" &&
+    studentModal &&
+    !studentModal.classList.contains("hidden")
+  ) {
     closeStudentModal();
   }
 });

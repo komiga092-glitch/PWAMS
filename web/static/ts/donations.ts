@@ -2,11 +2,26 @@ type FormSubmitEvent = SubmitEvent & { currentTarget: HTMLFormElement };
 
 function closeDonationModal(): void {
   document.getElementById("donationModal")?.classList.add("hidden");
+  document.body.style.overflow = "";
+  (document.getElementById("donation-form") as HTMLFormElement | null)?.reset();
 }
 
 function openDonationModal(): void {
   document.getElementById("donationModal")?.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 }
+
+document
+  .getElementById("donationModal")
+  ?.addEventListener("click", (event: MouseEvent) => {
+    if (event.target === event.currentTarget) closeDonationModal();
+  });
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  const modal = document.getElementById("donationModal");
+  if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+    closeDonationModal();
+});
 
 async function submitDonation(event: SubmitEvent): Promise<void> {
   event.preventDefault();

@@ -57,6 +57,14 @@ func (h *SyncHandler) Push(c *gin.Context) {
 		})
 		return
 	}
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
+	for i := range request.Operations {
+		request.Operations[i].UserID = currentUser.ID
+	}
 
 	existing, err := h.service.GetIdempotencyRecord(
 		idempotencyKey,
@@ -95,14 +103,6 @@ func (h *SyncHandler) Push(c *gin.Context) {
 			[]byte(existing.ResponseBody),
 		)
 		return
-	}
-	currentUser, ok := getCurrentUser(c)
-	if !ok {
-		return
-	}
-
-	for i := range request.Operations {
-		request.Operations[i].UserID = currentUser.ID
 	}
 
 	entityOrder := map[string]int{

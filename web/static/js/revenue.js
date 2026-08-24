@@ -3,10 +3,24 @@ const revenueModal = document.getElementById("revenueModal");
 const revenueForm = document.getElementById("revenue-form");
 function openRevenueModal() {
     revenueModal?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
 }
 function closeRevenueModal() {
     revenueModal?.classList.add("hidden");
+    document.body.style.overflow = "";
+    revenueForm?.reset();
 }
+revenueModal?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget)
+        closeRevenueModal();
+});
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" &&
+        revenueModal &&
+        !revenueModal.classList.contains("hidden")) {
+        closeRevenueModal();
+    }
+});
 async function submitRevenue(event) {
     event.preventDefault();
     if (!revenueForm)

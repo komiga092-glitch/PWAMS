@@ -11,11 +11,28 @@ const revenueForm = document.getElementById(
 
 function openRevenueModal(): void {
   revenueModal?.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 }
 
 function closeRevenueModal(): void {
   revenueModal?.classList.add("hidden");
+  document.body.style.overflow = "";
+  revenueForm?.reset();
 }
+
+revenueModal?.addEventListener("click", (event: MouseEvent) => {
+  if (event.target === event.currentTarget) closeRevenueModal();
+});
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  if (
+    event.key === "Escape" &&
+    revenueModal &&
+    !revenueModal.classList.contains("hidden")
+  ) {
+    closeRevenueModal();
+  }
+});
 
 async function submitRevenue(event: SubmitEvent): Promise<void> {
   event.preventDefault();

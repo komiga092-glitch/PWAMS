@@ -1,10 +1,27 @@
 function closeRepaymentModal(): void {
   document.getElementById("repaymentModal")?.classList.add("hidden");
+  document.body.style.overflow = "";
+  (
+    document.getElementById("repayment-form") as HTMLFormElement | null
+  )?.reset();
 }
 
 function openRepaymentModal(): void {
   document.getElementById("repaymentModal")?.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 }
+
+document
+  .getElementById("repaymentModal")
+  ?.addEventListener("click", (event: MouseEvent) => {
+    if (event.target === event.currentTarget) closeRepaymentModal();
+  });
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  const modal = document.getElementById("repaymentModal");
+  if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+    closeRepaymentModal();
+});
 
 async function loadRepaymentLoans(): Promise<void> {
   const select = document.getElementById(

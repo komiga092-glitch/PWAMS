@@ -74,7 +74,7 @@
 
 <!-- USER MODAL -->
 
-<div id="user-modal" class="modal-overlay" style="display: none">
+<div id="user-modal" class="modal hidden">
   <div class="modal-card">
     <div class="modal-header">
       <div>
@@ -87,69 +87,77 @@
       </button>
     </div>
 
-    <form id="user-form" class="form-grid">
+    <form id="user-form" class="form">
       <input type="hidden" id="user-id" />
 
-      <div class="form-group">
-        <label class="form-label">Username *</label>
-        <input
-          class="form-control"
-          id="user-username"
-          name="username"
-          minlength="3"
-          maxlength="50"
-          required
-        />
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Username *</label>
+            <input
+              class="form-control"
+              id="user-username"
+              name="username"
+              minlength="3"
+              maxlength="50"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input
+              class="form-control"
+              id="user-email"
+              name="email"
+              type="email"
+              required
+            />
+          </div>
+
+          <div class="form-group" id="password-group">
+            <label class="form-label">Password *</label>
+            <input
+              class="form-control"
+              id="user-password"
+              name="password"
+              type="password"
+              minlength="8"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Role *</label>
+
+            <select class="form-control" id="user-role" name="role" required>
+              <option value="Admin">Admin</option>
+              <option value="Staff">Staff</option>
+              <option value="Volunteer">Volunteer</option>
+              <option value="Donor">Donor</option>
+              <option value="Beneficiary">Beneficiary</option>
+              <option value="Super Admin">Super Admin</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="status-group" style="display: none">
+            <label class="form-label">Status *</label>
+
+            <select class="form-control" id="user-status" name="status">
+              <option value="Active">Active</option>
+              <option value="Disabled">Disabled</option>
+              <option value="Locked">Locked</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Email *</label>
-        <input
-          class="form-control"
-          id="user-email"
-          name="email"
-          type="email"
-          required
-        />
-      </div>
-
-      <div class="form-group" id="password-group">
-        <label class="form-label">Password *</label>
-        <input
-          class="form-control"
-          id="user-password"
-          name="password"
-          type="password"
-          minlength="8"
-        />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Role *</label>
-
-        <select class="form-control" id="user-role" name="role" required>
-          <option value="Admin">Admin</option>
-          <option value="Staff">Staff</option>
-          <option value="Volunteer">Volunteer</option>
-          <option value="Donor">Donor</option>
-          <option value="Beneficiary">Beneficiary</option>
-          <option value="Super Admin">Super Admin</option>
-        </select>
-      </div>
-
-      <div class="form-group" id="status-group" style="display: none">
-        <label class="form-label">Status *</label>
-
-        <select class="form-control" id="user-status" name="status">
-          <option value="Active">Active</option>
-          <option value="Disabled">Disabled</option>
-          <option value="Locked">Locked</option>
-          <option value="Pending">Pending</option>
-        </select>
-      </div>
-
-      <div class="form-actions full">
-        <button type="button" class="btn btn-light" onclick="closeUserModal()">
+      <div class="form-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="closeUserModal()"
+        >
           Cancel
         </button>
 
@@ -161,7 +169,7 @@
 
 <!-- PASSWORD MODAL -->
 
-<div id="password-modal" class="modal-overlay" style="display: none">
+<div id="password-modal" class="modal hidden">
   <div class="modal-card">
     <div class="modal-header">
       <div>
@@ -174,25 +182,29 @@
       </button>
     </div>
 
-    <form id="password-form" class="form-grid">
+    <form id="password-form" class="form">
       <input type="hidden" id="password-user-id" />
 
-      <div class="form-group full">
-        <label class="form-label">New Password *</label>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label">New Password *</label>
 
-        <input
-          class="form-control"
-          id="new-password"
-          type="password"
-          minlength="8"
-          required
-        />
+            <input
+              class="form-control"
+              id="new-password"
+              type="password"
+              minlength="8"
+              required
+            />
+          </div>
+        </div>
       </div>
 
-      <div class="form-actions full">
+      <div class="form-actions">
         <button
           type="button"
-          class="btn btn-light"
+          class="btn btn-secondary"
           onclick="closePasswordModal()"
         >
           Cancel
@@ -223,7 +235,8 @@
   }
 
   function openUserModal() {
-    document.getElementById("user-modal").style.display = "flex";
+    document.getElementById("user-modal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
 
     document.getElementById("user-modal-title").textContent = "Add User";
 
@@ -237,7 +250,9 @@
   }
 
   function closeUserModal() {
-    document.getElementById("user-modal").style.display = "none";
+    document.getElementById("user-modal").classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("user-form").reset();
   }
 
   function openPasswordModal(id) {
@@ -245,12 +260,36 @@
 
     document.getElementById("new-password").value = "";
 
-    document.getElementById("password-modal").style.display = "flex";
+    document.getElementById("password-modal").classList.remove("hidden");
+    document.body.style.overflow = "hidden";
   }
 
   function closePasswordModal() {
-    document.getElementById("password-modal").style.display = "none";
+    document.getElementById("password-modal").classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("password-form").reset();
   }
+
+  document.getElementById("user-modal").addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) closeUserModal();
+  });
+
+  document
+    .getElementById("password-modal")
+    .addEventListener("click", (event) => {
+      if (event.target === event.currentTarget) closePasswordModal();
+    });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const userModal = document.getElementById("user-modal");
+    const passwordModal = document.getElementById("password-modal");
+    if (passwordModal && !passwordModal.classList.contains("hidden")) {
+      closePasswordModal();
+    } else if (userModal && !userModal.classList.contains("hidden")) {
+      closeUserModal();
+    }
+  });
 
   function statusBadge(status) {
     if (status === "Active") {
@@ -502,7 +541,8 @@
 
       document.getElementById("status-group").style.display = "flex";
 
-      document.getElementById("user-modal").style.display = "flex";
+      document.getElementById("user-modal").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
     } catch (error) {
       showUserAlert(error.message);
     }

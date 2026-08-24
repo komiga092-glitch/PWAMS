@@ -1,10 +1,24 @@
 "use strict";
 function closeLoanModal() {
     document.getElementById("loanModal")?.classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("loan-form")?.reset();
 }
 function openLoanModal() {
     document.getElementById("loanModal")?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
 }
+document
+    .getElementById("loanModal")
+    ?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget)
+        closeLoanModal();
+});
+document.addEventListener("keydown", (event) => {
+    const modal = document.getElementById("loanModal");
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+        closeLoanModal();
+});
 async function loadLoanPeople() {
     const select = document.getElementById("loanPersonID");
     if (!select || select.options.length > 1)

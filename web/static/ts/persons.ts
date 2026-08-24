@@ -34,7 +34,8 @@ function openPersonModal(): void {
     return;
   }
 
-  personModal.style.display = "flex";
+  personModal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 
   const firstInput = document.getElementById(
     "person_full_name",
@@ -48,7 +49,8 @@ function closePersonModal(): void {
     return;
   }
 
-  personModal.style.display = "none";
+  personModal.classList.add("hidden");
+  document.body.style.overflow = "";
 
   personForm?.reset();
 }
@@ -128,6 +130,16 @@ cancelPersonButton?.addEventListener("click", () => {
 
 personModal?.addEventListener("click", (event: MouseEvent) => {
   if (event.target === personModal) {
+    closePersonModal();
+  }
+});
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  if (
+    event.key === "Escape" &&
+    personModal &&
+    !personModal.classList.contains("hidden")
+  ) {
     closePersonModal();
   }
 });

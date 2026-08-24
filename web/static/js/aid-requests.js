@@ -1,9 +1,12 @@
 "use strict";
 function closeAidRequestModal() {
     document.getElementById("aidRequestModal")?.classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("aid-request-form")?.reset();
 }
 function openAidRequestModal() {
     document.getElementById("aidRequestModal")?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
 }
 async function loadAidRequestPeople() {
     const select = document.getElementById("personID");
@@ -35,6 +38,17 @@ async function loadAidRequestPeople() {
 }
 document.addEventListener("DOMContentLoaded", () => {
     void loadAidRequestPeople();
+});
+document
+    .getElementById("aidRequestModal")
+    ?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget)
+        closeAidRequestModal();
+});
+document.addEventListener("keydown", (event) => {
+    const modal = document.getElementById("aidRequestModal");
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+        closeAidRequestModal();
 });
 async function submitAidRequest(event) {
     event.preventDefault();

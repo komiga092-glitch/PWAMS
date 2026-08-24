@@ -16,7 +16,7 @@ function openStudentModal() {
         console.error("Student modal not found.");
         return;
     }
-    studentModal.style.display = "flex";
+    studentModal.classList.remove("hidden");
     document.body.style.overflow = "hidden";
     void loadPersons();
 }
@@ -27,7 +27,7 @@ function closeStudentModal() {
     if (!studentModal) {
         return;
     }
-    studentModal.style.display = "none";
+    studentModal.classList.add("hidden");
     document.body.style.overflow = "";
     resetStudentForm();
 }
@@ -146,12 +146,16 @@ async function loadPersons() {
             option.textContent = `${person.full_name} (${person.phone})`;
             personSelect.appendChild(option);
         }
+        if (personSelect.options.length === 1) {
+            personSelect.innerHTML = '<option value="">No persons available</option>';
+        }
         personSelect.disabled = false;
         return;
     }
     try {
-        const response = await fetch("/persons", {
+        const response = await fetch("/persons?page=1&page_size=100&status=Active", {
             method: "GET",
+            credentials: "same-origin",
             headers: {
                 Accept: "application/json",
             },
@@ -168,7 +172,7 @@ async function loadPersons() {
          * Check response
          */
         if (!result.success || !Array.isArray(result.data)) {
-            throw new Error(result.message || "Invalid persons response.");
+            throw new Error("Failed to load persons");
         }
         /*
          * No persons available
@@ -233,7 +237,9 @@ studentModal?.addEventListener("click", (event) => {
    ESC KEY
    ========================================================= */
 document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && studentModal?.style.display === "flex") {
+    if (event.key === "Escape" &&
+        studentModal &&
+        !studentModal.classList.contains("hidden")) {
         closeStudentModal();
     }
 });

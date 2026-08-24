@@ -52,7 +52,7 @@ function openDonorModal(): void {
     return;
   }
 
-  donorModal.style.display = "flex";
+  donorModal.classList.remove("hidden");
 
   document.body.style.overflow = "hidden";
 }
@@ -66,9 +66,10 @@ function closeDonorModal(): void {
     return;
   }
 
-  donorModal.style.display = "none";
+  donorModal.classList.add("hidden");
 
   document.body.style.overflow = "";
+  donorForm?.reset();
 }
 
 /* =========================
@@ -97,7 +98,7 @@ donorModal?.addEventListener("click", (event: MouseEvent) => {
 
 document.addEventListener("keydown", (event: KeyboardEvent) => {
   if (event.key === "Escape") {
-    if (donorModal && donorModal.style.display === "flex") {
+    if (donorModal && !donorModal.classList.contains("hidden")) {
       closeDonorModal();
     }
   }

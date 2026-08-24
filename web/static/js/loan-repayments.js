@@ -1,10 +1,24 @@
 "use strict";
 function closeRepaymentModal() {
     document.getElementById("repaymentModal")?.classList.add("hidden");
+    document.body.style.overflow = "";
+    document.getElementById("repayment-form")?.reset();
 }
 function openRepaymentModal() {
     document.getElementById("repaymentModal")?.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
 }
+document
+    .getElementById("repaymentModal")
+    ?.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget)
+        closeRepaymentModal();
+});
+document.addEventListener("keydown", (event) => {
+    const modal = document.getElementById("repaymentModal");
+    if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+        closeRepaymentModal();
+});
 async function loadRepaymentLoans() {
     const select = document.getElementById("repaymentLoanID");
     if (!select || select.options.length > 1)

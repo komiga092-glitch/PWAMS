@@ -1,10 +1,25 @@
 function closeLoanModal(): void {
   document.getElementById("loanModal")?.classList.add("hidden");
+  document.body.style.overflow = "";
+  (document.getElementById("loan-form") as HTMLFormElement | null)?.reset();
 }
 
 function openLoanModal(): void {
   document.getElementById("loanModal")?.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 }
+
+document
+  .getElementById("loanModal")
+  ?.addEventListener("click", (event: MouseEvent) => {
+    if (event.target === event.currentTarget) closeLoanModal();
+  });
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  const modal = document.getElementById("loanModal");
+  if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+    closeLoanModal();
+});
 
 async function loadLoanPeople(): Promise<void> {
   const select = document.getElementById(

@@ -1,9 +1,14 @@
 function closeAidRequestModal(): void {
   document.getElementById("aidRequestModal")?.classList.add("hidden");
+  document.body.style.overflow = "";
+  (
+    document.getElementById("aid-request-form") as HTMLFormElement | null
+  )?.reset();
 }
 
 function openAidRequestModal(): void {
   document.getElementById("aidRequestModal")?.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 }
 
 async function loadAidRequestPeople(): Promise<void> {
@@ -44,6 +49,18 @@ async function loadAidRequestPeople(): Promise<void> {
 
 document.addEventListener("DOMContentLoaded", () => {
   void loadAidRequestPeople();
+});
+
+document
+  .getElementById("aidRequestModal")
+  ?.addEventListener("click", (event: MouseEvent) => {
+    if (event.target === event.currentTarget) closeAidRequestModal();
+  });
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+  const modal = document.getElementById("aidRequestModal");
+  if (event.key === "Escape" && modal && !modal.classList.contains("hidden"))
+    closeAidRequestModal();
 });
 
 async function submitAidRequest(event: SubmitEvent): Promise<void> {
