@@ -22,6 +22,7 @@ type ReviewLoanRequest struct {
 }
 
 type LoanListQuery struct {
+	Search   string `form:"search"`
 	PersonID string `form:"person_id"`
 	Status   string `form:"status"`
 	Page     int    `form:"page"`

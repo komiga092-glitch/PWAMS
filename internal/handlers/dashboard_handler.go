@@ -23,7 +23,12 @@ func NewDashboardHandler(
 
 // Page renders the dashboard page.
 func (h *DashboardHandler) Page(c *gin.Context) {
-	stats, err := h.dashboardService.GetStats()
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
+	stats, err := h.dashboardService.GetStats(currentUser.ID)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "base", gin.H{
 			"page_template": "dashboard_content",
@@ -42,7 +47,12 @@ func (h *DashboardHandler) Page(c *gin.Context) {
 
 // GetStats returns dashboard statistics as JSON.
 func (h *DashboardHandler) GetStats(c *gin.Context) {
-	stats, err := h.dashboardService.GetStats()
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
+	stats, err := h.dashboardService.GetStats(currentUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,

@@ -16,6 +16,30 @@ type NotificationHandler struct {
 	notificationService *services.NotificationService
 }
 
+func (h *NotificationHandler) Page(c *gin.Context) {
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
+	notifications, err := h.notificationService.ListForUser(currentUser.ID)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", gin.H{
+			"page_template": "notifications_content",
+			"title":         "Notifications",
+			"notifications": []models.Notification{},
+			"error":         "Unable to retrieve notifications",
+		})
+		return
+	}
+
+	c.HTML(http.StatusOK, "base", gin.H{
+		"page_template": "notifications_content",
+		"title":         "Notifications",
+		"notifications": notifications,
+	})
+}
+
 func NewNotificationHandler(
 	notificationService *services.NotificationService,
 ) *NotificationHandler {

@@ -59,6 +59,7 @@ func RegisterCareProvidedRoutes(
 
 	protected.DELETE(
 		"/care-provided/:id",
+		middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin),
 		handler.Delete,
 	)
 }

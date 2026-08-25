@@ -78,9 +78,11 @@
           "revenue_content" }} {{ template "revenue_content" . }} {{ else if eq
           .page_template "notifications_content" }} {{ template
           "notifications_content" . }} {{ else if eq .page_template
-          "audit_logs_content" }} {{ template "audit_logs_content" . }} {{ else
-          if eq .page_template "reports_content" }} {{ template
-          "reports_content" . }} {{ end }}
+          "messages_content" }} {{ template "messages_content" . }} {{ else if
+          eq .page_template "files_content" }} {{ template "files_content" . }}
+          {{ else if eq .page_template "audit_logs_content" }} {{ template
+          "audit_logs_content" . }} {{ else if eq .page_template
+          "reports_content" }} {{ template "reports_content" . }} {{ end }}
         </main>
       </div>
 

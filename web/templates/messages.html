@@ -1,0 +1,198 @@
+{{ define "messages_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Messages</h1>
+      <p>Send and manage private messages.</p>
+    </div>
+    <button id="compose-message-btn" class="btn btn-primary" type="button">
+      + Compose Message
+    </button>
+  </div>
+
+  <div
+    id="message-alert"
+    class="alert"
+    hidden
+    role="status"
+    aria-live="polite"
+  ></div>
+
+  <div class="messages-tabs" role="tablist" aria-label="Message folders">
+    <button
+      class="messages-tab active"
+      type="button"
+      data-message-view="inbox"
+      role="tab"
+      aria-selected="true"
+    >
+      Inbox
+    </button>
+    <button
+      class="messages-tab"
+      type="button"
+      data-message-view="sent"
+      role="tab"
+      aria-selected="false"
+    >
+      Sent
+    </button>
+    <button
+      class="messages-tab"
+      type="button"
+      data-message-view="unread"
+      role="tab"
+      aria-selected="false"
+    >
+      Unread
+      <span id="messages-page-unread-count" class="messages-count">0</span>
+    </button>
+  </div>
+
+  <div class="panel messages-panel">
+    <div class="panel-header">
+      <h2 id="message-list-title">Inbox</h2>
+      <span id="message-list-count" class="badge badge-muted">0 Records</span>
+    </div>
+
+    <div class="table-wrap">
+      <div id="messages-loading" class="empty">Loading messages...</div>
+      <div id="messages-empty" class="empty" hidden>No messages found.</div>
+      <div id="messages-error" class="empty messages-error" hidden>
+        Unable to load messages.
+      </div>
+      <table id="messages-table" class="data-table" hidden>
+        <thead>
+          <tr>
+            <th id="message-person-heading">Sender</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="messages-table-body"></tbody>
+      </table>
+    </div>
+
+    <div id="messages-pagination" class="pagination messages-pagination" hidden>
+      <button id="messages-previous" class="btn btn-secondary" type="button">
+        ← Previous
+      </button>
+      <span id="messages-page-info"></span>
+      <button id="messages-next" class="btn btn-secondary" type="button">
+        Next →
+      </button>
+    </div>
+  </div>
+</section>
+
+<div id="compose-message-modal" class="modal hidden">
+  <div class="modal-backdrop" data-close-compose></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Compose Message</h2>
+        <p>Send a private message to another user.</p>
+      </div>
+      <button
+        id="compose-message-close"
+        class="modal-close"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+
+    <form id="compose-message-form" class="form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="message-recipient">Recipient *</label>
+          <select id="message-recipient" name="recipient_id" required>
+            <option value="">Select recipient</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message-subject">Subject *</label>
+          <input
+            id="message-subject"
+            name="subject"
+            type="text"
+            maxlength="200"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="message-body">Message *</label>
+          <textarea id="message-body" name="body" rows="7" required></textarea>
+        </div>
+        <div id="compose-message-feedback" class="form-message" hidden></div>
+      </div>
+      <div class="form-actions">
+        <button
+          id="compose-message-cancel"
+          class="btn btn-secondary"
+          type="button"
+        >
+          Cancel
+        </button>
+        <button
+          id="compose-message-submit"
+          class="btn btn-primary"
+          type="submit"
+        >
+          Send Message
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="message-view-modal" class="modal hidden">
+  <div class="modal-backdrop" data-close-message-view></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2 id="message-view-subject">Message</h2>
+        <p id="message-view-date"></p>
+      </div>
+      <button
+        id="message-view-close"
+        class="modal-close"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+    <div class="modal-body message-view-body">
+      <dl class="message-details">
+        <div>
+          <dt>From</dt>
+          <dd id="message-view-sender"></dd>
+        </div>
+        <div>
+          <dt>To</dt>
+          <dd id="message-view-recipient"></dd>
+        </div>
+        <div>
+          <dt>Status</dt>
+          <dd id="message-view-status"></dd>
+        </div>
+      </dl>
+      <div id="message-view-body" class="message-content"></div>
+    </div>
+    <div class="form-actions">
+      <button id="message-view-delete" class="btn btn-danger" type="button">
+        Delete
+      </button>
+      <button id="message-view-cancel" class="btn btn-secondary" type="button">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/static/js/messages.js"></script>
+{{ end }}

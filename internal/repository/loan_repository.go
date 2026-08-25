@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"gorm.io/gorm"
@@ -49,6 +50,16 @@ func (r *LoanRepository) List(
 	var total int64
 
 	db := r.db.Model(&models.Loan{})
+
+	if query.Search != "" {
+		searchValue := "%" + strings.ToLower(strings.TrimSpace(query.Search)) + "%"
+		db = db.Where(
+			"LOWER(CAST(id AS TEXT)) LIKE ? OR LOWER(CAST(person_id AS TEXT)) LIKE ? OR LOWER(purpose) LIKE ?",
+			searchValue,
+			searchValue,
+			searchValue,
+		)
+	}
 
 	if query.PersonID != "" {
 		db = db.Where("person_id = ?", query.PersonID)

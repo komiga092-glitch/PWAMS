@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/google/uuid"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 )
@@ -24,7 +25,7 @@ func NewDashboardService(
 	}
 }
 
-func (s *DashboardService) GetStats() (
+func (s *DashboardService) GetStats(userID uuid.UUID) (
 	*models.DashboardStats,
 	error,
 ) {
@@ -87,7 +88,7 @@ func (s *DashboardService) GetStats() (
 	if stats.RevenueSummary, err = s.dashboardRepo.NetRevenue(); err != nil {
 		return nil, err
 	}
-	if stats.UnreadNotifications, err = s.dashboardRepo.CountWithoutDeleted("notifications", "is_read = ?", false); err != nil {
+	if stats.UnreadNotifications, err = s.dashboardRepo.CountWithoutDeleted("notifications", "user_id = ? AND is_read = ?", userID, false); err != nil {
 		return nil, err
 	}
 

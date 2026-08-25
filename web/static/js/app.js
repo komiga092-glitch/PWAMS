@@ -38,16 +38,21 @@ async function applyRoleVisibility() {
         const response = await fetch("/auth/me", {
             credentials: "same-origin",
         });
-        if (!response.ok)
+        if (!response.ok) {
+            currentRole = "";
+            updateRoleVisibility();
             return;
+        }
         const result = (await response.json());
         currentRole = result.role ?? "";
         updateRoleVisibility();
     }
     catch {
-        return;
+        currentRole = "";
+        updateRoleVisibility();
     }
 }
+updateRoleVisibility();
 void applyRoleVisibility();
 new MutationObserver(updateRoleVisibility).observe(document.body, {
     childList: true,

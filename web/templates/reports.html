@@ -12,17 +12,17 @@
   <div class="panel">
     <div class="panel-body">
       <div class="quick-grid">
-        <a class="quick-card" href="/reports/dashboard">
+        <a class="quick-card" href="/reports/dashboard/page#dashboard-report">
           <div class="quick-icon">▥</div>
           <div class="quick-title">Dashboard Stats</div>
           <div class="quick-text">View system summary report</div>
         </a>
-        <a class="quick-card" href="/reports/donations">
+        <a class="quick-card" href="/reports/dashboard/page#donation-report">
           <div class="quick-icon">◈</div>
           <div class="quick-title">Donations Report</div>
           <div class="quick-text">Review donor contribution summaries</div>
         </a>
-        <a class="quick-card" href="/reports/aid-requests">
+        <a class="quick-card" href="/reports/dashboard/page#aid-request-report">
           <div class="quick-icon">▣</div>
           <div class="quick-title">Aid Request Report</div>
           <div class="quick-text">Track assistance demand by type</div>
@@ -33,16 +33,33 @@
   {{ if .error }}
   <div class="alert alert-danger">{{ .error }}</div>
   {{ else if .dashboard }}
-  <div class="panel">
-    <div class="panel-header"><h2>Report Summary</h2></div>
+  <div id="dashboard-report" class="panel">
+    <div class="panel-header"><h2>Dashboard Report</h2></div>
     <div class="panel-body">
+      <p>Users: {{ .dashboard.TotalUsers }}</p>
       <p>Persons: {{ .dashboard.TotalPersons }}</p>
       <p>Students: {{ .dashboard.TotalStudents }}</p>
       <p>Donors: {{ .dashboard.TotalDonors }}</p>
       <p>Donations: {{ .dashboard.TotalDonations }}</p>
       <p>Aid Requests: {{ .dashboard.TotalAidRequests }}</p>
-      <p>Donation Amount: {{ printf "%.2f" .donations.TotalAmount }}</p>
-      <p>Pending Aid Requests: {{ .aid_requests.PendingRequests }}</p>
+      <p>Care Provided: {{ .dashboard.TotalCareProvided }}</p>
+    </div>
+  </div>
+  <div id="donation-report" class="panel">
+    <div class="panel-header"><h2>Donation Report</h2></div>
+    <div class="panel-body">
+      <p>Total Donations: {{ .donations.TotalDonations }}</p>
+      <p>Total Donation Amount: {{ printf "%.2f" .donations.TotalAmount }}</p>
+    </div>
+  </div>
+  <div id="aid-request-report" class="panel">
+    <div class="panel-header"><h2>Aid Request Report</h2></div>
+    <div class="panel-body">
+      <p>Total Requests: {{ .aid_requests.TotalRequests }}</p>
+      <p>Pending Requests: {{ .aid_requests.PendingRequests }}</p>
+      <p>Approved Requests: {{ .aid_requests.ApprovedRequests }}</p>
+      <p>Rejected Requests: {{ .aid_requests.RejectedRequests }}</p>
+      <p>Cancelled Requests: {{ .aid_requests.CancelledRequests }}</p>
     </div>
   </div>
   {{ else }}

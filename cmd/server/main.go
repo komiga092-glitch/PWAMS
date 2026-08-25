@@ -77,6 +77,7 @@ func main() {
 	reportRepo := repository.NewReportRepository(db)
 	auditLogRepo := repository.NewAuditLogRepository(db)
 	notificationRepo := repository.NewNotificationRepository(db)
+	messageRepo := repository.NewMessageRepository(db)
 	dashboardRepo := repository.NewDashboardRepository(db)
 	fileUploadRepo := repository.NewFileUploadRepository(db)
 
@@ -213,6 +214,11 @@ func main() {
 		notificationRepo,
 	)
 
+	messageService := services.NewMessageService(
+		messageRepo,
+		userRepo,
+	)
+
 	aidRequestService := services.NewAidRequestService(
 		aidRequestRepository,
 		personRepository,
@@ -295,8 +301,17 @@ func main() {
 		notificationService,
 	)
 
+	messageHandler := handlers.NewMessageHandler(
+		messageService,
+	)
+
+	messageRecipientHandler := handlers.NewMessageRecipientHandler(
+		userRepo,
+	)
+
 	fileUploadHandler := handlers.NewFileUploadHandler(
 		fileUploadService,
+		auditLogService,
 	)
 
 	loanHandler := handlers.NewLoanHandler(
@@ -379,6 +394,8 @@ func main() {
 		"web/templates/loan_repayments.html",
 		"web/templates/revenue.html",
 		"web/templates/notifications.html",
+		"web/templates/messages.html",
+		"web/templates/files.html",
 		"web/templates/reports.html",
 		"web/templates/audit_logs.html",
 	)
@@ -483,6 +500,13 @@ func main() {
 	routes.RegisterNotificationRoutes(
 		router,
 		notificationHandler,
+		authMiddleware,
+	)
+
+	routes.RegisterMessageRoutes(
+		router,
+		messageHandler,
+		messageRecipientHandler,
 		authMiddleware,
 	)
 

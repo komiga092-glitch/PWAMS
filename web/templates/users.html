@@ -218,6 +218,21 @@
 
 <script>
   let currentPage = 1;
+  let currentUserRole = "";
+
+  async function loadCurrentUserRole() {
+    try {
+      const response = await fetch("/auth/me", {
+        credentials: "same-origin",
+      });
+      if (!response.ok) return;
+
+      const result = await response.json();
+      currentUserRole = result.role || "";
+    } catch {
+      currentUserRole = "";
+    }
+  }
 
   function showUserAlert(message, success = false) {
     const box = document.getElementById("user-alert");
@@ -383,8 +398,13 @@
       }
 
       table.innerHTML = users
-        .map(
-          (user) => `
+        .map((user) => {
+          const canModifyTarget =
+            currentUserRole &&
+            (currentUserRole === "Super Admin" || user.role !== "Super Admin");
+          const canDelete = currentUserRole === "Super Admin";
+
+          return `
 
             <tr>
 
@@ -418,33 +438,49 @@
 
                     <div style="display:flex;gap:6px;flex-wrap:wrap;">
 
-                        <button
+                        ${
+                          canModifyTarget
+                            ? `<button
                             class="btn btn-light"
                             type="button"
                             onclick="editUser('${user.id}')">
                             Edit
-                        </button>
+                        </button>`
+                            : ""
+                        }
 
-                        <button
+                        ${
+                          canModifyTarget
+                            ? `<button
                             class="btn btn-light"
                             type="button"
                             onclick="changeUserPassword('${user.id}')">
                             Password
-                        </button>
+                        </button>`
+                            : ""
+                        }
 
-                        <button
+                        ${
+                          canModifyTarget
+                            ? `<button
                             class="btn btn-light"
                             type="button"
                             onclick="changeUserStatus('${user.id}', '${user.status}')">
                             Status
-                        </button>
+                        </button>`
+                            : ""
+                        }
 
-                        <button
+                        ${
+                          canDelete
+                            ? `<button
                             class="btn btn-danger"
                             type="button"
                             onclick="deleteUser('${user.id}', '${escapeHTML(user.username)}')">
                             Delete
-                        </button>
+                        </button>`
+                            : ""
+                        }
 
                     </div>
 
@@ -452,8 +488,8 @@
 
             </tr>
 
-        `,
-        )
+        `;
+        })
         .join("");
 
       renderPagination(pagination);
@@ -721,7 +757,7 @@
     });
 
   document.addEventListener("DOMContentLoaded", () => {
-    loadUsers(1);
+    loadCurrentUserRole().then(() => loadUsers(1));
   });
 </script>
 

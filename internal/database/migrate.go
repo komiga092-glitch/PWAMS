@@ -23,6 +23,7 @@ func Migrate(db *gorm.DB) error {
 		&models.FileUpload{},
 		&models.AuditLog{},
 		&models.Notification{},
+		&models.Message{},
 		&models.Loan{},
 		&models.LoanRepayment{},
 		&models.RevenueRecord{},

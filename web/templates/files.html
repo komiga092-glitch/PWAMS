@@ -1,0 +1,99 @@
+{{ define "files_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>File Management</h1>
+      <p>Upload and manage your files.</p>
+    </div>
+    <button id="open-file-upload" class="btn btn-primary" type="button">
+      + Upload File
+    </button>
+  </div>
+
+  <div
+    id="file-alert"
+    class="alert"
+    hidden
+    role="status"
+    aria-live="polite"
+  ></div>
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Your Files</h2>
+      <span id="file-count" class="badge badge-muted">0 Records</span>
+    </div>
+    <div class="table-wrap">
+      <div id="file-loading" class="empty">Loading files...</div>
+      <div id="file-empty" class="empty" hidden>No files uploaded.</div>
+      <div id="file-error" class="empty" hidden></div>
+      <table id="file-table" class="data-table" hidden>
+        <thead>
+          <tr>
+            <th>FILE</th>
+            <th>TYPE</th>
+            <th>SIZE</th>
+            <th>DATE</th>
+            <th>ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="file-table-body"></tbody>
+      </table>
+    </div>
+    <div id="file-pagination" class="pagination" hidden>
+      <button id="file-previous" class="btn btn-secondary" type="button">
+        ← Previous
+      </button>
+      <span id="file-page-info"></span>
+      <button id="file-next" class="btn btn-secondary" type="button">
+        Next →
+      </button>
+    </div>
+  </div>
+</section>
+
+<div id="file-upload-modal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Upload File</h2>
+        <p>Select a JPEG, PNG, WebP, or PDF file up to 2 MB.</p>
+      </div>
+      <button
+        id="file-upload-close"
+        class="modal-close"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    </div>
+    <form id="file-upload-form" class="form" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="file-input">File *</label>
+          <input
+            id="file-input"
+            type="file"
+            name="file"
+            accept="image/jpeg,image/png,image/webp,application/pdf"
+            required
+          />
+          <small id="file-selection-info"></small>
+        </div>
+        <div id="file-upload-feedback" class="form-message" hidden></div>
+      </div>
+      <div class="form-actions">
+        <button id="file-upload-cancel" class="btn btn-secondary" type="button">
+          Cancel
+        </button>
+        <button id="file-upload-submit" class="btn btn-primary" type="submit">
+          Upload File
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="/static/js/files.js"></script>
+{{ end }}

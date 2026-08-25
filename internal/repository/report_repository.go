@@ -47,6 +47,10 @@ func (r *ReportRepository) GetDashboardReport() (*models.DashboardReport, error)
 			query: `SELECT COUNT(*) FROM aid_requests WHERE deleted_at IS NULL`,
 			dest:  &report.TotalAidRequests,
 		},
+		{
+			query: `SELECT COUNT(*) FROM care_provided WHERE is_deleted = FALSE`,
+			dest:  &report.TotalCareProvided,
+		},
 	}
 
 	for _, item := range queries {
