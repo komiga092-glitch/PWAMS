@@ -1,0 +1,78 @@
+package components
+
+type DonorFormData struct {
+	Name    string
+	Email   string
+	Phone   string
+	Type    string
+	Status  string
+}
+
+templ DonorFormPage(data DonorFormData, isEdit bool, donorID string) {
+	@Base("PWAMS - Donor Form") {
+		<section class="person-page">
+			<div class="form-page-header">
+				<div>
+					if isEdit {
+						<h1>Edit Donor</h1>
+					} else {
+						<h1>Add Donor</h1>
+					}
+					<p>Donor Information</p>
+				</div>
+				<a href="/donors/page" class="back-link">← Back</a>
+			</div>
+			<div class="person-form-card">
+				<form
+					if isEdit {
+						hx-put={ "/donors/" + donorID }
+					} else {
+						hx-post="/donors"
+					}
+					hx-target="body"
+					hx-swap="innerHTML"
+				>
+					<div class="form-section">
+						<h2>Donor Information</h2>
+						<div class="form-row">
+							<div class="form-field">
+								<label for="name">Name <span>*</span></label>
+								<input id="name" name="name" type="text" class="input" value={ data.Name } required/>
+							</div>
+							<div class="form-field">
+								<label for="email">Email</label>
+								<input id="email" name="email" type="email" class="input" value={ data.Email }/>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-field">
+								<label for="phone">Phone</label>
+								<input id="phone" name="phone" type="tel" class="input" value={ data.Phone }/>
+							</div>
+							<div class="form-field">
+								<label for="type">Type</label>
+								<select id="type" name="type" class="input">
+									<option value="Individual" selected?={ data.Type == "Individual" }>Individual</option>
+									<option value="Organization" selected?={ data.Type == "Organization" }>Organization</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-field">
+								<label for="status">Status</label>
+								<select id="status" name="status" class="input">
+									<option value="Active" selected?={ data.Status == "Active" }>Active</option>
+									<option value="Inactive" selected?={ data.Status == "Inactive" }>Inactive</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="form-actions">
+						<a href="/donors/page" class="btn-secondary">Cancel</a>
+						<button type="submit" class="btn-primary">Save</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	}
+}

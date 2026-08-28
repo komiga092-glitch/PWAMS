@@ -1,13 +1,17 @@
 package handlers
 
 import (
+	"errors"
+	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
@@ -17,6 +21,7 @@ type AuthHandler struct {
 	authService          *services.AuthService
 	sessionService       *services.SessionService
 	passwordResetService *services.PasswordResetService
+	auditLogService      *services.AuditLogService
 	secureCookie         bool
 }
 
@@ -24,14 +29,38 @@ func NewAuthHandler(
 	authService *services.AuthService,
 	sessionService *services.SessionService,
 	passwordResetService *services.PasswordResetService,
+	auditLogService *services.AuditLogService,
 	secureCookie bool,
 ) *AuthHandler {
 	return &AuthHandler{
 		authService:          authService,
 		sessionService:       sessionService,
 		passwordResetService: passwordResetService,
+		auditLogService:      auditLogService,
 		secureCookie:         secureCookie,
 	}
+}
+
+// writeAudit records an authentication audit event (FR-16 / NFR-09).
+// Failures are swallowed deliberately: auditing must never block the
+// authentication flow itself.
+func (h *AuthHandler) writeAudit(
+	c *gin.Context,
+	userID string,
+	action string,
+	details string,
+) {
+	if h.auditLogService == nil {
+		return
+	}
+	_ = h.auditLogService.Create(
+		userID,
+		action,
+		"users",
+		userID,
+		details,
+		c.ClientIP(),
+	)
 }
 
 // Login authenticates the user, creates a session,
@@ -66,9 +95,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		request.Password,
 	)
 	if err != nil {
+		h.writeAudit(c, "", "LOGIN_FAILED", err.Error())
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
 			"title": "PWAMS Login",
-			"error": err.Error(),
 		})
 		return
 	}
@@ -83,6 +112,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	h.setSessionCookie(c, rawToken, expiresAt)
+
+	h.writeAudit(c, user.ID.String(), "LOGIN_SUCCESS", "")
 
 	c.Redirect(http.StatusSeeOther, "/dashboard")
 }
@@ -110,9 +141,22 @@ func (h *AuthHandler) ForgotPassword(c *gin.Context) {
 	}
 
 	if err := h.passwordResetService.ForgotPassword(request.Email); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		if errors.Is(err, repository.ErrUserNotFound) {
+			// Do not reveal whether the account exists
+			// (prevents user enumeration). Respond as if the
+			// email was sent.
+			c.JSON(http.StatusOK, gin.H{
+				"success": true,
+				"message": constants.ErrPasswordResetOTPSent,
+			})
+			return
+		}
+
+		// Log the real cause server-side; never leak internals.
+		log.Printf("forgot password failed for %q: %v", request.Email, err)
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": err.Error(),
+			"message": "Unable to send reset code. Please try again later.",
 		})
 		return
 	}
@@ -149,9 +193,14 @@ func (h *AuthHandler) VerifyResetOTP(c *gin.Context) {
 		request.Email,
 		request.OTP,
 	); err != nil {
+		message := "Invalid or expired code"
+		if !errors.Is(err, repository.ErrUserNotFound) &&
+			err.Error() != "invalid or expired OTP" {
+			log.Printf("verify reset OTP failed for %q: %v", request.Email, err)
+		}
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": err.Error(),
+			"message": message,
 		})
 		return
 	}
@@ -198,9 +247,21 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 		request.NewPassword,
 		request.ConfirmPassword,
 	); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		if errors.Is(err, repository.ErrUserNotFound) ||
+			err.Error() == "invalid or expired OTP" ||
+			err.Error() == "password must be at least 8 characters" ||
+			err.Error() == "new password and confirm password do not match" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+			return
+		}
+
+		log.Printf("reset password failed for %q: %v", request.Email, err)
+		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
-			"message": err.Error(),
+			"message": "Unable to reset password. Please try again later.",
 		})
 		return
 	}
@@ -233,7 +294,18 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 		}
 	}
 
+	if user, ok := c.Get("current_user"); ok {
+		if currentUser, isUser := user.(*models.User); isUser {
+			h.writeAudit(c, currentUser.ID.String(), "LOGOUT", "")
+		}
+	}
+
 	h.clearSessionCookie(c)
+
+	if strings.Contains(c.GetHeader("Accept"), "text/html") {
+		c.Redirect(http.StatusSeeOther, "/login")
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,

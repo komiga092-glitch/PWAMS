@@ -123,6 +123,63 @@ var ErrInvalidUserID = errors.New("invalid user id")
 var ErrInvalidPassword = errors.New(
 	"password must contain at least 8 characters",
 )
+var ErrCurrentPasswordIncorrect = errors.New("current password is incorrect")
+var ErrPasswordsDoNotMatch = errors.New("new passwords do not match")
+
+func (s *UserService) UpdateOwnProfile(
+	userID uuid.UUID,
+	request models.UpdateOwnProfileRequest,
+) (*models.User, error) {
+	username := strings.ToLower(strings.TrimSpace(request.Username))
+	email := strings.ToLower(strings.TrimSpace(request.Email))
+	exists, err := s.userRepo.ExistsByUsernameOrEmailExceptID(
+		username,
+		email,
+		userID.String(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, ErrUserAlreadyExists
+	}
+
+	user, err := s.userRepo.FindByID(userID.String())
+	if err != nil {
+		return nil, err
+	}
+	user.Username = username
+	user.Email = email
+	if err := s.userRepo.Update(user); err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func (s *UserService) ChangeOwnPassword(
+	userID uuid.UUID,
+	request models.ChangePasswordRequest,
+) error {
+	if request.NewPassword != request.ConfirmPassword {
+		return ErrPasswordsDoNotMatch
+	}
+	if len(request.NewPassword) < 8 {
+		return ErrInvalidPassword
+	}
+
+	user, err := s.userRepo.FindByID(userID.String())
+	if err != nil {
+		return err
+	}
+	if err := utils.CheckPassword(user.PasswordHash, request.CurrentPassword); err != nil {
+		return ErrCurrentPasswordIncorrect
+	}
+	passwordHash, err := utils.HashPassword(request.NewPassword)
+	if err != nil {
+		return fmt.Errorf("failed to hash new password: %w", err)
+	}
+	return s.userRepo.UpdatePassword(userID.String(), passwordHash)
+}
 
 func (s *UserService) GetUserByID(id string) (*models.User, error) {
 	id = strings.TrimSpace(id)

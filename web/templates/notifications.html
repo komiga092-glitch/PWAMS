@@ -6,6 +6,9 @@
       <h1>Notifications</h1>
       <p>View and manage system notifications</p>
     </div>
+    <button id="create-notification-btn" class="btn btn-primary" type="button" data-roles="Super Admin,Admin,Staff">
+      + Create Notification
+    </button>
   </div>
 
   <div class="panel">
@@ -27,9 +30,26 @@
 
             {{ if .CreatedAt }}
             <small> {{ .CreatedAt }} </small>
-            <button id="create-notification-btn" class="btn btn-primary" type="button" data-roles="Super Admin,Admin,Staff">
-              + Create Notification
-            </button>
+            {{ end }}
+          </div>
+
+          <div>
+            {{ if not .IsRead }}
+            <span class="badge badge-warning"> Unread </span>
+            {{ else }}
+            <span class="badge badge-success"> Read </span>
+            {{ end }}
+          </div>
+        </div>
+
+        {{ end }}
+      </div>
+
+      {{ else }}
+
+      <div class="empty">No notifications available.</div>
+
+      {{ end }}
     </div>
   </div>
 </section>

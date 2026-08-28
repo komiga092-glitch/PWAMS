@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,32 +14,35 @@ import (
 
 type AidRequestHandler struct {
 	aidRequestService *services.AidRequestService
+	auditLogService   *services.AuditLogService
 }
 
 func NewAidRequestHandler(
 	aidRequestService *services.AidRequestService,
+	auditLogService *services.AuditLogService,
 ) *AidRequestHandler {
 	return &AidRequestHandler{
 		aidRequestService: aidRequestService,
+		auditLogService:   auditLogService,
 	}
 }
 
 func (h *AidRequestHandler) Page(c *gin.Context) {
 	var query models.AidRequestListQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.HTML(http.StatusBadRequest, "base", gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": []gin.H{}, "error": "Invalid query parameters"})
+		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": []gin.H{}, "error": "Invalid query parameters"}))
 		return
 	}
 	requests, _, _, _, err := h.aidRequestService.ListAidRequests(query)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": []gin.H{}, "error": "Unable to retrieve aid requests"})
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": []gin.H{}, "error": "Unable to retrieve aid requests"}))
 		return
 	}
 	items := make([]gin.H, 0, len(requests))
 	for _, request := range requests {
 		items = append(items, gin.H{"ID": request.ID, "PersonID": request.PersonID, "RequestType": request.AidType, "Amount": request.RequestedAmount, "RequestedAt": request.RequestDate, "Status": request.Status})
 	}
-	c.HTML(http.StatusOK, "base", gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": items, "search": query.Search, "status": query.Status})
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": items, "search": query.Search, "status": query.Status}))
 }
 
 func (h *AidRequestHandler) Create(c *gin.Context) {
@@ -48,7 +52,6 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidAidRequestInfo,
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -268,7 +271,6 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidAidRequestInfo,
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -322,7 +324,6 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidReviewInfo,
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -362,6 +363,19 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 			errorResponseMapping{err: services.ErrApprovedAmountTooHigh, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return
+	}
+
+	// Approval/rejection decisions are mandatory audit events
+	// (SRS FR-16 / NFR-09).
+	if h.auditLogService != nil {
+		_ = h.auditLogService.Create(
+			currentUser.ID.String(),
+			"REVIEW",
+			"aid_requests",
+			aidRequest.ID.String(),
+			fmt.Sprintf("status=%s approved_amount=%s", aidRequest.Status, aidRequest.ApprovedAmount.String()),
+			c.ClientIP(),
+		)
 	}
 
 	c.JSON(http.StatusOK, gin.H{

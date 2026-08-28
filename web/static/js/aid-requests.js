@@ -53,6 +53,9 @@ document.addEventListener("keydown", (event) => {
 async function submitAidRequest(event) {
     event.preventDefault();
     const form = event.currentTarget;
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton)
+        submitButton.disabled = true;
     const data = Object.fromEntries(new FormData(form));
     const requestBody = {
         ...data,
@@ -82,6 +85,10 @@ async function submitAidRequest(event) {
     }
     catch (error) {
         alert(error instanceof Error ? error.message : "Unable to save aid request.");
+    }
+    finally {
+        if (submitButton)
+            submitButton.disabled = false;
     }
 }
 window.openAidRequestModal =

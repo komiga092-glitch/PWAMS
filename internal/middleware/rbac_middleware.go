@@ -13,10 +13,7 @@ func RequireRole(requiredRole string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		value, exists := c.Get("current_user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"success": false,
-				"message": "Authentication required",
-			})
+			abortUnauthenticated(c, "Authentication required")
 			return
 		}
 
@@ -30,10 +27,7 @@ func RequireRole(requiredRole string) gin.HandlerFunc {
 		}
 
 		if user.Role.Name != requiredRole {
-			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-				"success": false,
-				"message": "You do not have permission to access this resource",
-			})
+			abortForbidden(c)
 			return
 		}
 
@@ -46,10 +40,7 @@ func RequireAnyRole(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		value, exists := c.Get("current_user")
 		if !exists {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"success": false,
-				"message": "Authentication required",
-			})
+			abortUnauthenticated(c, "Authentication required")
 			return
 		}
 
@@ -69,9 +60,23 @@ func RequireAnyRole(allowedRoles ...string) gin.HandlerFunc {
 			}
 		}
 
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
-			"success": false,
-			"message": "You do not have permission to access this resource",
-		})
+		abortForbidden(c)
 	}
+}
+
+func abortForbidden(c *gin.Context) {
+	if isBrowserRequest(c) {
+		c.HTML(http.StatusForbidden, "error.html", gin.H{
+			"title":   "Access denied",
+			"heading": "Access denied",
+			"message": "You do not have permission to access this page.",
+		})
+		c.Abort()
+		return
+	}
+
+	c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+		"success": false,
+		"message": "You do not have permission to access this resource",
+	})
 }

@@ -41,3 +41,7 @@ type CareProvided struct {
 	IsDeleted bool       `gorm:"not null;default:false;index" json:"is_deleted"`
 	TenantID  *uuid.UUID `gorm:"type:uuid;index" json:"tenant_id"`
 }
+
+func (CareProvided) TableName() string {
+	return "care_provided"
+}

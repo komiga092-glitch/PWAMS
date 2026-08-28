@@ -11,7 +11,11 @@
   <nav class="nav">
     <div class="nav-section">Main</div>
 
-    <a class="nav-link" href="/dashboard" data-roles="Super Admin,Admin,Staff">
+    <a
+      class="nav-link"
+      href="/dashboard"
+      data-roles="Super Admin,Admin,Staff,Volunteer,Donor,Beneficiary"
+    >
       <span class="nav-icon">⌂</span><span>Dashboard</span>
     </a>
 
@@ -81,7 +85,10 @@
       <span class="nav-icon">¤</span><span>Revenue</span>
     </a>
 
-    <div class="nav-section">System</div>
+    <div class="nav-section">Account</div>
+    <a class="nav-link" href="/profile">
+      <span class="nav-icon">◉</span><span>My Profile</span>
+    </a>
 
     <a class="nav-link" href="/notifications/page">
       <span class="nav-icon">♢</span><span>Notifications</span>
@@ -112,6 +119,12 @@
     <a class="nav-link" href="/audit-logs/page" data-roles="Super Admin,Admin">
       <span class="nav-icon">◫</span><span>Audit Logs</span>
     </a>
+
+    <form class="logout-form" method="post" action="/logout">
+      <button class="nav-link logout-button" type="submit">
+        <span class="nav-icon">↪</span><span>Logout</span>
+      </button>
+    </form>
   </nav>
 </aside>
 {{ end }}

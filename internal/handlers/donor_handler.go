@@ -31,7 +31,6 @@ func (h *DonorHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid donor information",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -83,14 +82,14 @@ func (h *DonorHandler) Page(c *gin.Context) {
 	var query models.DonorListQuery
 
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.HTML(http.StatusBadRequest, "base", gin.H{
+		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
 			"page_template": "donors_content",
 			"title":         "Donors - PWAMS",
 			"data":          []gin.H{},
 			"search":        "",
 			"status":        "",
 			"error":         "Invalid query parameters",
-		})
+		}))
 		return
 	}
 
@@ -98,14 +97,14 @@ func (h *DonorHandler) Page(c *gin.Context) {
 		h.donorService.ListDonors(query)
 
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 			"page_template": "donors_content",
 			"title":         "Donors - PWAMS",
 			"data":          []gin.H{},
 			"search":        query.Search,
 			"status":        query.Status,
 			"error":         "Unable to retrieve donors",
-		})
+		}))
 		return
 	}
 
@@ -122,13 +121,13 @@ func (h *DonorHandler) Page(c *gin.Context) {
 		})
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "donors_content",
 		"title":         "Donors - PWAMS",
 		"data":          items,
 		"search":        query.Search,
 		"status":        query.Status,
-	})
+	}))
 }
 
 func (h *DonorHandler) List(c *gin.Context) {
@@ -256,7 +255,6 @@ func (h *DonorHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid donor information",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -363,35 +361,35 @@ func (h *DonorHandler) ViewPage(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidDonorID):
-			c.HTML(http.StatusBadRequest, "base", gin.H{
+			c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
 				"page_template": "donors_content",
 				"title":         "Donors - PWAMS",
 				"error":         constants.ErrInvalidDonorID,
-			})
+			}))
 
 		case errors.Is(err, repository.ErrDonorNotFound):
-			c.HTML(http.StatusNotFound, "base", gin.H{
+			c.HTML(http.StatusNotFound, "base", PageData(c, gin.H{
 				"page_template": "donors_content",
 				"title":         "Donors - PWAMS",
 				"error":         constants.ErrDonorNotFound,
-			})
+			}))
 
 		default:
-			c.HTML(http.StatusInternalServerError, "base", gin.H{
+			c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 				"page_template": "donors_content",
 				"title":         "Donors - PWAMS",
 				"error":         constants.ErrUnableToRetrieveDonor,
-			})
+			}))
 		}
 
 		return
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "donor_view_content",
 		"title":         "View Donor - PWAMS",
 		"donor":         donor,
-	})
+	}))
 }
 
 func (h *DonorHandler) EditPage(c *gin.Context) {
@@ -401,35 +399,35 @@ func (h *DonorHandler) EditPage(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidDonorID):
-			c.HTML(http.StatusBadRequest, "base", gin.H{
+			c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
 				"page_template": "donors_content",
 				"title":         "Donors - PWAMS",
 				"error":         constants.ErrInvalidDonorID,
-			})
+			}))
 
 		case errors.Is(err, repository.ErrDonorNotFound):
-			c.HTML(http.StatusNotFound, "base", gin.H{
+			c.HTML(http.StatusNotFound, "base", PageData(c, gin.H{
 				"page_template": "donors_content",
 				"title":         "Donors - PWAMS",
 				"error":         constants.ErrDonorNotFound,
-			})
+			}))
 
 		default:
-			c.HTML(http.StatusInternalServerError, "base", gin.H{
+			c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 				"page_template": "donors_content",
 				"title":         "Donors - PWAMS",
 				"error":         constants.ErrUnableToRetrieveDonor,
-			})
+			}))
 		}
 
 		return
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "donor_edit_content",
 		"title":         "Edit Donor - PWAMS",
 		"donor":         donor,
-	})
+	}))
 }
 
 func (h *DonorHandler) Delete(c *gin.Context) {

@@ -28,19 +28,19 @@ func NewLoanHandler(
 func (h *LoanHandler) Page(c *gin.Context) {
 	var query models.LoanListQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.HTML(http.StatusBadRequest, "base", gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Invalid query parameters"})
+		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Invalid query parameters"}))
 		return
 	}
 	loans, _, _, _, err := h.loanService.ListLoans(query)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Unable to retrieve loans"})
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Unable to retrieve loans"}))
 		return
 	}
 	items := make([]gin.H, 0, len(loans))
 	for _, loan := range loans {
 		items = append(items, gin.H{"ID": loan.ID, "PersonID": loan.PersonID, "LoanAmount": loan.LoanAmount, "InterestRate": loan.InterestRate, "DurationMonths": loan.DurationMonths, "InstallmentAmount": loan.InstallmentAmount, "Status": loan.Status})
 	}
-	c.HTML(http.StatusOK, "base", gin.H{"page_template": "loans_content", "title": "Loans", "data": items, "search": "", "status": query.Status})
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{"page_template": "loans_content", "title": "Loans", "data": items, "search": "", "status": query.Status}))
 }
 
 func (h *LoanHandler) Create(c *gin.Context) {
@@ -50,7 +50,6 @@ func (h *LoanHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid loan request",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -202,7 +201,6 @@ func (h *LoanHandler) Review(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid review request",
-			"error":   err.Error(),
 		})
 		return
 	}

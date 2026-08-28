@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 )
@@ -70,7 +71,7 @@ func (s *RevenueService) Create(request models.CreateRevenueRecordRequest, creat
 	return s.repo.FindByID(record.ID.String())
 }
 
-func (s *RevenueService) buildRecord(recordType, category string, amount float64, currency, recordDate, description, reference string, createdByID uuid.UUID) (*models.RevenueRecord, error) {
+func (s *RevenueService) buildRecord(recordType, category string, amount decimal.Decimal, currency, recordDate, description, reference string, createdByID uuid.UUID) (*models.RevenueRecord, error) {
 	recordType = strings.ToLower(strings.TrimSpace(recordType))
 	category = strings.TrimSpace(category)
 	if !validRevenueType(recordType) {
@@ -79,7 +80,7 @@ func (s *RevenueService) buildRecord(recordType, category string, amount float64
 	if !validRevenueCategory(category) {
 		return nil, ErrInvalidRevenueCategory
 	}
-	if amount <= 0 {
+	if amount.LessThanOrEqual(decimal.Zero) {
 		return nil, ErrInvalidRevenueAmount
 	}
 	date, err := parseRevenueDate(recordDate)

@@ -1,0 +1,126 @@
+package components
+
+type DashboardStats struct {
+	TotalBeneficiaries int
+	TotalStudents      int
+	TotalDonors        int
+	ActiveLoans        int
+	PendingAidRequests int
+	RevenueSummary     float64
+	UnreadNotifications int
+	UsersByRole        map[string]int
+}
+
+templ DashboardPage(stats DashboardStats, errorMsg string) {
+	@Base("PWAMS - Dashboard") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Dashboard</h1>
+					<p>Overview of PWAMS operations</p>
+				</div>
+				<a href="/reports/dashboard" class="btn btn-primary" data-roles="Super Admin,Admin">View Reports</a>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			} else {
+				<section class="stats-grid">
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Total Beneficiaries</span><span class="stat-icon">♟</span>
+						</div>
+						<div class="stat-value">{ itoa(stats.TotalBeneficiaries) }</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Students</span><span class="stat-icon">✓</span>
+						</div>
+						<div class="stat-value">{ itoa(stats.TotalStudents) }</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Donors</span><span class="stat-icon">◷</span>
+						</div>
+						<div class="stat-value">{ itoa(stats.TotalDonors) }</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Active Loans</span><span class="stat-icon">⊘</span>
+						</div>
+						<div class="stat-value">{ itoa(stats.ActiveLoans) }</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Pending Aid Requests</span><span class="stat-icon">◷</span>
+						</div>
+						<div class="stat-value">{ itoa(stats.PendingAidRequests) }</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Revenue Summary</span><span class="stat-icon">◈</span>
+						</div>
+						<div class="stat-value">{ formatDecimal(stats.RevenueSummary) }</div>
+					</div>
+					<div class="stat-card">
+						<div class="stat-top">
+							<span class="stat-label">Notifications</span><span class="stat-icon">♢</span>
+						</div>
+						<div class="stat-value">{ itoa(stats.UnreadNotifications) }</div>
+					</div>
+				</section>
+				<div class="dashboard-grid">
+					<div class="panel">
+						<div class="panel-header"><h2>Quick Access</h2></div>
+						<div class="panel-body">
+							<div class="quick-grid">
+								<a class="quick-card" href="/persons/page" data-roles="Super Admin,Admin,Staff">
+									<div class="quick-icon">♙</div>
+									<div class="quick-title">Care Seekers</div>
+									<div class="quick-text">View and manage persons</div>
+								</a>
+								<a class="quick-card" href="/students/page" data-roles="Super Admin,Admin,Staff">
+									<div class="quick-icon">🎓</div>
+									<div class="quick-title">Students</div>
+									<div class="quick-text">Manage student records</div>
+								</a>
+								<a class="quick-card" href="/donations/page" data-roles="Super Admin,Admin,Staff">
+									<div class="quick-icon">◈</div>
+									<div class="quick-title">Donations</div>
+									<div class="quick-text">Manage donations</div>
+								</a>
+								<a class="quick-card" href="/aid-requests/page" data-roles="Super Admin,Admin,Staff">
+									<div class="quick-icon">▣</div>
+									<div class="quick-title">Aid Requests</div>
+									<div class="quick-text">Review assistance</div>
+								</a>
+								<a class="quick-card" href="/loans/page" data-roles="Super Admin,Admin,Staff">
+									<div class="quick-icon">₹</div>
+									<div class="quick-title">Loans</div>
+									<div class="quick-text">Manage loans</div>
+								</a>
+								<a class="quick-card" href="/notifications/page">
+									<div class="quick-icon">♢</div>
+									<div class="quick-title">Notifications</div>
+									<div class="quick-text">View notifications</div>
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="panel">
+						<div class="panel-header"><h2>Users by Role</h2></div>
+						<div class="panel-body">
+							for role, count := range stats.UsersByRole {
+								<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">
+									<span>{ role }</span><strong>{ itoa(count) }</strong>
+								</div>
+							}
+							if len(stats.UsersByRole) == 0 {
+								<div class="empty">No role data available.</div>
+							}
+						</div>
+					</div>
+				</div>
+			}
+		</section>
+	}
+}

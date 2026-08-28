@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
@@ -55,11 +56,11 @@ func (s *LoanService) CreateLoan(
 		return nil, errors.New("person account is not active")
 	}
 
-	if request.LoanAmount <= 0 {
+	if request.LoanAmount.LessThanOrEqual(decimal.Zero) {
 		return nil, ErrInvalidLoanAmount
 	}
 
-	if request.InterestRate < 0 {
+	if request.InterestRate.LessThan(decimal.Zero) {
 		return nil, ErrInvalidInterestRate
 	}
 
@@ -95,14 +96,22 @@ func (s *LoanService) CreateLoan(
 }
 
 func calculateLoanInstallment(
-	amount float64,
-	interestRate float64,
+	amount decimal.Decimal,
+	interestRate decimal.Decimal,
 	durationMonths int,
-) float64 {
-	totalInterest := amount * (interestRate / 100)
-	totalAmount := amount + totalInterest
+) decimal.Decimal {
+	return CalculateLoanInstallmentPublic(amount, interestRate, durationMonths)
+}
 
-	return totalAmount / float64(durationMonths)
+// CalculateLoanInstallmentPublic is exported for testing.
+func CalculateLoanInstallmentPublic(
+	amount decimal.Decimal,
+	interestRate decimal.Decimal,
+	durationMonths int,
+) decimal.Decimal {
+	totalInterest := amount.Mul(interestRate).Div(decimal.NewFromInt(100))
+	totalAmount := amount.Add(totalInterest)
+	return totalAmount.Div(decimal.NewFromInt(int64(durationMonths)))
 }
 
 func (s *LoanService) GetLoanByID(

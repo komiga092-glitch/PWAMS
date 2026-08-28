@@ -1,0 +1,86 @@
+package components
+
+type Student struct {
+	ID          uint
+	FullName    string
+	School      string
+	Grade       string
+	Status      string
+}
+
+templ StudentsPage(students []Student, search string, errorMsg string) {
+	@Base("PWAMS - Students") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Students</h1>
+					<p>Manage student educational records.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/students/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Add Student</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/students/page" hx-target="#students-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="student-search">Search</label>
+							<input id="student-search" type="text" name="search" placeholder="Search name or school..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/students/page" hx-target="#students-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="students-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Student List</h2>
+						<span class="badge">{ itoa(len(students)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Name</th><th>School</th><th>Grade</th><th>Status</th><th>Actions</th></tr>
+							</thead>
+							<tbody>
+								for _, s := range students {
+									<tr>
+										<td>{ s.FullName }</td>
+										<td>{ s.School }</td>
+										<td>{ s.Grade }</td>
+										<td>
+											if s.Status == "Active" {
+												<span class="badge badge-success">Active</span>
+											} else {
+												<span class="badge badge-muted">{ s.Status }</span>
+											}
+										</td>
+										<td>
+											<div class="table-actions">
+												<a href={ "/students/" + itoa(int(s.ID)) + "/view" } class="btn btn-secondary">View</a>
+												<a href={ "/students/" + itoa(int(s.ID)) + "/edit" } class="btn btn-primary">Edit</a>
+											</div>
+										</td>
+									</tr>
+								}
+								if len(students) == 0 {
+									<tr><td colspan="5" class="empty">No students found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

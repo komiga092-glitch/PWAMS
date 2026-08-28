@@ -8,7 +8,9 @@
     "outDir": "./web/static/js/offline",
     "sourceMap": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": []
   },
-  "include": ["web/src/offline/**/*.ts"]
+  "include": ["web/src/offline/**/*.ts", "web/src/offline/sw.d.ts"],
+  "exclude": ["node_modules", "web/src/offline/**/*.test.ts"]
 }

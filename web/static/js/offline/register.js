@@ -4,7 +4,91 @@ import { syncPendingMutations } from "./sync.js";
 import { renderConflictStatus } from "./conflicts.js";
 import { pullSync } from "./pull.js";
 import { syncPendingMediaUploads } from "./media.js";
-import { revalidateOnlineSession } from "./session.js";
+import { isOfflineSessionValid, revalidateOnlineSession, OFFLINE_SESSION_EXPIRED_MESSAGE, } from "./session.js";
+/* =========================================================
+   OFFLINE SESSION WINDOW GUARD (spec §7)
+   A user may work offline for max 48 hours. After that the
+   PWA layout is blocked until a real server reconnect check
+   succeeds.
+   ========================================================= */
+let sessionLockElement = null;
+function showOfflineSessionLock() {
+    if (sessionLockElement)
+        return;
+    const lock = document.createElement("div");
+    lock.className = "offline-session-lock";
+    lock.setAttribute("role", "alertdialog");
+    lock.setAttribute("aria-modal", "true");
+    lock.innerHTML = `
+    <div class="offline-session-lock-card">
+      <h2>Session locked</h2>
+      <p>${OFFLINE_SESSION_EXPIRED_MESSAGE}</p>
+      <button type="button" data-session-reconnect>Reconnect</button>
+      <p class="offline-session-lock-status" data-session-lock-status hidden></p>
+    </div>
+  `;
+    document.body.appendChild(lock);
+    document.body.style.overflow = "hidden";
+    sessionLockElement = lock;
+    const button = lock.querySelector("[data-session-reconnect]");
+    button?.addEventListener("click", () => {
+        void (async () => {
+            button.disabled = true;
+            const status = lock.querySelector("[data-session-lock-status]");
+            if (status) {
+                status.hidden = false;
+                status.textContent = "Checking connection...";
+            }
+            if (await revalidateOnlineSession()) {
+                hideOfflineSessionLock();
+            }
+            else if (status) {
+                status.textContent =
+                    "Still offline or session rejected. Try again once connectivity returns.";
+                button.disabled = false;
+            }
+        })();
+    });
+}
+function hideOfflineSessionLock() {
+    sessionLockElement?.remove();
+    sessionLockElement = null;
+    document.body.style.overflow = "";
+}
+async function enforceOfflineSessionWindow() {
+    try {
+        if (!navigator.onLine && !(await isOfflineSessionValid())) {
+            showOfflineSessionLock();
+            return;
+        }
+        if (navigator.onLine || (await isOfflineSessionValid())) {
+            hideOfflineSessionLock();
+        }
+    }
+    catch (error) {
+        console.error("Offline session window check failed", error);
+    }
+}
+/** Spec §17: warn when browser storage drops below 100 MB free. */
+async function checkStorageQuota() {
+    if (!navigator.storage?.estimate)
+        return;
+    try {
+        const estimate = await navigator.storage.estimate();
+        const quota = estimate.quota ?? 0;
+        const usage = estimate.usage ?? 0;
+        if (quota > 0 && quota - usage < 100 * 1024 * 1024) {
+            console.warn("PWAMS storage warning: less than 100 MB of PWA storage remains.");
+            const indicator = document.querySelector("[data-offline-status]");
+            if (indicator) {
+                indicator.title = "Low device storage - sync may fail.";
+            }
+        }
+    }
+    catch {
+        // Storage estimation is best-effort only.
+    }
+}
 async function synchronizeOfflineChanges() {
     if (!(await revalidateOnlineSession())) {
         const indicator = document.querySelector("[data-offline-status]");
@@ -40,7 +124,7 @@ async function synchronizeOfflineChanges() {
     }
 }
 window.addEventListener("online", () => {
-    void synchronizeOfflineChanges();
+    void synchronizeOfflineChanges().then(() => enforceOfflineSessionWindow());
 });
 window.addEventListener("pwams:sync-conflict", () => {
     void renderConflictStatus();
@@ -74,9 +158,11 @@ async function initializeOfflineFoundation() {
     catch (error) {
         console.error("Offline conflict status initialization failed:", error);
     }
+    await enforceOfflineSessionWindow();
     if (navigator.onLine) {
         await synchronizeOfflineChanges();
     }
+    await checkStorageQuota();
     if ("serviceWorker" in navigator) {
         try {
             await navigator.serviceWorker.register("/static/js/offline/service-worker.js", { scope: "/" });

@@ -7,7 +7,12 @@
       <p>Manage and track donations received by PWAMS.</p>
     </div>
 
-    <button class="btn btn-primary" type="button" onclick="openDonationModal()">
+    <button
+      class="btn btn-primary"
+      type="button"
+      onclick="openDonationModal()"
+      data-roles="Super Admin,Admin,Staff"
+    >
       + New Donation
     </button>
   </div>
@@ -37,7 +42,7 @@
           {{ range .data }}
 
           <tr>
-            <td>{{ .DonorID }}</td>
+            <td>{{ .DonorName }}</td>
 
             <td>{{ .Amount }}</td>
 
@@ -105,9 +110,17 @@
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="donorID">Donor ID *</label>
-
-          <input id="donorID" name="donor_id" placeholder="Donor ID" required />
+          <label for="donorID">Donor *</label>
+          {{ if .donors }}
+          <select id="donorID" name="donor_id" required>
+            <option value="">Select donor</option>
+            {{ range .donors }}
+            <option value="{{ .ID }}">{{ .Name }}</option>
+            {{ end }}
+          </select>
+          {{ else }}
+          <p class="form-help">No active donors are available.</p>
+          {{ end }}
         </div>
         <div class="form-group">
           <label for="donationType">Donation Type *</label>

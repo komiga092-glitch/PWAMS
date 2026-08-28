@@ -65,6 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
 async function submitRepayment(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const form = event.currentTarget as HTMLFormElement;
+  const submitButton = form.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  );
+  if (submitButton) submitButton.disabled = true;
   const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
   const requestBody = {
     ...data,
@@ -100,6 +104,8 @@ async function submitRepayment(event: SubmitEvent): Promise<void> {
     window.location.reload();
   } catch (error: unknown) {
     alert(error instanceof Error ? error.message : "Unable to save repayment.");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 }
 

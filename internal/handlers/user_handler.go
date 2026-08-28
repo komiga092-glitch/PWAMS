@@ -29,10 +29,78 @@ func NewUserHandler(
 
 // Page renders the users management page.
 func (h *UserHandler) Page(c *gin.Context) {
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"title":         "Users",
 		"page_template": "users_content",
-	})
+	}))
+}
+
+func (h *UserHandler) ProfilePage(c *gin.Context) {
+	currentUser, ok := h.getCurrentUser(c)
+	if !ok {
+		return
+	}
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
+		"title":         "My Profile",
+		"page_template": "profile_content",
+		"profile_user":  currentUser,
+	}))
+}
+
+func (h *UserHandler) UpdateOwnProfile(c *gin.Context) {
+	currentUser, ok := h.getCurrentUser(c)
+	if !ok {
+		return
+	}
+	var request models.UpdateOwnProfileRequest
+	if err := c.ShouldBind(&request); err != nil {
+		c.HTML(http.StatusUnprocessableEntity, "base", PageData(c, gin.H{
+			"title": "My Profile", "page_template": "profile_content", "profile_user": currentUser,
+			"error": "Enter a valid username and email address.",
+		}))
+		return
+	}
+	user, err := h.userService.UpdateOwnProfile(currentUser.ID, request)
+	if err != nil {
+		status := http.StatusInternalServerError
+		message := "Unable to update your profile."
+		if errors.Is(err, services.ErrUserAlreadyExists) {
+			status = http.StatusConflict
+			message = "That username or email is already in use."
+		}
+		c.HTML(status, "base", PageData(c, gin.H{"title": "My Profile", "page_template": "profile_content", "profile_user": userOrCurrent(user, currentUser), "error": message}))
+		return
+	}
+	c.Redirect(http.StatusSeeOther, "/profile?updated=1")
+}
+
+func (h *UserHandler) ChangeOwnPassword(c *gin.Context) {
+	currentUser, ok := h.getCurrentUser(c)
+	if !ok {
+		return
+	}
+	var request models.ChangePasswordRequest
+	if err := c.ShouldBind(&request); err != nil {
+		c.HTML(http.StatusUnprocessableEntity, "base", PageData(c, gin.H{"title": "My Profile", "page_template": "profile_content", "profile_user": currentUser, "password_error": "Complete all password fields correctly."}))
+		return
+	}
+	if err := h.userService.ChangeOwnPassword(currentUser.ID, request); err != nil {
+		status := http.StatusUnprocessableEntity
+		message := err.Error()
+		if errors.Is(err, services.ErrCurrentPasswordIncorrect) {
+			message = "Current password is incorrect."
+		}
+		c.HTML(status, "base", PageData(c, gin.H{"title": "My Profile", "page_template": "profile_content", "profile_user": currentUser, "password_error": message}))
+		return
+	}
+	c.Redirect(http.StatusSeeOther, "/profile?password_updated=1")
+}
+
+func userOrCurrent(user, current *models.User) *models.User {
+	if user != nil {
+		return user
+	}
+	return current
 }
 
 // Create creates a new system user.
@@ -56,7 +124,6 @@ func (h *UserHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid user information",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -278,7 +345,6 @@ func (h *UserHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid user information",
-			"error":   err.Error(),
 		})
 		return
 	}

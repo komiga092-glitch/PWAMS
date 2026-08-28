@@ -24,11 +24,11 @@ func RegisterCareProvidedRoutes(
 	protected.GET(
 		"/care-provided/page",
 		func(c *gin.Context) {
-			c.HTML(http.StatusOK, "base", gin.H{
+			c.HTML(http.StatusOK, "base", handlers.PageData(c, gin.H{
 				"page_template": "care_provided_content",
 				"title":         "Care Provided",
 				"data":          []interface{}{},
-			})
+			}))
 		},
 	)
 

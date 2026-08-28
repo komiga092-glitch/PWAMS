@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -9,18 +10,39 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
-type SyncHandler struct {
-	service *services.SyncService
+// normalizedEntity applies the same singularisation the sync service
+// uses so failure results report consistent entity names.
+func normalizedEntity(entityType string) string {
+	name := strings.ToLower(strings.TrimSpace(entityType))
+	return strings.TrimSuffix(name, "s")
 }
 
-func NewSyncHandler(service *services.SyncService) *SyncHandler {
+// truncatedReason keeps failure messages short and free of internals
+// that would otherwise leak database or stack detail to clients.
+func truncatedReason(err error) string {
+	const maxLen = 160
+	message := err.Error()
+	if len(message) > maxLen {
+		message = message[:maxLen]
+	}
+	return message
+}
+
+type SyncHandler struct {
+	service *services.SyncService
+	db      *gorm.DB
+}
+
+func NewSyncHandler(service *services.SyncService, db *gorm.DB) *SyncHandler {
 	return &SyncHandler{
 		service: service,
+		db:      db,
 	}
 }
 
@@ -120,28 +142,62 @@ func (h *SyncHandler) Push(c *gin.Context) {
 
 	results := make([]models.SyncResult, 0, len(request.Operations))
 	hasConflict := false
+	hasFailure := false
 
-	for _, operation := range request.Operations {
-		result, err := h.service.ApplyOperation(operation)
+	txErr := h.db.Transaction(func(tx *gorm.DB) error {
+		for idx, operation := range request.Operations {
+			// Per-operation savepoint (spec §5): a structural/validation
+			// failure rolls back only that entity's work so independent
+			// operations in the batch still commit.
+			savepoint := fmt.Sprintf("pwams_sync_op_%d", idx)
 
-		if result != nil {
-			results = append(results, *result)
-		}
-
-		if err != nil {
-			if errors.Is(err, services.ErrPersonSyncConflict) ||
-				errors.Is(err, services.ErrSyncConflict) {
-				hasConflict = true
-				continue
+			if err := tx.SavePoint(savepoint).Error; err != nil {
+				return err
 			}
 
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": "Unable to process synchronization operation",
-				"results": results,
-			})
-			return
+			result, err := h.service.ApplyOperation(operation)
+
+			if result != nil {
+				results = append(results, *result)
+			}
+
+			if err != nil {
+				switch {
+				case errors.Is(err, services.ErrPersonSyncConflict),
+					errors.Is(err, services.ErrSyncConflict):
+					// Server record untouched for conflicts; other
+					// operations proceed and overall status becomes 409.
+					hasConflict = true
+
+				default:
+					if rollbackErr := tx.RollbackTo(savepoint).Error; rollbackErr != nil {
+						return rollbackErr
+					}
+
+					failed := models.SyncResult{
+						OperationID:   operation.ID,
+						EntityType:    normalizedEntity(operation.EntityType),
+						RecordID:      operation.RecordID,
+						Success:       false,
+						Code:          models.SyncErrorValidation,
+						ClientVersion: operation.ClientVersion,
+						Message:       truncatedReason(err),
+					}
+					results = append(results, failed)
+					hasFailure = true
+				}
+			}
 		}
+		return nil
+	})
+
+	if txErr != nil && !hasConflict {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Unable to process synchronization operation",
+			"results": results,
+		})
+		return
 	}
 
 	statusCode := http.StatusOK
@@ -151,7 +207,7 @@ func (h *SyncHandler) Push(c *gin.Context) {
 	}
 
 	response := models.SyncPushResponse{
-		Success: !hasConflict,
+		Success: !hasConflict && !hasFailure,
 		Results: results,
 	}
 

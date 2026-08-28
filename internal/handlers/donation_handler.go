@@ -3,8 +3,10 @@ package handlers
 import (
 	"log"
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -14,32 +16,58 @@ import (
 
 type DonationHandler struct {
 	donationService *services.DonationService
+	donorService    *services.DonorService
 }
 
 func NewDonationHandler(
 	donationService *services.DonationService,
+	donorService *services.DonorService,
 ) *DonationHandler {
 	return &DonationHandler{
 		donationService: donationService,
+		donorService:    donorService,
 	}
 }
 
 func (h *DonationHandler) Page(c *gin.Context) {
+	donors, _, _, _, err := h.donorService.ListDonors(models.DonorListQuery{
+		Status:   models.DonorStatusActive,
+		Page:     1,
+		PageSize: 100,
+	})
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
+			"page_template": "donations_content",
+			"title":         "Donations",
+			"data":          []gin.H{},
+			"donors":        []models.Donor{},
+			"error":         "Unable to retrieve donors",
+		}))
+		return
+	}
+	sort.SliceStable(donors, func(i, j int) bool {
+		return donors[i].Name < donors[j].Name
+	})
+
 	var query models.DonationListQuery
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.HTML(http.StatusBadRequest, "base", gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "error": "Invalid query parameters"})
+		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "donors": donors, "error": "Invalid query parameters"}))
 		return
 	}
-	donations, _, _, _, err := h.donationService.ListDonations(query)
+	donationRecords, _, _, _, err := h.donationService.ListDonations(query)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "error": "Unable to retrieve donations"})
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "donors": donors, "error": "Unable to retrieve donations"}))
 		return
 	}
-	items := make([]gin.H, 0, len(donations))
-	for _, donation := range donations {
-		items = append(items, gin.H{"ID": donation.ID, "DonorID": donation.DonorID, "Amount": donation.Amount, "DonationDate": donation.DonationDate, "Description": donation.Description, "Status": donation.Status})
+	items := make([]gin.H, 0, len(donationRecords))
+	for _, donation := range donationRecords {
+		donorName := "Unknown donor"
+		if donation.Donor.ID != uuid.Nil {
+			donorName = donation.Donor.Name
+		}
+		items = append(items, gin.H{"ID": donation.ID, "DonorID": donation.DonorID, "DonorName": donorName, "Amount": donation.Amount, "DonationDate": donation.DonationDate, "Description": donation.Description, "Status": donation.Status})
 	}
-	c.HTML(http.StatusOK, "base", gin.H{"page_template": "donations_content", "title": "Donations", "data": items})
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{"page_template": "donations_content", "title": "Donations", "data": items, "donors": donors}))
 }
 
 func (h *DonationHandler) Create(c *gin.Context) {
@@ -49,7 +77,6 @@ func (h *DonationHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid donation information",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -247,7 +274,6 @@ func (h *DonationHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidDonationInfo,
-			"error":   err.Error(),
 		})
 		return
 	}

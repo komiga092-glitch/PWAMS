@@ -35,6 +35,12 @@ func main() {
 		log.Fatalf("database connection error: %v", err)
 	}
 
+	// Release mode for production: disables debug warnings and
+	// request-level debug logging (secure-by-default).
+	if cfg.AppEnv == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	sqlDB, err := db.DB()
 	if err != nil {
 		log.Fatalf("database instance error: %v", err)
@@ -144,6 +150,7 @@ func main() {
 
 	syncHandler := handlers.NewSyncHandler(
 		syncService,
+		db,
 	)
 	// =========================
 	// Services
@@ -243,6 +250,7 @@ func main() {
 	loanRepaymentService := services.NewLoanRepaymentService(
 		loanRepaymentRepo,
 		loanRepo,
+		db,
 	)
 
 	revenueService := services.NewRevenueService(revenueRepo)
@@ -261,6 +269,7 @@ func main() {
 		authService,
 		sessionService,
 		passwordResetService,
+		auditLogService,
 		secureCookie,
 	)
 
@@ -291,10 +300,12 @@ func main() {
 
 	donationHandler := handlers.NewDonationHandler(
 		donationService,
+		donorService,
 	)
 
 	aidRequestHandler := handlers.NewAidRequestHandler(
 		aidRequestService,
+		auditLogService,
 	)
 
 	notificationHandler := handlers.NewNotificationHandler(
@@ -320,9 +331,10 @@ func main() {
 
 	loanRepaymentHandler := handlers.NewLoanRepaymentHandler(
 		loanRepaymentService,
+		auditLogService,
 	)
 
-	revenueHandler := handlers.NewRevenueHandler(revenueService)
+	revenueHandler := handlers.NewRevenueHandler(revenueService, auditLogService)
 
 	careProvidedHandler := handlers.NewCareProvidedHandler(
 		careProvidedService,
@@ -342,6 +354,7 @@ func main() {
 
 	authMiddleware := middleware.NewAuthMiddleware(
 		sessionService,
+		secureCookie,
 	)
 
 	// =========================
@@ -349,6 +362,14 @@ func main() {
 	// =========================
 
 	router := gin.Default()
+
+	// Global middleware
+	router.Use(middleware.SecurityHeaders())
+	router.Use(middleware.RateLimitGeneric())
+
+	// CSRF: issue token cookies on every response and validate the
+	// double-submit token on all unsafe methods.
+	router.Use(middleware.EnsureCSRF(secureCookie))
 
 	/*
 		Template loading.
@@ -371,9 +392,11 @@ func main() {
 		"web/templates/forgot_password.html",
 		"web/templates/verify_reset_otp.html",
 		"web/templates/reset_password.html",
+		"web/templates/error.html",
 
 		"web/templates/dashboard.html",
 		"web/templates/users.html",
+		"web/templates/profile.html",
 
 		"web/templates/persons.html",
 		"web/templates/person_form.html",
@@ -399,7 +422,14 @@ func main() {
 		"web/templates/reports.html",
 		"web/templates/audit_logs.html",
 	)
+	router.Use(func(c *gin.Context) {
+		if c.Request.URL.Path == "/static/js/offline/service-worker.js" {
+			c.Header("Service-Worker-Allowed", "/")
+		}
+		c.Next()
+	})
 	router.Static("/static", "web/static")
+	router.StaticFile("/offline.html", "web/static/offline.html")
 	// =========================
 	// Background Jobs
 	// =========================
@@ -424,7 +454,7 @@ func main() {
 	// Routes
 	// =========================
 
-	routes.Setup(router)
+	routes.Setup(router, db)
 
 	routes.RegisterAuthRoutes(
 		router,
@@ -539,7 +569,11 @@ func main() {
 		revenueHandler,
 		authMiddleware,
 	)
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// Swagger UI is a development/documentation tool and must not be
+	// exposed in production builds.
+	if cfg.AppEnv != "production" {
+		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 	// =========================
 	// Start Server
 	// =========================
@@ -556,5 +590,14 @@ func main() {
 			"server failed: %v",
 			err,
 		)
+	}
+}
+
+func isSafeHTTPMethod(method string) bool {
+	switch method {
+	case "GET", "HEAD", "OPTIONS":
+		return true
+	default:
+		return false
 	}
 }

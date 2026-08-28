@@ -1,0 +1,84 @@
+package components
+
+type PersonViewData struct {
+	ID              uint
+	FullName        string
+	NICPassport     string
+	Phone           string
+	Email           string
+	Gender          string
+	DateOfBirth     string
+	Address         string
+	District        string
+	DSDivision      string
+	GNDivision      string
+	MonthlyIncome   string
+	Occupation      string
+	Status          string
+	PersonType      string
+}
+
+templ PersonViewPage(p PersonViewData) {
+	@Base("PWAMS - Care Seeker Details") {
+		<section class="person-page">
+			<div class="form-page-header">
+				<div>
+					<h1>Care Seeker Details</h1>
+					<p>{ p.FullName }</p>
+				</div>
+				<div class="table-actions">
+					<a href="/persons/page" class="btn btn-secondary">← Back</a>
+					<a href={ "/persons/" + itoa(int(p.ID)) + "/edit" } class="btn btn-primary">Edit</a>
+				</div>
+			</div>
+			<div class="person-form-card">
+				<div class="form-section">
+					<h2>Person Information</h2>
+					<div class="form-row">
+						<div class="form-field"><label>Person Type</label><div>{ p.PersonType }</div></div>
+						<div class="form-field"><label>Full Name</label><div>{ p.FullName }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field"><label>NIC / Passport</label><div>{ p.NICPassport }</div></div>
+						<div class="form-field"><label>Date of Birth</label><div>{ p.DateOfBirth }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field"><label>Gender</label><div>{ p.Gender }</div></div>
+						<div class="form-field"><label>Contact Number</label><div>{ p.Phone }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field"><label>Email</label><div>{ p.Email }</div></div>
+						<div class="form-field"><label>Occupation</label><div>{ p.Occupation }</div></div>
+					</div>
+				</div>
+				<div class="form-section">
+					<h2>Address Information</h2>
+					<div class="form-field full-field"><label>Address</label><div>{ p.Address }</div></div>
+					<div class="form-row">
+						<div class="form-field"><label>District</label><div>{ p.District }</div></div>
+						<div class="form-field"><label>DS Division</label><div>{ p.DSDivision }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field"><label>GN Division</label><div>{ p.GNDivision }</div></div>
+						<div class="form-field"><label>Monthly Income</label><div>{ p.MonthlyIncome }</div></div>
+					</div>
+				</div>
+				<div class="form-section">
+					<h2>Registration Information</h2>
+					<div class="form-field">
+						<label>Status</label>
+						<div>
+							if p.Status == "Active" {
+								<span class="badge badge-success">Active</span>
+							} else if p.Status == "Pending" {
+								<span class="badge badge-warning">Pending</span>
+							} else {
+								<span class="badge badge-muted">{ p.Status }</span>
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

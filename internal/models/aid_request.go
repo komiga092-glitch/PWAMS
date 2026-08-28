@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -41,8 +42,8 @@ type AidRequest struct {
 	Title       string `gorm:"size:200;not null" json:"title"`
 	Description string `gorm:"type:text;not null" json:"description"`
 
-	RequestedAmount float64 `gorm:"type:numeric(14,2);default:0" json:"requested_amount"`
-	ApprovedAmount  float64 `gorm:"type:numeric(14,2);default:0" json:"approved_amount"`
+	RequestedAmount decimal.Decimal `gorm:"type:numeric(14,2);default:0" json:"requested_amount"`
+	ApprovedAmount  decimal.Decimal `gorm:"type:numeric(14,2);default:0" json:"approved_amount"`
 	Currency        string  `gorm:"size:10;default:LKR" json:"currency"`
 
 	RequestDate time.Time  `gorm:"not null;index" json:"request_date"`

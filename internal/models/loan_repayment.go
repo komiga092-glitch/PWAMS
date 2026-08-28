@@ -4,32 +4,33 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 const (
-	RepaymentStatusPending   = "pending"
-	RepaymentStatusPaid      = "paid"
-	RepaymentStatusOverdue   = "overdue"
-	RepaymentStatusCancelled = "cancelled"
+	RepaymentStatusPending   = "Pending"
+	RepaymentStatusPaid      = "Paid"
+	RepaymentStatusOverdue   = "Overdue"
+	RepaymentStatusCancelled = "Cancelled"
 )
 
 type LoanRepayment struct {
 	ID uuid.UUID `gorm:"type:uuid;primaryKey" json:"id"`
 
-	LoanID uuid.UUID `gorm:"type:uuid;not null;index" json:"loan_id"`
+	LoanID uuid.UUID `gorm:"type:uuid;not null;index;uniqueIndex:uk_loan_repayment_installment" json:"loan_id"`
 	Loan   Loan      `gorm:"foreignKey:LoanID" json:"loan,omitempty"`
 
-	InstallmentNumber int `gorm:"not null" json:"installment_number"`
+	InstallmentNumber int `gorm:"not null;uniqueIndex:uk_loan_repayment_installment" json:"installment_number"`
 
 	DueDate time.Time `gorm:"not null" json:"due_date"`
 
-	Amount float64 `gorm:"type:numeric(15,2);not null" json:"amount"`
+	Amount decimal.Decimal `gorm:"type:numeric(15,2);not null" json:"amount"`
 
-	PaidAmount float64 `gorm:"type:numeric(15,2);not null;default:0" json:"paid_amount"`
+	PaidAmount decimal.Decimal `gorm:"type:numeric(15,2);not null;default:0" json:"paid_amount"`
 
 	PaidAt *time.Time `json:"paid_at,omitempty"`
 
-	Status string `gorm:"type:varchar(30);not null;default:'pending';index" json:"status"`
+	Status string `gorm:"type:varchar(30);not null;default:'Pending';index" json:"status"`
 
 	PaymentReference string `gorm:"type:varchar(255)" json:"payment_reference,omitempty"`
 
@@ -44,17 +45,17 @@ type LoanRepayment struct {
 }
 
 type CreateLoanRepaymentRequest struct {
-	LoanID            string  `json:"loan_id" binding:"required,uuid"`
-	InstallmentNumber int     `json:"installment_number" binding:"required"`
-	DueDate           string  `json:"due_date" binding:"required"`
-	Amount            float64 `json:"amount" binding:"required,gt=0"`
-	Notes             string  `json:"notes"`
+	LoanID            string          `json:"loan_id" binding:"required,uuid"`
+	InstallmentNumber int             `json:"installment_number" binding:"required"`
+	DueDate           string          `json:"due_date" binding:"required"`
+	Amount            decimal.Decimal `json:"amount" binding:"required"`
+	Notes             string          `json:"notes"`
 }
 
 type PayLoanRepaymentRequest struct {
-	PaidAmount       float64 `json:"paid_amount" binding:"required,gt=0"`
-	PaymentReference string  `json:"payment_reference"`
-	Notes            string  `json:"notes"`
+	PaidAmount       decimal.Decimal `json:"paid_amount" binding:"required"`
+	PaymentReference string          `json:"payment_reference"`
+	Notes            string          `json:"notes"`
 }
 
 type LoanRepaymentListQuery struct {

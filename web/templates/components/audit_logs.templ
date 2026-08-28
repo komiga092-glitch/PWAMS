@@ -1,0 +1,68 @@
+package components
+
+type AuditLog struct {
+	ID        uint
+	Action    string
+	Entity    string
+	EntityID  string
+	User      string
+	Timestamp string
+}
+
+templ AuditLogsPage(logs []AuditLog, search string, errorMsg string) {
+	@Base("PWAMS - Audit Logs") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Audit Logs</h1>
+					<p>Track system activity and changes.</p>
+				</div>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/audit-logs/page" hx-target="#audit-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="audit-search">Search</label>
+							<input id="audit-search" type="text" name="search" placeholder="Search action, entity or user..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/audit-logs/page" hx-target="#audit-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="audit-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Audit Log</h2>
+						<span class="badge">{ itoa(len(logs)) } Entries</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Timestamp</th><th>User</th><th>Action</th><th>Entity</th><th>Entity ID</th></tr>
+							</thead>
+							<tbody>
+								for _, l := range logs {
+									<tr>
+										<td>{ l.Timestamp }</td>
+										<td>{ l.User }</td>
+										<td>{ l.Action }</td>
+										<td>{ l.Entity }</td>
+										<td>{ l.EntityID }</td>
+									</tr>
+								}
+								if len(logs) == 0 {
+									<tr><td colspan="5" class="empty">No audit logs found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

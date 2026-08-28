@@ -22,6 +22,9 @@ func RegisterDashboardRoutes(
 			models.RoleSuperAdmin,
 			models.RoleAdmin,
 			models.RoleStaff,
+			models.RoleVolunteer,
+			models.RoleDonor,
+			models.RoleBeneficiary,
 		),
 	)
 

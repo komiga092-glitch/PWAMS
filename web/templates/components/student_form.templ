@@ -1,0 +1,68 @@
+package components
+
+type StudentFormData struct {
+	FullName string
+	School   string
+	Grade    string
+	Status   string
+}
+
+templ StudentFormPage(data StudentFormData, isEdit bool, studentID string) {
+	@Base("PWAMS - Student Form") {
+		<section class="person-page">
+			<div class="form-page-header">
+				<div>
+					if isEdit {
+						<h1>Edit Student</h1>
+					} else {
+						<h1>Add Student</h1>
+					}
+					<p>Student Information</p>
+				</div>
+				<a href="/students/page" class="back-link">← Back</a>
+			</div>
+			<div class="person-form-card">
+				<form
+					if isEdit {
+						hx-put={ "/students/" + studentID }
+					} else {
+						hx-post="/students"
+					}
+					hx-target="body"
+					hx-swap="innerHTML"
+				>
+					<div class="form-section">
+						<h2>Student Information</h2>
+						<div class="form-row">
+							<div class="form-field">
+								<label for="full_name">Full Name <span>*</span></label>
+								<input id="full_name" name="full_name" type="text" class="input" value={ data.FullName } required/>
+							</div>
+							<div class="form-field">
+								<label for="school">School</label>
+								<input id="school" name="school" type="text" class="input" value={ data.School }/>
+							</div>
+						</div>
+						<div class="form-row">
+							<div class="form-field">
+								<label for="grade">Grade</label>
+								<input id="grade" name="grade" type="text" class="input" value={ data.Grade }/>
+							</div>
+							<div class="form-field">
+								<label for="status">Status</label>
+								<select id="status" name="status" class="input">
+									<option value="Active" selected?={ data.Status == "Active" }>Active</option>
+									<option value="Inactive" selected?={ data.Status == "Inactive" }>Inactive</option>
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="form-actions">
+						<a href="/students/page" class="btn-secondary">Cancel</a>
+						<button type="submit" class="btn-primary">Save</button>
+					</div>
+				</form>
+			</div>
+		</section>
+	}
+}

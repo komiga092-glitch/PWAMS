@@ -49,10 +49,10 @@ func NewFileUploadHandler(
 }
 
 func (h *FileUploadHandler) Page(c *gin.Context) {
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "files_content",
 		"title":         "File Management",
-	})
+	}))
 }
 
 func (h *FileUploadHandler) List(c *gin.Context) {
@@ -229,7 +229,7 @@ func (h *FileUploadHandler) Upload(c *gin.Context) {
 		return
 	}
 
-	if err := os.MkdirAll(uploadDirectory, 0755); err != nil {
+	if err := os.MkdirAll(uploadDirectory, 0700); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"message": "Unable to prepare upload directory",
@@ -238,6 +238,22 @@ func (h *FileUploadHandler) Upload(c *gin.Context) {
 	}
 
 	extension := strings.ToLower(filepath.Ext(fileHeader.Filename))
+
+	allowedExtensions := map[string]bool{
+		".jpg": true,
+		".jpeg": true,
+		".png": true,
+		".webp": true,
+		".pdf": true,
+	}
+	if !allowedExtensions[extension] {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Unsupported file extension",
+		})
+		return
+	}
+
 	storedName := uuid.NewString() + extension
 	storedPath := filepath.Join(uploadDirectory, storedName)
 

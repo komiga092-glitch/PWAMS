@@ -16,6 +16,11 @@ func RegisterUserRoutes(
 	users := router.Group("/users")
 
 	users.Use(authMiddleware.RequireAuth())
+	profile := router.Group("/profile")
+	profile.Use(authMiddleware.RequireAuth())
+	profile.GET("", userHandler.ProfilePage)
+	profile.POST("", userHandler.UpdateOwnProfile)
+	profile.POST("/password", userHandler.ChangeOwnPassword)
 
 	users.Use(
 		middleware.RequireAnyRole(

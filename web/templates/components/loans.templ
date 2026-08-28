@@ -1,0 +1,93 @@
+package components
+
+type Loan struct {
+	ID              uint
+	PersonName      string
+	Amount          string
+	InterestRate    string
+	Term            string
+	Installment     string
+	Status          string
+	Date            string
+}
+
+templ LoansPage(loans []Loan, search string, errorMsg string) {
+	@Base("PWAMS - Loans") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Loans</h1>
+					<p>Manage loan disbursements and tracking.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/loans/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ New Loan</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/loans/page" hx-target="#loans-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="loan-search">Search</label>
+							<input id="loan-search" type="text" name="search" placeholder="Search person..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/loans/page" hx-target="#loans-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="loans-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Loan List</h2>
+						<span class="badge">{ itoa(len(loans)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Person</th><th>Amount</th><th>Rate</th><th>Term</th><th>Installment</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+							</thead>
+							<tbody>
+								for _, l := range loans {
+									<tr>
+										<td>{ l.PersonName }</td>
+										<td>{ l.Amount }</td>
+										<td>{ l.InterestRate }</td>
+										<td>{ l.Term }</td>
+										<td>{ l.Installment }</td>
+										<td>{ l.Date }</td>
+										<td>
+											if l.Status == "Approved" {
+												<span class="badge badge-success">Approved</span>
+											} else if l.Status == "Pending" {
+												<span class="badge badge-warning">Pending</span>
+											} else {
+												<span class="badge badge-muted">{ l.Status }</span>
+											}
+										</td>
+										<td>
+											<div class="table-actions">
+												<a href={ "/loans/" + itoa(int(l.ID)) + "/view" } class="btn btn-secondary">View</a>
+											</div>
+										</td>
+									</tr>
+								}
+								if len(loans) == 0 {
+									<tr><td colspan="8" class="empty">No loans found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

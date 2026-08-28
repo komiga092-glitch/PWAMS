@@ -1,0 +1,27 @@
+package components
+
+templ ErrorPage(code int, message string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>PWAMS - Error</title>
+			<link rel="stylesheet" href="/static/css/app.css"/>
+		</head>
+		<body>
+			<div class="login-page">
+				<section class="login-form-side" style="width:100%;max-width:480px;">
+					<div class="login-card" style="text-align:center;">
+						<h1 style="font-size:48px;margin-bottom:8px;">{ itoa(code) }</h1>
+						<h2>Error</h2>
+						<p class="subtitle">{ message }</p>
+						<div style="margin-top:24px;">
+							<a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+						</div>
+					</div>
+				</section>
+			</div>
+		</body>
+	</html>
+}

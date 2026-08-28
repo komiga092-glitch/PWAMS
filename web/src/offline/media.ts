@@ -8,6 +8,7 @@ import {
 } from "./db.js";
 import { isOnline } from "./connectivity.js";
 import { isOfflineSessionValid, revalidateOnlineSession } from "./session.js";
+import { getCsrfToken } from "./csrf.js";
 
 export const MAX_LOCAL_MEDIA_SIZE = 2 * 1024 * 1024;
 const SUPPORTED_MEDIA_TYPES = new Set([
@@ -142,7 +143,10 @@ export async function syncPendingMediaUploads(): Promise<void> {
       const response = await fetch(entry.url, {
         method: "POST",
         credentials: "include",
-        headers: { "Idempotency-Key": entry.operationId },
+        headers: {
+          "Idempotency-Key": entry.operationId,
+          "X-CSRF-Token": getCsrfToken(),
+        },
         body: formData,
       });
       const resultStatus = mediaRetryStatus(response.status);

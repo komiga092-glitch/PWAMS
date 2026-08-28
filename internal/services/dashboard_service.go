@@ -29,6 +29,31 @@ func (s *DashboardService) GetStats(userID uuid.UUID) (
 	*models.DashboardStats,
 	error,
 ) {
+	return s.getStatsForRole(userID, models.RoleSuperAdmin)
+}
+
+func (s *DashboardService) getStatsForRole(userID uuid.UUID, role string) (
+	*models.DashboardStats,
+	error,
+) {
+	stats := &models.DashboardStats{}
+	if role != models.RoleSuperAdmin && role != models.RoleAdmin && role != models.RoleStaff {
+		if s.dashboardRepo == nil {
+			return stats, nil
+		}
+		unread, err := s.dashboardRepo.CountWithoutDeleted(
+			"notifications",
+			"user_id = ? AND is_read = ?",
+			userID,
+			false,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stats.UnreadNotifications = unread
+		return stats, nil
+	}
+
 	totalUsers, err := s.userRepo.CountAll()
 	if err != nil {
 		return nil, err
@@ -58,7 +83,7 @@ func (s *DashboardService) GetStats(userID uuid.UUID) (
 		return nil, err
 	}
 
-	stats := &models.DashboardStats{
+	stats = &models.DashboardStats{
 		TotalUsers:    totalUsers,
 		ActiveUsers:   activeUsers,
 		DisabledUsers: disabledUsers,
@@ -70,19 +95,22 @@ func (s *DashboardService) GetStats(userID uuid.UUID) (
 		return stats, nil
 	}
 
-	if stats.TotalBeneficiaries, err = s.dashboardRepo.Count("persons", ""); err != nil {
+	// Records can be soft-deleted through two paths: online CRUD sets
+	// gorm's deleted_at while offline sync sets is_deleted. Counts must
+	// exclude both or synced deletions inflate the numbers.
+	if stats.TotalBeneficiaries, err = s.dashboardRepo.Count("persons", "is_deleted = ?", false); err != nil {
 		return nil, err
 	}
-	if stats.TotalStudents, err = s.dashboardRepo.Count("students", ""); err != nil {
+	if stats.TotalStudents, err = s.dashboardRepo.Count("students", "is_deleted = ?", false); err != nil {
 		return nil, err
 	}
-	if stats.TotalDonors, err = s.dashboardRepo.Count("donors", ""); err != nil {
+	if stats.TotalDonors, err = s.dashboardRepo.Count("donors", "is_deleted = ?", false); err != nil {
 		return nil, err
 	}
-	if stats.ActiveLoans, err = s.dashboardRepo.CountWithoutDeleted("loans", "status = ?", models.LoanStatusActive); err != nil {
+	if stats.ActiveLoans, err = s.dashboardRepo.CountWithoutDeleted("loans", "status = ? AND is_deleted = ?", models.LoanStatusActive, false); err != nil {
 		return nil, err
 	}
-	if stats.PendingAidRequests, err = s.dashboardRepo.Count("aid_requests", "status = ?", models.AidStatusPending); err != nil {
+	if stats.PendingAidRequests, err = s.dashboardRepo.Count("aid_requests", "status = ? AND is_deleted = ?", models.AidStatusPending, false); err != nil {
 		return nil, err
 	}
 	if stats.RevenueSummary, err = s.dashboardRepo.NetRevenue(); err != nil {
@@ -93,4 +121,11 @@ func (s *DashboardService) GetStats(userID uuid.UUID) (
 	}
 
 	return stats, nil
+}
+
+func (s *DashboardService) GetStatsForRole(
+	userID uuid.UUID,
+	role string,
+) (*models.DashboardStats, error) {
+	return s.getStatsForRole(userID, role)
 }

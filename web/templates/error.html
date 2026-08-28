@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ .title }} | PWAMS</title>
+    <link rel="stylesheet" href="/static/css/app.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="panel">
+        <div class="panel-header"><h1>{{ .heading }}</h1></div>
+        <div class="panel-body">
+          <p>{{ .message }}</p>
+          <a class="btn btn-primary" href="/dashboard">Return to dashboard</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

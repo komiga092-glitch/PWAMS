@@ -1,0 +1,64 @@
+package components
+
+type FileRecord struct {
+	ID       uint
+	Name     string
+	Size     string
+	Type     string
+	Uploaded string
+}
+
+templ FilesPage(files []FileRecord, errorMsg string) {
+	@Base("PWAMS - Files") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Files</h1>
+					<p>Manage uploaded files and documents.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/files/upload"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Upload File</button>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div class="panel">
+				<div class="panel-header">
+					<h2>File List</h2>
+					<span class="badge">{ itoa(len(files)) } Files</span>
+				</div>
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr><th>Name</th><th>Size</th><th>Type</th><th>Uploaded</th><th>Actions</th></tr>
+						</thead>
+						<tbody>
+							for _, f := range files {
+								<tr>
+									<td>{ f.Name }</td>
+									<td>{ f.Size }</td>
+									<td>{ f.Type }</td>
+									<td>{ f.Uploaded }</td>
+									<td>
+										<div class="table-actions">
+											<a href={ "/files/" + itoa(int(f.ID)) + "/download" } class="btn btn-secondary">Download</a>
+										</div>
+									</td>
+								</tr>
+							}
+							if len(files) == 0 {
+								<tr><td colspan="5" class="empty">No files found.</td></tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	}
+}

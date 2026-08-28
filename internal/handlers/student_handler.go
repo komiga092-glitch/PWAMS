@@ -31,7 +31,6 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidStudentInformation,
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -235,35 +234,35 @@ func (h *StudentHandler) ViewPage(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidStudentID):
-			c.HTML(http.StatusBadRequest, "base", gin.H{
+			c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
 				"page_template": "student_view",
 				"title":         "Invalid Student - PWAMS",
 				"error":         constants.ErrInvalidStudentID,
-			})
+			}))
 
 		case errors.Is(err, repository.ErrStudentNotFound):
-			c.HTML(http.StatusNotFound, "base", gin.H{
+			c.HTML(http.StatusNotFound, "base", PageData(c, gin.H{
 				"page_template": "student_view",
 				"title":         "Student Not Found - PWAMS",
 				"error":         constants.ErrStudentNotFound,
-			})
+			}))
 
 		default:
-			c.HTML(http.StatusInternalServerError, "base", gin.H{
+			c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 				"page_template": "student_view",
 				"title":         "Student - PWAMS",
 				"error":         constants.ErrUnableToRetrieveStudent,
-			})
+			}))
 		}
 
 		return
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "student_view",
 		"title":         "Student Details - PWAMS",
 		"student":       student,
-	})
+	}))
 }
 
 func (h *StudentHandler) EditPage(c *gin.Context) {
@@ -274,35 +273,35 @@ func (h *StudentHandler) EditPage(c *gin.Context) {
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidStudentID):
-			c.HTML(http.StatusBadRequest, "base", gin.H{
+			c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
 				"page_template": "student_edit",
 				"title":         "Invalid Student - PWAMS",
 				"error":         constants.ErrInvalidStudentID,
-			})
+			}))
 
 		case errors.Is(err, repository.ErrStudentNotFound):
-			c.HTML(http.StatusNotFound, "base", gin.H{
+			c.HTML(http.StatusNotFound, "base", PageData(c, gin.H{
 				"page_template": "student_edit",
 				"title":         "Student Not Found - PWAMS",
 				"error":         constants.ErrStudentNotFound,
-			})
+			}))
 
 		default:
-			c.HTML(http.StatusInternalServerError, "base", gin.H{
+			c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 				"page_template": "student_edit",
 				"title":         "Edit Student - PWAMS",
 				"error":         constants.ErrUnableToRetrieveStudent,
-			})
+			}))
 		}
 
 		return
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "student_edit",
 		"title":         "Edit Student - PWAMS",
 		"student":       student,
-	})
+	}))
 }
 
 func (h *StudentHandler) Update(c *gin.Context) {
@@ -314,7 +313,6 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": constants.ErrInvalidStudentInformation,
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -452,28 +450,28 @@ func (h *StudentHandler) Page(c *gin.Context) {
 	var query models.StudentListQuery
 
 	if err := c.ShouldBindQuery(&query); err != nil {
-		c.HTML(http.StatusBadRequest, "base", gin.H{
+		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
 			"page_template": "students_content",
 			"title":         "Students - PWAMS",
 			"students":      []interface{}{},
 			"search":        "",
 			"status":        "",
 			"error":         constants.ErrInvalidQueryParameters,
-		})
+		}))
 		return
 	}
 
 	students, _, _, _, err := h.studentService.ListStudents(query)
 
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 			"page_template": "students_content",
 			"title":         "Students - PWAMS",
 			"students":      []interface{}{},
 			"search":        query.Search,
 			"status":        query.Status,
 			"error":         constants.ErrUnableToRetrieveStudents,
-		})
+		}))
 		return
 	}
 
@@ -490,11 +488,11 @@ func (h *StudentHandler) Page(c *gin.Context) {
 		})
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "students_content",
 		"title":         "Students - PWAMS",
 		"students":      items,
 		"search":        query.Search,
 		"status":        query.Status,
-	})
+	}))
 }

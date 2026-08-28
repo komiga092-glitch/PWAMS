@@ -1,3 +1,48 @@
+/* ==========================================================================
+   Accessibility additions
+   ========================================================================== */
+
+/* Visible, high-contrast focus indicator for keyboard users on every
+   interactive element. :focus-visible only shows for keyboard focus so
+   mouse users are unaffected. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect the OS "reduce motion" setting: disable transitions and
+   animations that can cause vestibular issues (WCAG 2.3.3). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Minimum touch target size for primary controls on coarse pointers
+   (WCAG 2.5.8). */
+@media (pointer: coarse) {
+  .btn,
+  .menu-btn,
+  .notification-btn,
+  .modal-close,
+  .profile-action,
+  .nav-link {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
 .offline-status {
   position: fixed;
   right: 12px;
@@ -91,6 +136,8 @@ textarea {
   height: 100vh;
   overflow-y: auto;
   z-index: 50;
+  display: flex;
+  flex-direction: column;
 }
 
 .brand {
@@ -124,6 +171,9 @@ textarea {
 
 .nav {
   padding: 18px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 .nav-section {
   margin: 18px 8px 8px;
@@ -149,6 +199,18 @@ textarea {
   background: rgba(255, 255, 255, 0.13);
   color: #fff;
 }
+.logout-form {
+  margin-top: auto;
+  padding-top: 18px;
+}
+.logout-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
 .nav-icon {
   width: 22px;
   text-align: center;
@@ -173,12 +235,32 @@ textarea {
   z-index: 40;
 }
 
-.menu-btn {
-  display: none;
+/* Icon-only buttons share one sized, centred hit area. */
+.menu-btn,
+.notification-btn,
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
   border: 0;
+  border-radius: 9px;
   background: transparent;
-  font-size: 24px;
   cursor: pointer;
+}
+.menu-btn:hover,
+.notification-btn:hover,
+.modal-close:hover {
+  background: rgba(15, 23, 42, 0.07);
+}
+
+.menu-btn {
+  display: none; /* Revealed by the mobile breakpoint below. */
+  font-size: 24px;
 }
 
 .topbar-right {
@@ -187,15 +269,52 @@ textarea {
   gap: 14px;
 }
 .notification-btn {
-  border: 0;
-  background: transparent;
   font-size: 21px;
-  cursor: pointer;
+  text-decoration: none;
 }
 .profile {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+.profile-menu {
+  position: relative;
+}
+.profile-menu summary {
+  list-style: none;
+  cursor: pointer;
+}
+.profile-menu summary::-webkit-details-marker {
+  display: none;
+}
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 140px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 60;
+}
+.profile-action {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 9px 10px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.profile-action:hover {
+  background: var(--surface-soft);
+}
+.profile-username {
+  font-size: 11px;
+  color: var(--muted);
 }
 .avatar {
   width: 38px;
@@ -214,6 +333,38 @@ textarea {
 .profile-role {
   font-size: 12px;
   color: var(--muted);
+}
+.profile-page-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.profile-page-avatar {
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+}
+.profile-details {
+  display: grid;
+  gap: 14px;
+}
+.profile-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+.profile-details dt {
+  color: var(--muted);
+}
+.profile-details dd {
+  margin: 0;
+  text-align: right;
+}
+.profile-section-heading {
+  margin: 30px 0 16px;
 }
 
 .page {
@@ -237,18 +388,34 @@ textarea {
   color: var(--muted);
 }
 
-.btn {
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-light,
+.btn-danger,
+.btn-small {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 0;
+  box-sizing: border-box;
+
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid transparent;
   border-radius: 10px;
-  padding: 10px 16px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  max-width: 100%;
+  text-decoration: none;
   cursor: pointer;
-  font-weight: 700;
 }
 
+/* Variant colours only - geometry comes from the shared rule above. */
 .btn-primary {
   background: var(--primary);
   color: #fff;
@@ -256,19 +423,53 @@ textarea {
 .btn-primary:hover {
   background: var(--primary-dark);
 }
+.btn-secondary {
+  background: #fff;
+  color: #444;
+  border-color: #d2d2d2;
+}
+.btn-secondary:hover {
+  background: #f5f5f5;
+}
 .btn-light {
   background: #eef1f8;
   color: var(--text);
 }
+.btn-light:hover {
+  background: #e2e7f3;
+}
 .btn-danger {
   background: #dc3545;
   color: #fff;
-  border: 1px solid #dc3545;
+  border-color: #dc3545;
+}
+.btn-danger:hover {
+  background: #c62f3e;
 }
 
-.btn-danger:hover {
-  opacity: 0.9;
+/* Compact variant for dense contexts (table action rows). */
+.btn-small {
+  min-height: 34px;
+  padding: 6px 13px;
+  border-radius: 9px;
+  font-size: 13px;
 }
+
+/* Form/modal action pairs keep an even, tappable width. */
+.form-actions .btn,
+.modal-footer .btn {
+  min-width: 120px;
+}
+
+/* States. JS disables submit buttons while a request is in flight;
+   reflect that visually for both attributes. */
+.btn:disabled,
+.btn[disabled],
+.btn[aria-busy="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -550,7 +751,7 @@ textarea {
     left: 0;
   }
   .menu-btn {
-    display: block;
+    display: inline-flex;
   }
   .overlay.show {
     display: block;
@@ -660,14 +861,7 @@ textarea {
 }
 
 .modal-close {
-  border: 0;
-  background: transparent;
-
-  font-size: 28px;
-  line-height: 1;
-
-  cursor: pointer;
-
+  font-size: 26px;
   color: var(--muted);
 }
 
@@ -754,9 +948,6 @@ textarea {
 }
 
 .messages-pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 14px;
   padding: 18px 20px;
   border-top: 1px solid var(--border);
@@ -913,7 +1104,7 @@ textarea {
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 
   padding-top: 8px;
 }
@@ -1026,52 +1217,8 @@ textarea {
   resize: vertical;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 5px;
-}
-
-.btn-primary,
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 120px;
-  min-height: 44px;
-
-  padding: 10px 22px;
-
-  border-radius: 7px;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.btn-primary {
-  border: none;
-  background: #29377f;
-  color: #fff;
-}
-
-.btn-primary:hover {
-  background: #202d6a;
-}
-
-.btn-secondary {
-  border: 1px solid #d2d2d2;
-  background: #fff;
-  color: #444;
-}
-
-.btn-secondary:hover {
-  background: #f5f5f5;
-}
+/* Button geometry/colours are defined once by the shared .btn system;
+   see the "Button system" rules near the top of this file. */
 
 @media (max-width: 700px) {
   .person-page {
@@ -1094,15 +1241,6 @@ textarea {
   .form-page-header h1 {
     font-size: 23px;
   }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-  }
 }
 
 /* Match the Student add form across every other create modal. */
@@ -1120,21 +1258,6 @@ textarea {
   font-size: 21px;
   font-weight: 700;
   line-height: 1.3;
-}
-
-.modal-card .modal-close,
-.modal-content .modal-close {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border-radius: 9px;
-  color: var(--muted);
-  font-size: 28px;
-  line-height: 1;
 }
 
 .modal-card .modal-close:hover,
@@ -1216,17 +1339,8 @@ textarea {
   border-top: 1px solid var(--border);
 }
 
-.modal-card .modal-footer .btn,
-.modal-card .form-actions .btn,
-.modal-content .modal-footer .btn,
-.modal-content .form-actions .btn {
-  min-width: 120px;
-  min-height: 44px;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-}
+/* Buttons inside modal footers inherit the shared .btn system and the
+   `.form-actions .btn` min-width rule; no local overrides needed. */
 
 @media (max-width: 700px) {
   .modal-card .modal-header,
@@ -1243,16 +1357,7 @@ textarea {
   .modal-card .form-actions,
   .modal-content .modal-footer,
   .modal-content .form-actions {
-    flex-direction: column-reverse;
-    align-items: stretch;
     padding: 15px 18px 18px;
-  }
-
-  .modal-card .modal-footer .btn,
-  .modal-card .form-actions .btn,
-  .modal-content .modal-footer .btn,
-  .modal-content .form-actions .btn {
-    width: 100%;
   }
 }
 
@@ -1510,70 +1615,10 @@ textarea {
 }
 
 /* =========================================================
-   FORM ACTIONS
+   FORM ACTIONS & BUTTONS
+   Provided by the shared .btn system and the generic
+   .modal-content .form-actions rules - no local overrides.
    ========================================================= */
-
-#student-modal #student-create-form .form-actions {
-  width: 100%;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: flex-end;
-
-  gap: 10px;
-
-  margin-top: 6px;
-
-  padding-top: 18px;
-
-  border-top: 1px solid var(--border);
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-#student-modal #student-create-form .form-actions .btn {
-  min-width: 120px;
-
-  min-height: 44px;
-
-  padding: 10px 18px;
-
-  border-radius: 10px;
-
-  font-size: 14px;
-
-  font-weight: 700;
-}
-
-/* Cancel */
-#student-modal #student-create-form .form-actions .btn-secondary {
-  background: #ffffff;
-
-  color: #374151;
-
-  border: 1px solid #d1d5db;
-}
-
-#student-modal #student-create-form .form-actions .btn-secondary:hover {
-  background: #f8fafc;
-}
-
-/* Save */
-#student-modal #student-create-form .form-actions .btn-primary {
-  background: var(--primary);
-
-  color: #ffffff;
-
-  border: 1px solid var(--primary);
-}
-
-#student-modal #student-create-form .form-actions .btn-primary:hover {
-  background: var(--primary-dark);
-}
 
 /* =========================================================
    SCROLLBAR
@@ -1633,18 +1678,6 @@ textarea {
 
   #student-modal #student-create-form {
     gap: 14px;
-  }
-
-  #student-modal #student-create-form .form-actions {
-    flex-direction: column-reverse;
-
-    align-items: stretch;
-
-    gap: 9px;
-  }
-
-  #student-modal #student-create-form .form-actions .btn {
-    width: 100%;
   }
 }
 
@@ -1763,16 +1796,6 @@ textarea {
   resize: vertical;
 }
 
-#person-modal .form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-
-  padding-top: 18px;
-
-  border-top: 1px solid var(--border);
-}
-
 @media (max-width: 700px) {
   #person-modal {
     padding: 12px;
@@ -1798,12 +1821,100 @@ textarea {
   #person-modal .form-group.full {
     grid-column: auto;
   }
+}
 
-  #person-modal .form-actions {
+/* ==========================================================================
+   Buttons - responsive consolidation
+   ========================================================================== */
+
+/* On small screens every action row stacks full-width so labels never
+   clip and tap targets stay large. column-reverse keeps the primary
+   action on top (it is last in the markup). This single rule replaces
+   the per-modal and per-page stacking rules. */
+@media (max-width: 700px) {
+  .form-actions,
+  .modal-card .form-actions,
+  .modal-content .form-actions,
+  .modal-card .modal-footer,
+  .modal-content .modal-footer {
     flex-direction: column-reverse;
+    align-items: stretch;
   }
 
-  #person-modal .form-actions .btn {
+  .form-actions .btn,
+  .modal-card .form-actions .btn,
+  .modal-content .form-actions .btn,
+  .modal-card .modal-footer .btn,
+  .modal-content .modal-footer .btn {
     width: 100%;
+    min-width: 0;
   }
+}
+
+/* Pagination rows: centred controls with even spacing around the page
+   indicator. The [hidden] guard keeps display:flex from overriding the
+   attribute-based hiding used by several pages. */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.pagination[hidden] {
+  display: none;
+}
+
+/* Action-button groups inside tables: even gaps, wrapping instead of
+   overflowing on narrow screens. */
+.table-actions,
+td.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* =========================
+   OFFLINE SESSION LOCK (spec §7)
+   Full-screen guard rendered when the 48h offline window expires.
+   ========================= */
+
+.offline-session-lock {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.75);
+}
+
+.offline-session-lock-card {
+  width: min(420px, 100%);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  padding: 28px;
+  text-align: center;
+}
+
+.offline-session-lock-card h2 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.offline-session-lock-card p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+}
+
+.offline-session-lock-status {
+  margin-top: 12px;
+  margin-bottom: 0 !important;
+  font-size: 13px;
 }

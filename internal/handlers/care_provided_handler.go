@@ -32,7 +32,6 @@ func (h *CareProvidedHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid care provided information",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -148,7 +147,6 @@ func (h *CareProvidedHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid care provided information",
-			"error":   err.Error(),
 		})
 		return
 	}

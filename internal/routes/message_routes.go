@@ -19,10 +19,10 @@ func RegisterMessageRoutes(
 	messages.Use(authMiddleware.RequireAuth())
 
 	messages.GET("/page", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "base", gin.H{
+		c.HTML(http.StatusOK, "base", handlers.PageData(c, gin.H{
 			"page_template": "messages_content",
 			"title":         "Messages",
-		})
+		}))
 	})
 	messages.GET("/recipients", recipientHandler.List)
 	messages.GET("", messageHandler.List)

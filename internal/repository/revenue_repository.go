@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -89,8 +90,8 @@ func (r *RevenueRepository) List(query models.RevenueListQuery) ([]models.Revenu
 
 func (r *RevenueRepository) Summary(period string, start, end time.Time) (*models.RevenueSummary, error) {
 	var result struct {
-		Income   float64
-		Expenses float64
+		Income   decimal.Decimal
+		Expenses decimal.Decimal
 	}
 	err := r.db.Raw(`
 		SELECT
@@ -102,5 +103,5 @@ func (r *RevenueRepository) Summary(period string, start, end time.Time) (*model
 	if err != nil {
 		return nil, err
 	}
-	return &models.RevenueSummary{Period: period, Income: result.Income, Expenses: result.Expenses, Net: result.Income - result.Expenses}, nil
+	return &models.RevenueSummary{Period: period, Income: result.Income, Expenses: result.Expenses, Net: result.Income.Sub(result.Expenses)}, nil
 }

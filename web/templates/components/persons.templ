@@ -1,0 +1,146 @@
+package components
+
+type Person struct {
+	ID          uint
+	FullName    string
+	NICPassport string
+	Phone       string
+	Gender      string
+	Status      string
+}
+
+templ PersonsPage(persons []Person, search string, status string, errorMsg string) {
+	@Base("PWAMS - Care Seekers") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Care Seekers</h1>
+					<p>Manage people receiving or requesting support.</p>
+				</div>
+				<button
+					id="add-person-btn"
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/persons/new"
+					hx-target="#person-modal-content"
+					hx-swap="innerHTML"
+					hx-on::after-request="document.getElementById('person-modal').classList.remove('hidden')"
+				>
+					+ Add Care Seeker
+				</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form
+						method="GET"
+						action="/persons/page"
+						class="students-filter"
+						hx-get="/persons/page"
+						hx-target="#persons-list"
+						hx-swap="innerHTML"
+						hx-trigger="submit, change from:select[name=status]"
+						hx-indicator="#persons-spinner"
+					>
+						<div>
+							<label for="person-search">Search</label>
+							<input
+								id="person-search"
+								type="text"
+								name="search"
+								placeholder="Search name, phone or NIC..."
+								value={ search }
+								hx-trigger="keyup changed delay:300ms"
+								hx-get="/persons/page"
+								hx-target="#persons-list"
+								hx-include="[name='status']"
+							/>
+						</div>
+						<div>
+							<label for="person-status">Status</label>
+							<select id="person-status" name="status">
+								<option value="">All Status</option>
+								<option value="Active" selected?={ status == "Active" }>Active</option>
+								<option value="Inactive" selected?={ status == "Inactive" }>Inactive</option>
+								<option value="Pending" selected?={ status == "Pending" }>Pending</option>
+							</select>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="persons-list">
+				@PersonsTable(persons)
+			</div>
+			<span id="persons-spinner" class="htmx-indicator">Loading...</span>
+		</section>
+		<div id="person-modal" class="modal hidden">
+			<div class="modal-content" id="person-modal-content"></div>
+		</div>
+		<script src="/static/js/persons.js"></script>
+	}
+}
+
+templ PersonsTable(persons []Person) {
+	<div class="panel">
+		<div class="panel-header">
+			<h2>Care Seeker List</h2>
+			<span class="badge">{ itoa(len(persons)) } Records</span>
+		</div>
+		<div class="table-wrap">
+			<table class="data-table">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>NIC / Passport</th>
+						<th>Phone</th>
+						<th>Gender</th>
+						<th>Status</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, p := range persons {
+						<tr>
+							<td>{ p.FullName }</td>
+							<td>{ p.NICPassport }</td>
+							<td>{ p.Phone }</td>
+							<td>{ p.Gender }</td>
+							<td>
+								if p.Status == "Active" {
+									<span class="badge badge-success">Active</span>
+								} else if p.Status == "Pending" {
+									<span class="badge badge-warning">Pending</span>
+								} else {
+									<span class="badge badge-muted">Inactive</span>
+								}
+							</td>
+							<td>
+								<div class="table-actions">
+									<a href={ "/persons/" + itoa(int(p.ID)) + "/view" } class="btn btn-secondary">View</a>
+									<a
+										href={ "/persons/" + itoa(int(p.ID)) + "/edit" }
+										class="btn btn-primary"
+										hx-get={ "/persons/" + itoa(int(p.ID)) + "/edit" }
+										hx-target="body"
+										hx-swap="innerHTML"
+									>Edit</a>
+								</div>
+							</td>
+						</tr>
+					}
+					if len(persons) == 0 {
+						<tr>
+							<td colspan="6" class="empty">No care seekers found.</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+}

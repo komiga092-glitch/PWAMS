@@ -123,7 +123,7 @@ export async function mergePulledRecords(records, cursor) {
             .getAll();
         outboxRequest.onsuccess = () => {
             const protectedRecords = new Set(outboxRequest.result
-                .filter((entry) => entry.status === "PENDING" || entry.status === "CONFLICT")
+                .filter((entry) => entry.status === "PENDING" || entry.status === "CONFLICT" || entry.status === "FAILED")
                 .map((entry) => `${entry.entityType}:${entry.recordId}`));
             for (const pulled of records) {
                 const storeName = STORE_BY_ENTITY[pulled.entity_type];
@@ -249,6 +249,53 @@ export async function clearMutationBody(id) {
         request.onerror = () => reject(request.error ?? new Error("Unable to read offline mutation"));
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error ?? new Error("Unable to clear temporary media"));
+    });
+}
+export async function pruneSyncedOutboxEntries() {
+    const database = await openOfflineDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(OFFLINE_STORES.outbox, "readwrite");
+        const store = transaction.objectStore(OFFLINE_STORES.outbox);
+        const request = store.getAll();
+        request.onsuccess = () => {
+            const entries = request.result;
+            const now = Date.now();
+            const maxAge = 7 * 24 * 60 * 60 * 1000;
+            for (const entry of entries) {
+                if (entry.status === "SYNCED") {
+                    const age = now - new Date(entry.createdAt).getTime();
+                    if (age > maxAge) {
+                        store.delete(entry.id);
+                    }
+                }
+            }
+        };
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ?? new Error("Unable to prune outbox"));
+    });
+}
+const OFFLINE_PIN_METADATA_ID = "offline_pin_hash";
+export async function getOfflinePinHash() {
+    const database = await openOfflineDatabase();
+    return new Promise((resolve, reject) => {
+        const request = database
+            .transaction(OFFLINE_STORES.metadata, "readonly")
+            .objectStore(OFFLINE_STORES.metadata)
+            .get(OFFLINE_PIN_METADATA_ID);
+        request.onsuccess = () => resolve(request.result?.value ?? null);
+        request.onerror = () => reject(request.error ?? new Error("Unable to read offline PIN metadata"));
+    });
+}
+export async function setOfflinePinHash(hash) {
+    const database = await openOfflineDatabase();
+    await new Promise((resolve, reject) => {
+        const transaction = database.transaction(OFFLINE_STORES.metadata, "readwrite");
+        transaction
+            .objectStore(OFFLINE_STORES.metadata)
+            .put({ id: OFFLINE_PIN_METADATA_ID, value: hash });
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ??
+            new Error("Unable to store offline PIN metadata"));
     });
 }
 //# sourceMappingURL=db.js.map

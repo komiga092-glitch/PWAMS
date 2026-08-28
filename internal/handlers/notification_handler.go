@@ -24,20 +24,20 @@ func (h *NotificationHandler) Page(c *gin.Context) {
 
 	notifications, err := h.notificationService.ListForUser(currentUser.ID)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 			"page_template": "notifications_content",
 			"title":         "Notifications",
 			"notifications": []models.Notification{},
 			"error":         "Unable to retrieve notifications",
-		})
+		}))
 		return
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "notifications_content",
 		"title":         "Notifications",
 		"notifications": notifications,
-	})
+	}))
 }
 
 func NewNotificationHandler(

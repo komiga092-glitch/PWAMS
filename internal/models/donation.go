@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -32,12 +33,12 @@ type Donation struct {
 
 	DonationType string `gorm:"size:50;not null;index" json:"donation_type"`
 
-	Amount      float64 `gorm:"type:numeric(14,2);default:0" json:"amount"`
-	Currency    string  `gorm:"size:10;default:LKR" json:"currency"`
-	ItemName    string  `gorm:"size:150" json:"item_name"`
-	Quantity    float64 `gorm:"type:numeric(12,2);default:0" json:"quantity"`
-	Unit        string  `gorm:"size:30" json:"unit"`
-	Description string  `gorm:"type:text" json:"description"`
+	Amount      decimal.Decimal `gorm:"type:numeric(14,2);default:0" json:"amount"`
+	Currency    string          `gorm:"size:10;default:LKR" json:"currency"`
+	ItemName    string          `gorm:"size:150" json:"item_name"`
+	Quantity    decimal.Decimal `gorm:"type:numeric(12,2);default:0" json:"quantity"`
+	Unit        string          `gorm:"size:30" json:"unit"`
+	Description string          `gorm:"type:text" json:"description"`
 
 	DonationDate time.Time `gorm:"not null;index" json:"donation_date"`
 	ReferenceNo  string    `gorm:"size:100;uniqueIndex" json:"reference_no"`
@@ -50,6 +51,10 @@ type Donation struct {
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Version   int            `gorm:"not null;default:1" json:"version"`
+	UpdatedBy *uuid.UUID     `gorm:"type:uuid" json:"updated_by"`
+	IsDeleted bool           `gorm:"not null;default:false;index" json:"is_deleted"`
+	TenantID  *uuid.UUID     `gorm:"type:uuid;index" json:"tenant_id"`
 }
 
 func (donation *Donation) BeforeCreate(_ *gorm.DB) error {

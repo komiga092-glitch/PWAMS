@@ -9,7 +9,7 @@
     <link rel="manifest" href="/static/manifest.webmanifest" />
     <title>{{ block "title" . }}PWAMS{{ end }}</title>
     <link rel="stylesheet" href="/static/css/app.css" />
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="/static/js/vendor/htmx.min.js"></script>
   </head>
   <body>
     <div class="app-shell">
@@ -33,13 +33,25 @@
               aria-label="Notifications"
               >🔔</a
             >
-            <div class="profile">
-              <div class="avatar">U</div>
-              <div>
-                <div class="profile-name">Account</div>
-                <div class="profile-role">PWAMS User</div>
+            <details class="profile-menu">
+              <summary class="profile" aria-label="Open profile menu">
+                <div class="avatar" data-profile-avatar>U</div>
+                <div>
+                  <div class="profile-name" data-profile-name>Account</div>
+                  <div class="profile-username" data-profile-username></div>
+                  <div class="profile-role" data-profile-role></div>
+                </div>
+              </summary>
+              <div class="profile-dropdown">
+                <a class="profile-action" href="/profile">My Profile</a>
+                <a class="profile-action" href="/profile#change-password"
+                  >Change Password</a
+                >
+                <form method="post" action="/logout">
+                  <button class="profile-action" type="submit">Logout</button>
+                </form>
               </div>
-            </div>
+            </details>
           </div>
         </header>
         <main>
@@ -54,8 +66,9 @@
           }} {{ else if eq .page_template "dashboard_content" }} {{ template
           "dashboard_content" . }} {{ else if eq .page_template "users_content"
           }} {{ template "users_content" . }} {{ else if eq .page_template
-          "persons_content" }} {{ template "persons_content" . }} {{ else if eq
-          .page_template "person_form_content" }} {{ template
+          "profile_content" }} {{ template "profile_content" . }} {{ else if eq
+          .page_template "persons_content" }} {{ template "persons_content" . }}
+          {{ else if eq .page_template "person_form_content" }} {{ template
           "person_form_content" . }} {{ else if eq .page_template
           "person_view_content" }} {{ template "person_view_content" . }} {{
           else if eq .page_template "person_edit_content" }} {{ template

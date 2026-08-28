@@ -152,10 +152,12 @@ func (r *SyncRepository) PullEntities(
 		{"persons", "person"},
 		{"students", "student"},
 		{"donors", "donor"},
+		{"donations", "donation"},
 		{"aid_requests", "aid_request"},
 		{"care_provided", "care_provided"},
 		{"loans", "loan"},
 		{"loan_repayments", "loan_repayment"},
+		{"revenue_records", "revenue_record"},
 	}
 
 	type syncRow struct {

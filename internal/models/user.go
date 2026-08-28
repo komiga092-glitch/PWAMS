@@ -15,17 +15,19 @@ const (
 )
 
 type User struct {
-	ID           uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
-	Username     string         `gorm:"size:50;uniqueIndex;not null" json:"username"`
-	Email        string         `gorm:"size:100;uniqueIndex;not null" json:"email"`
-	PasswordHash string         `gorm:"size:255;not null" json:"-"`
-	RoleID       uuid.UUID      `gorm:"type:uuid;not null;index" json:"role_id"`
-	Role         Role           `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;" json:"role"`
-	Status       string         `gorm:"size:20;not null;default:Active;index" json:"status"`
-	LastLoginAt  *time.Time     `json:"last_login_at,omitempty"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	DeletedAt    gorm.DeletedAt `gorm:"index" json:"-"`
+	ID                  uuid.UUID      `gorm:"type:uuid;primaryKey" json:"id"`
+	Username            string         `gorm:"size:50;uniqueIndex;not null" json:"username"`
+	Email               string         `gorm:"size:100;uniqueIndex;not null" json:"email"`
+	PasswordHash        string         `gorm:"size:255;not null" json:"-"`
+	RoleID              uuid.UUID      `gorm:"type:uuid;not null;index" json:"role_id"`
+	Role                Role           `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;" json:"role"`
+	Status              string         `gorm:"size:20;not null;default:Active;index" json:"status"`
+	FailedLoginAttempts int            `gorm:"not null;default:0" json:"-"`
+	LockedUntil         *time.Time     `json:"-"`
+	LastLoginAt         *time.Time     `json:"last_login_at,omitempty"`
+	CreatedAt           time.Time      `json:"created_at"`
+	UpdatedAt           time.Time      `json:"updated_at"`
+	DeletedAt           gorm.DeletedAt `gorm:"index" json:"-"`
 }
 
 func (user *User) BeforeCreate(_ *gorm.DB) error {
@@ -38,4 +40,11 @@ func (user *User) BeforeCreate(_ *gorm.DB) error {
 	}
 
 	return nil
+}
+
+func (user *User) IsLocked() bool {
+	if user.LockedUntil == nil {
+		return false
+	}
+	return time.Now().Before(*user.LockedUntil)
 }

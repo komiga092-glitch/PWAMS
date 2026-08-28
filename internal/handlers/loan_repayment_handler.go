@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 
 	"net/http"
 	"strconv"
@@ -15,13 +16,16 @@ import (
 
 type LoanRepaymentHandler struct {
 	repaymentService *services.LoanRepaymentService
+	auditLogService  *services.AuditLogService
 }
 
 func NewLoanRepaymentHandler(
 	repaymentService *services.LoanRepaymentService,
+	auditLogService *services.AuditLogService,
 ) *LoanRepaymentHandler {
 	return &LoanRepaymentHandler{
 		repaymentService: repaymentService,
+		auditLogService:  auditLogService,
 	}
 }
 
@@ -29,14 +33,14 @@ func (h *LoanRepaymentHandler) Page(c *gin.Context) {
 	query := models.LoanRepaymentListQuery{LoanID: c.Query("loan_id"), Status: c.Query("status")}
 	repayments, _, _, _, err := h.repaymentService.List(query)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": []gin.H{}, "error": "Unable to retrieve repayments"})
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": []gin.H{}, "error": "Unable to retrieve repayments"}))
 		return
 	}
 	items := make([]gin.H, 0, len(repayments))
 	for _, repayment := range repayments {
 		items = append(items, gin.H{"ID": repayment.ID, "LoanID": repayment.LoanID, "Amount": repayment.Amount, "DueDate": repayment.DueDate, "PaidAt": repayment.PaidAt})
 	}
-	c.HTML(http.StatusOK, "base", gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": items})
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": items}))
 }
 
 // Create creates a repayment schedule entry for a loan.
@@ -47,7 +51,6 @@ func (h *LoanRepaymentHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid repayment request",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -194,7 +197,6 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"message": "Invalid payment request",
-			"error":   err.Error(),
 		})
 		return
 	}
@@ -238,6 +240,18 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 				"message": "Cancelled repayment cannot be paid",
 			})
 
+		case errors.Is(err, services.ErrLoanNotPayable):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": "Payments are only allowed on active loans",
+			})
+
+		case errors.Is(err, services.ErrRepaymentModified):
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"message": "This repayment was updated by another user. Please reload and retry.",
+			})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -253,6 +267,28 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 		"message":   "Repayment payment processed successfully",
 		"repayment": repayment,
 	})
+
+	// FR-16 / NFR-09: loan payments are mandatory audit events.
+	if h.auditLogService != nil {
+		details := fmt.Sprintf(
+			"paid_amount=%s status=%s installment=%d",
+			repayment.PaidAmount.String(),
+			repayment.Status,
+			repayment.InstallmentNumber,
+		)
+		userID := ""
+		if user, ok := getCurrentUser(c); ok && user != nil {
+			userID = user.ID.String()
+		}
+		_ = h.auditLogService.Create(
+			userID,
+			"LOAN_PAYMENT",
+			"loan_repayments",
+			id,
+			details,
+			c.ClientIP(),
+		)
+	}
 }
 
 // Cancel cancels an unpaid repayment.
@@ -283,7 +319,6 @@ func (h *LoanRepaymentHandler) Cancel(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
 				"message": "Unable to create repayment",
-				"error":   err.Error(),
 			})
 		}
 

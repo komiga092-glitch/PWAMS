@@ -38,6 +38,10 @@ async function submitRevenue(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   if (!revenueForm) return;
 
+  const submitButton = revenueForm.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  );
+  if (submitButton) submitButton.disabled = true;
   const data = Object.fromEntries(new FormData(revenueForm)) as Record<
     string,
     string
@@ -76,6 +80,8 @@ async function submitRevenue(event: SubmitEvent): Promise<void> {
     alert(
       error instanceof Error ? error.message : "Unable to save revenue record.",
     );
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 }
 

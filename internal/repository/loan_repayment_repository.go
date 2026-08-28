@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -149,6 +150,38 @@ func (r *LoanRepaymentRepository) Update(
 	repayment *models.LoanRepayment,
 ) error {
 	return r.db.Save(repayment).Error
+}
+
+// UpdatePaymentGuarded applies the payment mutation only when the row
+// still carries the status and paid amount the caller observed. It is a
+// compare-and-swap that prevents concurrent/double-payments from being
+// silently merged (lost update).
+func (r *LoanRepaymentRepository) UpdatePaymentGuarded(
+	repayment *models.LoanRepayment,
+	prevStatus string,
+	prevPaidAmount decimal.Decimal,
+) (bool, error) {
+	result := r.db.
+		Model(&models.LoanRepayment{}).
+		Where(
+			"id = ? AND status = ? AND paid_amount = ?",
+			repayment.ID,
+			prevStatus,
+			prevPaidAmount,
+		).
+		Updates(map[string]interface{}{
+			"status":            repayment.Status,
+			"paid_amount":       repayment.PaidAmount,
+			"paid_at":           repayment.PaidAt,
+			"payment_reference": repayment.PaymentReference,
+			"notes":             repayment.Notes,
+		})
+
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return result.RowsAffected > 0, nil
 }
 
 func (r *LoanRepaymentRepository) Delete(

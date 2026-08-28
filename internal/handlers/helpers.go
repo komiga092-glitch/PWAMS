@@ -38,6 +38,13 @@ func getCurrentUser(c *gin.Context) (*models.User, bool) {
 	return currentUser, true
 }
 
+func PageData(c *gin.Context, data gin.H) gin.H {
+	if currentUser, ok := c.Get("current_user"); ok {
+		data["current_user"] = currentUser
+	}
+	return data
+}
+
 func buildPagination(total int64, page int, pageSize int) gin.H {
 	totalPages := 0
 	if total > 0 {

@@ -42,7 +42,7 @@ func Load() (*Config, error) {
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
-		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
+		DBSSLMode:  getEnv("DB_SSLMODE", "require"),
 
 		SuperAdminUsername: os.Getenv("SUPER_ADMIN_USERNAME"),
 		SuperAdminEmail:    os.Getenv("SUPER_ADMIN_EMAIL"),

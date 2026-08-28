@@ -1,0 +1,59 @@
+package components
+
+templ Base(title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="theme-color" content="#1f2937"/>
+			<meta name="mobile-web-app-capable" content="yes"/>
+			<link rel="manifest" href="/static/manifest.webmanifest"/>
+			<title>{ title }</title>
+			<link rel="stylesheet" href="/static/css/app.css"/>
+			<meta name="csrf-token" content=""/>
+			<script src="/static/js/vendor/htmx.min.js"></script>
+			<script src="/static/js/vendor/response-targets.js"></script>
+		</head>
+		<body hx-ext="response-targets">
+			<div class="app-shell">
+				@Sidebar()
+				<div class="main">
+					<header class="topbar">
+						<button class="menu-btn" type="button" data-menu-button aria-label="Open menu">☰</button>
+						<div></div>
+						<div class="topbar-right">
+							<a class="notification-btn" href="/notifications/page" aria-label="Notifications">🔔</a>
+							<details class="profile-menu">
+								<summary class="profile" aria-label="Open profile menu">
+									<div class="avatar" data-profile-avatar>U</div>
+									<div>
+										<div class="profile-name" data-profile-name>Account</div>
+										<div class="profile-username" data-profile-username></div>
+										<div class="profile-role" data-profile-role></div>
+									</div>
+								</summary>
+								<div class="profile-dropdown">
+									<a class="profile-action" href="/profile">My Profile</a>
+									<a class="profile-action" href="/profile#change-password">Change Password</a>
+									<form method="post" action="/logout">
+										<button class="profile-action" type="submit">Logout</button>
+									</form>
+								</div>
+							</details>
+						</div>
+					</header>
+					<main>
+						<div class="sync-conflicts" data-sync-conflicts hidden role="status" aria-live="polite"></div>
+						{ children... }
+					</main>
+				</div>
+				<div class="overlay" data-overlay></div>
+			</div>
+			<script src="/static/js/app.js"></script>
+			<div class="offline-status" data-offline-status data-state="online" role="status" aria-live="polite">Online</div>
+			<script type="module" src="/static/js/offline/register.js"></script>
+			<script type="module" src="/static/js/offline/pages.js"></script>
+		</body>
+	</html>
+}

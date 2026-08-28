@@ -1,0 +1,59 @@
+package components
+
+type Message struct {
+	ID       uint
+	From     string
+	Subject  string
+	Preview  string
+	Date     string
+	Read     bool
+}
+
+templ MessagesPage(messages []Message, errorMsg string) {
+	@Base("PWAMS - Messages") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Messages</h1>
+					<p>Internal messaging and communications.</p>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div class="panel">
+				<div class="panel-header">
+					<h2>Messages</h2>
+					<span class="badge">{ itoa(len(messages)) } Messages</span>
+				</div>
+				<div class="table-wrap">
+					<table class="data-table">
+						<thead>
+							<tr><th>From</th><th>Subject</th><th>Preview</th><th>Date</th><th>Status</th></tr>
+						</thead>
+						<tbody>
+							for _, m := range messages {
+								<tr>
+									<td>{ m.From }</td>
+									<td>{ m.Subject }</td>
+									<td>{ m.Preview }</td>
+									<td>{ m.Date }</td>
+									<td>
+										if m.Read {
+											<span class="badge badge-muted">Read</span>
+										} else {
+											<span class="badge badge-success">New</span>
+										}
+									</td>
+								</tr>
+							}
+							if len(messages) == 0 {
+								<tr><td colspan="5" class="empty">No messages.</td></tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	}
+}

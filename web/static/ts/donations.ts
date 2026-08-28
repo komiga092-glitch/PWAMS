@@ -26,6 +26,10 @@ document.addEventListener("keydown", (event: KeyboardEvent) => {
 async function submitDonation(event: SubmitEvent): Promise<void> {
   event.preventDefault();
   const form = event.currentTarget as HTMLFormElement;
+  const submitButton = form.querySelector<HTMLButtonElement>(
+    'button[type="submit"]',
+  );
+  if (submitButton) submitButton.disabled = true;
   const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
   data.amount = String(Number(data.amount || 0));
   data.quantity = String(Number(data.quantity || 0));
@@ -66,6 +70,8 @@ async function submitDonation(event: SubmitEvent): Promise<void> {
     window.location.reload();
   } catch (error: unknown) {
     alert(error instanceof Error ? error.message : "Unable to save donation.");
+  } finally {
+    if (submitButton) submitButton.disabled = false;
   }
 }
 

@@ -1,0 +1,91 @@
+package components
+
+type Donation struct {
+	ID            uint
+	DonorName     string
+	Amount        string
+	Date          string
+	PaymentMethod string
+	Status        string
+	ReferenceNo   string
+}
+
+templ DonationsPage(donations []Donation, search string, errorMsg string) {
+	@Base("PWAMS - Donations") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Donations</h1>
+					<p>Track and manage all donations.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/donations/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Add Donation</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/donations/page" hx-target="#donations-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="donation-search">Search</label>
+							<input id="donation-search" type="text" name="search" placeholder="Search donor or reference..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/donations/page" hx-target="#donations-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="donations-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Donation List</h2>
+						<span class="badge">{ itoa(len(donations)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Donor</th><th>Amount</th><th>Date</th><th>Method</th><th>Reference</th><th>Status</th><th>Actions</th></tr>
+							</thead>
+							<tbody>
+								for _, d := range donations {
+									<tr>
+										<td>{ d.DonorName }</td>
+										<td>{ d.Amount }</td>
+										<td>{ d.Date }</td>
+										<td>{ d.PaymentMethod }</td>
+										<td>{ d.ReferenceNo }</td>
+										<td>
+											if d.Status == "Completed" {
+												<span class="badge badge-success">Completed</span>
+											} else if d.Status == "Pending" {
+												<span class="badge badge-warning">Pending</span>
+											} else {
+												<span class="badge badge-muted">{ d.Status }</span>
+											}
+										</td>
+										<td>
+											<div class="table-actions">
+												<a href={ "/donations/" + itoa(int(d.ID)) + "/view" } class="btn btn-secondary">View</a>
+											</div>
+										</td>
+									</tr>
+								}
+								if len(donations) == 0 {
+									<tr><td colspan="7" class="empty">No donations found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

@@ -1,0 +1,48 @@
+package components
+
+type StudentViewData struct {
+	ID       uint
+	FullName string
+	School   string
+	Grade    string
+	Status   string
+}
+
+templ StudentViewPage(s StudentViewData) {
+	@Base("PWAMS - Student Details") {
+		<section class="person-page">
+			<div class="form-page-header">
+				<div>
+					<h1>Student Details</h1>
+					<p>{ s.FullName }</p>
+				</div>
+				<div class="table-actions">
+					<a href="/students/page" class="btn btn-secondary">← Back</a>
+					<a href={ "/students/" + itoa(int(s.ID)) + "/edit" } class="btn btn-primary">Edit</a>
+				</div>
+			</div>
+			<div class="person-form-card">
+				<div class="form-section">
+					<h2>Student Information</h2>
+					<div class="form-row">
+						<div class="form-field"><label>Full Name</label><div>{ s.FullName }</div></div>
+						<div class="form-field"><label>School</label><div>{ s.School }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field"><label>Grade</label><div>{ s.Grade }</div></div>
+						<div class="form-field">
+							<label>Status</label>
+							<div>
+								if s.Status == "Active" {
+									<span class="badge badge-success">Active</span>
+								} else {
+									<span class="badge badge-muted">{ s.Status }</span>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

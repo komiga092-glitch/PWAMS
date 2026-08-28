@@ -96,7 +96,42 @@ func (s *SyncService) ValidatePushRequest(
 func (s *SyncService) RequestHash(
 	request models.SyncPushRequest,
 ) (string, error) {
-	data, err := json.Marshal(request)
+	// Build a normalized copy excluding timestamps for stable hashing
+	type normalizedOp struct {
+		ID            uuid.UUID              `json:"id"`
+		EntityType    string                 `json:"entity_type"`
+		Operation     string                 `json:"operation"`
+		RecordID      uuid.UUID              `json:"record_id"`
+		ClientVersion int                    `json:"client_version"`
+		Payload       map[string]interface{} `json:"payload"`
+	}
+	type normalizedRequest struct {
+		UserID     uuid.UUID        `json:"user_id"`
+		Operations []normalizedOp   `json:"operations"`
+	}
+	// UserID is not a top-level field of SyncPushRequest; the handler
+	// stamps every operation with the authenticated user's ID.
+	userID := uuid.Nil
+	if len(request.Operations) > 0 {
+		userID = request.Operations[0].UserID
+	}
+
+	normalized := normalizedRequest{
+		UserID:     userID,
+		Operations: make([]normalizedOp, len(request.Operations)),
+	}
+	for i, op := range request.Operations {
+		normalized.Operations[i] = normalizedOp{
+			ID:            op.ID,
+			EntityType:    op.EntityType,
+			Operation:     op.Operation,
+			RecordID:      op.RecordID,
+			ClientVersion: op.ClientVersion,
+			Payload:       op.Payload,
+		}
+	}
+
+	data, err := json.Marshal(normalized)
 	if err != nil {
 		return "", err
 	}

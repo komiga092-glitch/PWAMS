@@ -1,0 +1,82 @@
+package components
+
+type CareProvided struct {
+	ID          uint
+	PersonName  string
+	CareType    string
+	Date        string
+	Notes       string
+	Status      string
+}
+
+templ CareProvidedPage(records []CareProvided, search string, errorMsg string) {
+	@Base("PWAMS - Care Provided") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Care Provided</h1>
+					<p>Track care and support activities delivered.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/care-provided/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Add Record</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/care-provided/page" hx-target="#care-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="care-search">Search</label>
+							<input id="care-search" type="text" name="search" placeholder="Search person or type..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/care-provided/page" hx-target="#care-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="care-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Care Records</h2>
+						<span class="badge">{ itoa(len(records)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Person</th><th>Care Type</th><th>Date</th><th>Notes</th><th>Status</th></tr>
+							</thead>
+							<tbody>
+								for _, c := range records {
+									<tr>
+										<td>{ c.PersonName }</td>
+										<td>{ c.CareType }</td>
+										<td>{ c.Date }</td>
+										<td>{ c.Notes }</td>
+										<td>
+											if c.Status == "Completed" {
+												<span class="badge badge-success">Completed</span>
+											} else {
+												<span class="badge badge-warning">{ c.Status }</span>
+											}
+										</td>
+									</tr>
+								}
+								if len(records) == 0 {
+									<tr><td colspan="5" class="empty">No care records found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

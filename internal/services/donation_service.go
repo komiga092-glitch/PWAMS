@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -135,7 +136,7 @@ func (s *DonationService) CreateDonation(
 
 	if donationType == models.DonationTypeCash {
 		donation.ItemName = ""
-		donation.Quantity = 0
+		donation.Quantity = decimal.Zero
 		donation.Unit = ""
 	}
 
@@ -195,14 +196,14 @@ func (s *DonationService) validateDonationDetails(
 
 	case models.DonationTypeCash:
 
-		if request.Amount <= 0 {
+		if request.Amount.LessThanOrEqual(decimal.Zero) {
 			return "", ErrCashAmountRequired
 		}
 
 	default:
 
 		if strings.TrimSpace(request.ItemName) == "" ||
-			request.Quantity <= 0 ||
+			request.Quantity.LessThanOrEqual(decimal.Zero) ||
 			strings.TrimSpace(request.Unit) == "" {
 
 			return "", ErrItemDetailsRequired
@@ -454,12 +455,12 @@ func applyDonationUpdate(
 
 	if donationType == models.DonationTypeCash {
 		donation.ItemName = ""
-		donation.Quantity = 0
+		donation.Quantity = decimal.Zero
 		donation.Unit = ""
 		return
 	}
 
-	donation.Amount = 0
+	donation.Amount = decimal.Zero
 }
 
 func (s *DonationService) UpdateDonationStatus(
@@ -524,18 +525,18 @@ func (s *DonationService) parseDonationDate(date string) (time.Time, error) {
 
 func validateDonationPayload(
 	donationType string,
-	amount, quantity float64,
+	amount, quantity decimal.Decimal,
 	itemName, unit string,
 ) error {
 	switch donationType {
 	case models.DonationTypeCash:
-		if amount <= 0 {
+		if amount.LessThanOrEqual(decimal.Zero) {
 			return ErrCashAmountRequired
 		}
 
 	default:
 		if strings.TrimSpace(itemName) == "" ||
-			quantity <= 0 ||
+			quantity.LessThanOrEqual(decimal.Zero) ||
 			strings.TrimSpace(unit) == "" {
 			return ErrItemDetailsRequired
 		}

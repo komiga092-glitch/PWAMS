@@ -1,0 +1,135 @@
+{{ define "profile_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>My Profile</h1>
+      <p>Manage your own account information.</p>
+    </div>
+  </div>
+
+  {{ if .updated }}
+  <div class="alert alert-success">Profile updated successfully.</div>
+  {{ end }} {{ if .password_updated }}
+  <div class="alert alert-success">Password changed successfully.</div>
+  {{ end }} {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }} {{ if .password_error }}
+  <div class="alert alert-danger">{{ .password_error }}</div>
+  {{ end }}
+
+  <div class="dashboard-grid">
+    <section class="panel">
+      <div class="panel-header"><h2>Account details</h2></div>
+      <div class="panel-body">
+        <div class="profile-page-identity">
+          <div class="avatar profile-page-avatar">
+            {{ printf "%.1s" .profile_user.Username }}
+          </div>
+          <div>
+            <h2>{{ .profile_user.Username }}</h2>
+            <p class="profile-role">Role: {{ .profile_user.Role.Name }}</p>
+          </div>
+        </div>
+        <dl class="profile-details">
+          <div>
+            <dt>Username</dt>
+            <dd>{{ .profile_user.Username }}</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>{{ .profile_user.Email }}</dd>
+          </div>
+          <div>
+            <dt>Role</dt>
+            <dd>{{ .profile_user.Role.Name }}</dd>
+          </div>
+          <div>
+            <dt>Account status</dt>
+            <dd>{{ .profile_user.Status }}</dd>
+          </div>
+          <div>
+            <dt>Created</dt>
+            <dd>{{ .profile_user.CreatedAt }}</dd>
+          </div>
+          <div>
+            <dt>Last login</dt>
+            <dd>
+              {{ if .profile_user.LastLoginAt }}{{ .profile_user.LastLoginAt
+              }}{{ else }}Not available{{ end }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-header"><h2>Edit profile</h2></div>
+      <div class="panel-body">
+        <form method="post" action="/profile" class="form">
+          <label class="form-label" for="profile-username">Username</label>
+          <input
+            class="form-control"
+            id="profile-username"
+            name="username"
+            value="{{ .profile_user.Username }}"
+            required
+            minlength="3"
+            maxlength="50"
+          />
+          <label class="form-label" for="profile-email">Email</label>
+          <input
+            class="form-control"
+            id="profile-email"
+            name="email"
+            type="email"
+            value="{{ .profile_user.Email }}"
+            required
+            maxlength="100"
+          />
+          <button class="btn btn-primary" type="submit">Save profile</button>
+        </form>
+        <h2 id="change-password" class="profile-section-heading">
+          Change password
+        </h2>
+        <form method="post" action="/profile/password" class="form">
+          <label class="form-label" for="current-password"
+            >Current password</label
+          >
+          <input
+            class="form-control"
+            id="current-password"
+            name="current_password"
+            type="password"
+            required
+            autocomplete="current-password"
+          />
+          <label class="form-label" for="new-password">New password</label>
+          <input
+            class="form-control"
+            id="new-password"
+            name="new_password"
+            type="password"
+            required
+            minlength="8"
+            maxlength="72"
+            autocomplete="new-password"
+          />
+          <label class="form-label" for="confirm-password"
+            >Confirm new password</label
+          >
+          <input
+            class="form-control"
+            id="confirm-password"
+            name="confirm_password"
+            type="password"
+            required
+            minlength="8"
+            maxlength="72"
+            autocomplete="new-password"
+          />
+          <button class="btn btn-primary" type="submit">Change password</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</section>
+{{ end }}

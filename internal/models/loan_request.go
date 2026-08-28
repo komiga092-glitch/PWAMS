@@ -1,18 +1,20 @@
 package models
 
+import "github.com/shopspring/decimal"
+
 type CreateLoanRequest struct {
-	PersonID       string  `json:"person_id" binding:"required,uuid"`
-	LoanAmount     float64 `json:"loan_amount" binding:"required,gt=0"`
-	InterestRate   float64 `json:"interest_rate" binding:"gte=0"`
-	DurationMonths int     `json:"duration_months" binding:"required,gt=0"`
-	Purpose        string  `json:"purpose"`
+	PersonID       string          `json:"person_id" binding:"required,uuid"`
+	LoanAmount     decimal.Decimal `json:"loan_amount" binding:"required"`
+	InterestRate   decimal.Decimal `json:"interest_rate" binding:"required"`
+	DurationMonths int             `json:"duration_months" binding:"required,gt=0"`
+	Purpose        string          `json:"purpose"`
 }
 
 type UpdateLoanRequest struct {
-	LoanAmount     float64 `json:"loan_amount" binding:"required,gt=0"`
-	InterestRate   float64 `json:"interest_rate" binding:"gte=0"`
-	DurationMonths int     `json:"duration_months" binding:"required,gt=0"`
-	Purpose        string  `json:"purpose"`
+	LoanAmount     decimal.Decimal `json:"loan_amount" binding:"required"`
+	InterestRate   decimal.Decimal `json:"interest_rate" binding:"required"`
+	DurationMonths int             `json:"duration_months" binding:"required,gt=0"`
+	Purpose        string          `json:"purpose"`
 }
 
 type ReviewLoanRequest struct {

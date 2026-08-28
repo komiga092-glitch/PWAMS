@@ -1,0 +1,88 @@
+package components
+
+type RevenueRecord struct {
+	ID          uint
+	Source      string
+	Category    string
+	Amount      string
+	Date        string
+	Description string
+	Status      string
+}
+
+templ RevenuePage(records []RevenueRecord, search string, errorMsg string) {
+	@Base("PWAMS - Revenue") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Revenue</h1>
+					<p>Track income and financial records.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin"
+					hx-get="/revenue/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Add Record</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/revenue/page" hx-target="#revenue-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="revenue-search">Search</label>
+							<input id="revenue-search" type="text" name="search" placeholder="Search source or category..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/revenue/page" hx-target="#revenue-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="revenue-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Revenue Records</h2>
+						<span class="badge">{ itoa(len(records)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Source</th><th>Category</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+							</thead>
+							<tbody>
+								for _, r := range records {
+									<tr>
+										<td>{ r.Source }</td>
+										<td>{ r.Category }</td>
+										<td>{ r.Amount }</td>
+										<td>{ r.Date }</td>
+										<td>
+											if r.Status == "Confirmed" {
+												<span class="badge badge-success">Confirmed</span>
+											} else {
+												<span class="badge badge-warning">{ r.Status }</span>
+											}
+										</td>
+										<td>
+											<div class="table-actions">
+												<a href={ "/revenue/" + itoa(int(r.ID)) + "/view" } class="btn btn-secondary">View</a>
+											</div>
+										</td>
+									</tr>
+								}
+								if len(records) == 0 {
+									<tr><td colspan="6" class="empty">No revenue records found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

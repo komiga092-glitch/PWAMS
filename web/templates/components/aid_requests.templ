@@ -1,0 +1,91 @@
+package components
+
+type AidRequest struct {
+	ID              uint
+	PersonName      string
+	RequestType     string
+	Amount          string
+	Status          string
+	Date            string
+	Priority        string
+}
+
+templ AidRequestsPage(requests []AidRequest, search string, errorMsg string) {
+	@Base("PWAMS - Aid Requests") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Aid Requests</h1>
+					<p>Review and manage aid assistance requests.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/aid-requests/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ New Request</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/aid-requests/page" hx-target="#aid-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="aid-search">Search</label>
+							<input id="aid-search" type="text" name="search" placeholder="Search person or type..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/aid-requests/page" hx-target="#aid-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="aid-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Aid Request List</h2>
+						<span class="badge">{ itoa(len(requests)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Person</th><th>Type</th><th>Amount</th><th>Priority</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+							</thead>
+							<tbody>
+								for _, r := range requests {
+									<tr>
+										<td>{ r.PersonName }</td>
+										<td>{ r.RequestType }</td>
+										<td>{ r.Amount }</td>
+										<td>{ r.Priority }</td>
+										<td>{ r.Date }</td>
+										<td>
+											if r.Status == "Approved" {
+												<span class="badge badge-success">Approved</span>
+											} else if r.Status == "Pending" {
+												<span class="badge badge-warning">Pending</span>
+											} else {
+												<span class="badge badge-muted">{ r.Status }</span>
+											}
+										</td>
+										<td>
+											<div class="table-actions">
+												<a href={ "/aid-requests/" + itoa(int(r.ID)) + "/view" } class="btn btn-secondary">View</a>
+											</div>
+										</td>
+									</tr>
+								}
+								if len(requests) == 0 {
+									<tr><td colspan="7" class="empty">No aid requests found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

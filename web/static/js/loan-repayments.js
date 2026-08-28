@@ -53,6 +53,9 @@ document.addEventListener("DOMContentLoaded", () => {
 async function submitRepayment(event) {
     event.preventDefault();
     const form = event.currentTarget;
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton)
+        submitButton.disabled = true;
     const data = Object.fromEntries(new FormData(form));
     const requestBody = {
         ...data,
@@ -83,6 +86,10 @@ async function submitRepayment(event) {
     }
     catch (error) {
         alert(error instanceof Error ? error.message : "Unable to save repayment.");
+    }
+    finally {
+        if (submitButton)
+            submitButton.disabled = false;
     }
 }
 window.openRepaymentModal = openRepaymentModal;

@@ -13,7 +13,11 @@ type AuditLog struct {
 	Entity    string     `gorm:"size:100;not null" json:"entity"`
 	EntityID  *uuid.UUID `gorm:"type:uuid" json:"entity_id"`
 	Details   string     `gorm:"type:text" json:"details"`
+	OldValue  string     `gorm:"type:text" json:"old_value"`
+	NewValue  string     `gorm:"type:text" json:"new_value"`
+	RequestID string     `gorm:"size:100;index" json:"request_id"`
 	IPAddress string     `gorm:"size:45" json:"ip_address"`
+	TenantID  *uuid.UUID `gorm:"type:uuid;index" json:"tenant_id"`
 	CreatedAt time.Time  `json:"created_at"`
 }
 

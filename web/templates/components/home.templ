@@ -1,0 +1,43 @@
+package components
+
+templ HomePage() {
+	@Base("PWAMS - Home") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Welcome to PWAMS</h1>
+					<p>People Welfare Association Management System</p>
+				</div>
+			</div>
+			<div class="dashboard-grid">
+				<div class="panel">
+					<div class="panel-header"><h2>Quick Navigation</h2></div>
+					<div class="panel-body">
+						<div class="quick-grid">
+							<a class="quick-card" href="/dashboard">
+								<div class="quick-icon">⌂</div>
+								<div class="quick-title">Dashboard</div>
+								<div class="quick-text">Overview of operations</div>
+							</a>
+							<a class="quick-card" href="/persons/page" data-roles="Super Admin,Admin,Staff">
+								<div class="quick-icon">♙</div>
+								<div class="quick-title">Care Seekers</div>
+								<div class="quick-text">Manage beneficiaries</div>
+							</a>
+							<a class="quick-card" href="/donations/page" data-roles="Super Admin,Admin,Staff">
+								<div class="quick-icon">◈</div>
+								<div class="quick-title">Donations</div>
+								<div class="quick-text">Track contributions</div>
+							</a>
+							<a class="quick-card" href="/loans/page" data-roles="Super Admin,Admin,Staff">
+								<div class="quick-icon">₹</div>
+								<div class="quick-title">Loans</div>
+								<div class="quick-text">Manage loans</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

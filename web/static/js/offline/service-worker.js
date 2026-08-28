@@ -1,5 +1,6 @@
 "use strict";
 const CACHE_NAME = "pwams-static-v1";
+const OFFLINE_SHELL = "/offline.html";
 const STATIC_ASSETS = [
     "/static/css/app.css",
     "/static/js/app.js",
@@ -16,6 +17,7 @@ const STATIC_ASSETS = [
     "/static/js/offline-data.js",
     "/static/js/offline/service-worker.js",
     "/static/manifest.webmanifest",
+    OFFLINE_SHELL,
 ];
 const worker = self;
 worker.addEventListener("install", (event) => {
@@ -35,12 +37,32 @@ worker.addEventListener("activate", (event) => {
 worker.addEventListener("fetch", (event) => {
     const request = event.request;
     const url = new URL(request.url);
-    if (request.method !== "GET" ||
-        url.origin !== worker.location.origin ||
-        !url.pathname.startsWith("/static/"))
+    if (request.method !== "GET" || url.origin !== worker.location.origin)
         return;
-    event.respondWith(fetch(request).catch(() => caches
-        .match(request)
-        .then((response) => response ?? new Response("Offline", { status: 503 }))));
+    if (url.pathname.startsWith("/static/")) {
+        event.respondWith(fetch(request).catch(() => caches
+            .match(request)
+            .then((response) => response ?? new Response("Offline", { status: 503 }))));
+        return;
+    }
+    if (request.mode === "navigate") {
+        event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_SHELL).then((response) => response ??
+            new Response("Offline", {
+                status: 503,
+                headers: { "Content-Type": "text/html" },
+            }))));
+    }
+});
+worker.addEventListener("sync", (event) => {
+    if (event.tag === "pwams-background-sync") {
+        event.waitUntil(new Promise((resolve) => {
+            worker.clients.matchAll().then((clientList) => {
+                clientList.forEach((client) => {
+                    client.postMessage({ type: "PWAMS_SYNC_REQUESTED" });
+                });
+                resolve();
+            });
+        }));
+    }
 });
 //# sourceMappingURL=service-worker.js.map

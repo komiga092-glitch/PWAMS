@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +28,7 @@ type Person struct {
 
 	Address       string  `gorm:"type:text" json:"address"`
 	Occupation    string  `gorm:"size:100" json:"occupation"`
-	MonthlyIncome float64 `gorm:"type:numeric(12,2);default:0" json:"monthly_income"`
+	MonthlyIncome decimal.Decimal `gorm:"type:numeric(12,2);default:0" json:"monthly_income"`
 
 	Status string `gorm:"size:20;not null;default:'Active';index" json:"status"`
 

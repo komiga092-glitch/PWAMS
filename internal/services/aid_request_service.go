@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
+	"github.com/shopspring/decimal"
 )
 
 var (
@@ -144,7 +146,7 @@ func (s *AidRequestService) CreateAidRequest(
 		Title:           strings.TrimSpace(request.Title),
 		Description:     strings.TrimSpace(request.Description),
 		RequestedAmount: request.RequestedAmount,
-		ApprovedAmount:  0,
+		ApprovedAmount:  decimal.Zero,
 		Currency:        currency,
 		RequestDate:     requestDate,
 		NeededBy:        neededBy,
@@ -159,21 +161,14 @@ func (s *AidRequestService) CreateAidRequest(
 		)
 	}
 
-	// Create notification for the user who created the request.
-	notification := &models.Notification{
-		UserID:  createdByID,
-		Title:   "Aid Request Created",
-		Message: "Your aid request has been created successfully.",
-		Type:    "aid_request",
-	}
-
 	if s.notificationService != nil {
-		if err := s.notificationService.Create(notification); err != nil {
-			return nil, fmt.Errorf(
-				"unable to create aid request notification: %w",
-				err,
-			)
+		notification := &models.Notification{
+			UserID:  createdByID,
+			Title:   "Aid Request Created",
+			Message: "Your aid request has been created successfully.",
+			Type:    "aid_request",
 		}
+		sendAidRequestNotification(s.notificationService, notification)
 	}
 
 	return aidRequest, nil
@@ -508,12 +503,13 @@ func (s *AidRequestService) ReviewAidRequest(
 
 	switch newStatus {
 	case models.AidStatusApproved:
-		if request.ApprovedAmount <= 0 {
+		if !request.ApprovedAmount.IsPositive() {
 			return nil, ErrApprovedAmountRequired
 		}
 
-		if request.ApprovedAmount >
-			aidRequest.RequestedAmount {
+		if request.ApprovedAmount.GreaterThan(
+			aidRequest.RequestedAmount,
+		) {
 			return nil, ErrApprovedAmountTooHigh
 		}
 
@@ -522,7 +518,7 @@ func (s *AidRequestService) ReviewAidRequest(
 
 	case models.AidStatusRejected,
 		models.AidStatusCancelled:
-		aidRequest.ApprovedAmount = 0
+		aidRequest.ApprovedAmount = decimal.Zero
 	}
 
 	now := time.Now().UTC()
@@ -576,17 +572,29 @@ func (s *AidRequestService) ReviewAidRequest(
 	}
 
 	if s.notificationService != nil {
-		if err := s.notificationService.Create(
-			notification,
-		); err != nil {
-			return nil, fmt.Errorf(
-				"unable to create aid request notification: %w",
-				err,
-			)
-		}
+		// Notifications are a side effect of an already-committed review
+		// decision. A delivery failure must never roll back or fail the
+		// approval itself (B6) — it is logged for operators instead.
+		sendAidRequestNotification(s.notificationService, notification)
 	}
 
 	return aidRequest, nil
+}
+
+// sendAidRequestNotification best-effort delivers an aid-request
+// notification and records delivery problems without propagating them.
+func sendAidRequestNotification(
+	notificationService *NotificationService,
+	notification *models.Notification,
+) {
+	if err := notificationService.Create(notification); err != nil {
+		log.Printf(
+			"unable to deliver aid request notification %q for user %q: %v",
+			notification.Title,
+			notification.UserID,
+			err,
+		)
+	}
 }
 
 func (s *AidRequestService) CancelAidRequest(
@@ -637,14 +645,7 @@ func (s *AidRequestService) CancelAidRequest(
 	}
 
 	if s.notificationService != nil {
-		if err := s.notificationService.Create(
-			notification,
-		); err != nil {
-			return nil, fmt.Errorf(
-				"unable to create cancellation notification: %w",
-				err,
-			)
-		}
+		sendAidRequestNotification(s.notificationService, notification)
 	}
 
 	return aidRequest, nil

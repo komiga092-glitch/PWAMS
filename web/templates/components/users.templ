@@ -1,0 +1,85 @@
+package components
+
+type User struct {
+	ID       uint
+	Username string
+	Email    string
+	Role     string
+	Status   string
+}
+
+templ UsersPage(users []User, search string, errorMsg string) {
+	@Base("PWAMS - Users") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Users</h1>
+					<p>Manage system user accounts.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin"
+					hx-get="/users/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Add User</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/users/page" hx-target="#users-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="user-search">Search</label>
+							<input id="user-search" type="text" name="search" placeholder="Search username or email..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/users/page" hx-target="#users-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="users-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>User List</h2>
+						<span class="badge">{ itoa(len(users)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+							</thead>
+							<tbody>
+								for _, u := range users {
+									<tr>
+										<td>{ u.Username }</td>
+										<td>{ u.Email }</td>
+										<td>{ u.Role }</td>
+										<td>
+											if u.Status == "Active" {
+												<span class="badge badge-success">Active</span>
+											} else {
+												<span class="badge badge-muted">{ u.Status }</span>
+											}
+										</td>
+										<td>
+											<div class="table-actions">
+												<a href={ "/users/" + itoa(int(u.ID)) + "/edit" } class="btn btn-primary">Edit</a>
+											</div>
+										</td>
+									</tr>
+								}
+								if len(users) == 0 {
+									<tr><td colspan="5" class="empty">No users found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

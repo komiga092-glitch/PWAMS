@@ -4,15 +4,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 const (
-	LoanStatusPending   = "pending"
-	LoanStatusApproved  = "approved"
-	LoanStatusRejected  = "rejected"
-	LoanStatusActive    = "active"
-	LoanStatusCompleted = "completed"
-	LoanStatusCancelled = "cancelled"
+	LoanStatusPending   = "Pending"
+	LoanStatusApproved  = "Approved"
+	LoanStatusRejected  = "Rejected"
+	LoanStatusActive    = "Active"
+	LoanStatusCompleted = "Completed"
+	LoanStatusCancelled = "Cancelled"
 )
 
 type Loan struct {
@@ -20,15 +21,15 @@ type Loan struct {
 
 	PersonID uuid.UUID `gorm:"type:uuid;not null;index" json:"person_id"`
 
-	LoanAmount float64 `gorm:"type:numeric(15,2);not null" json:"loan_amount"`
+	LoanAmount decimal.Decimal `gorm:"type:numeric(15,2);not null" json:"loan_amount"`
 
-	InterestRate float64 `gorm:"type:numeric(5,2);not null;default:0" json:"interest_rate"`
+	InterestRate decimal.Decimal `gorm:"type:numeric(5,2);not null;default:0" json:"interest_rate"`
 
 	DurationMonths int `gorm:"not null" json:"duration_months"`
 
-	InstallmentAmount float64 `gorm:"type:numeric(15,2);not null;default:0" json:"installment_amount"`
+	InstallmentAmount decimal.Decimal `gorm:"type:numeric(15,2);not null;default:0" json:"installment_amount"`
 
-	Status string `gorm:"type:varchar(30);not null;default:'pending';index" json:"status"`
+	Status string `gorm:"type:varchar(30);not null;default:'Pending';index" json:"status"`
 
 	Purpose string `gorm:"type:text" json:"purpose"`
 

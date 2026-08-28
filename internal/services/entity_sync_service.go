@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -75,6 +76,11 @@ func (s *EntitySyncService) Apply(operation models.SyncOperation) (*models.SyncR
 		if err != nil {
 			return nil, err
 		}
+
+		if syncBool(syncField(current, "IsDeleted")) {
+			return nil, fmt.Errorf("%s record was deleted on the server", s.adapter.Entity)
+		}
+
 		serverVersion := syncVersion(current)
 		if serverVersion != operation.ClientVersion {
 			conflict := result(false)
@@ -145,6 +151,11 @@ func syncVersion(record any) int {
 		return version
 	}
 	return 1
+}
+
+func syncBool(value any) bool {
+	typed, ok := value.(bool)
+	return ok && typed
 }
 
 func syncField(record any, name string) any {

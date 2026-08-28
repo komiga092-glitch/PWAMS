@@ -96,12 +96,12 @@ func (s *PersonSyncService) create(
 	}
 
 	return &models.SyncResult{
-		OperationID:    operation.ID,
-		EntityType:     "person",
-		RecordID:       person.ID,
-		Success:        true,
-		ServerVersion:  person.Version,
-		ClientVersion:  operation.ClientVersion,
+		OperationID:   operation.ID,
+		EntityType:    "person",
+		RecordID:      person.ID,
+		Success:       true,
+		ServerVersion: person.Version,
+		ClientVersion: operation.ClientVersion,
 	}, nil
 }
 
@@ -127,18 +127,22 @@ func (s *PersonSyncService) update(
 		return nil, err
 	}
 
+	if person.IsDeleted {
+		return nil, errors.New("person record was deleted on the server")
+	}
+
 	// Optimistic locking:
 	// the client must update the version it originally read.
 	if person.Version != operation.ClientVersion {
 		return &models.SyncResult{
-			OperationID:    operation.ID,
-			EntityType:     "person",
-			RecordID:       operation.RecordID,
-			Success:        false,
-			Code:           models.SyncErrorConflict,
-			Message:        "Person record was modified on the server",
-			ServerVersion:  person.Version,
-			ClientVersion:  operation.ClientVersion,
+			OperationID:   operation.ID,
+			EntityType:    "person",
+			RecordID:      operation.RecordID,
+			Success:       false,
+			Code:          models.SyncErrorConflict,
+			Message:       "Person record was modified on the server",
+			ServerVersion: person.Version,
+			ClientVersion: operation.ClientVersion,
 		}, ErrPersonSyncConflict
 	}
 
@@ -166,12 +170,12 @@ func (s *PersonSyncService) update(
 	}
 
 	return &models.SyncResult{
-		OperationID:    operation.ID,
-		EntityType:     "person",
-		RecordID:       person.ID,
-		Success:        true,
-		ServerVersion:  incoming.Version,
-		ClientVersion:  operation.ClientVersion,
+		OperationID:   operation.ID,
+		EntityType:    "person",
+		RecordID:      person.ID,
+		Success:       true,
+		ServerVersion: incoming.Version,
+		ClientVersion: operation.ClientVersion,
 	}, nil
 }
 
@@ -200,14 +204,14 @@ func (s *PersonSyncService) delete(
 	// Optimistic locking before soft delete.
 	if person.Version != operation.ClientVersion {
 		return &models.SyncResult{
-			OperationID:    operation.ID,
-			EntityType:     "person",
-			RecordID:       operation.RecordID,
-			Success:        false,
-			Code:           models.SyncErrorConflict,
-			Message:        "Person record was modified on the server",
-			ServerVersion:  person.Version,
-			ClientVersion:  operation.ClientVersion,
+			OperationID:   operation.ID,
+			EntityType:    "person",
+			RecordID:      operation.RecordID,
+			Success:       false,
+			Code:          models.SyncErrorConflict,
+			Message:       "Person record was modified on the server",
+			ServerVersion: person.Version,
+			ClientVersion: operation.ClientVersion,
 		}, ErrPersonSyncConflict
 	}
 
@@ -220,11 +224,11 @@ func (s *PersonSyncService) delete(
 	}
 
 	return &models.SyncResult{
-		OperationID:    operation.ID,
-		EntityType:     "person",
-		RecordID:       person.ID,
-		Success:        true,
-		ServerVersion:  person.Version,
-		ClientVersion:  operation.ClientVersion,
+		OperationID:   operation.ID,
+		EntityType:    "person",
+		RecordID:      person.ID,
+		Success:       true,
+		ServerVersion: person.Version,
+		ClientVersion: operation.ClientVersion,
 	}, nil
 }

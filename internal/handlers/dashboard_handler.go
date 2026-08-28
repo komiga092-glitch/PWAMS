@@ -28,7 +28,7 @@ func (h *DashboardHandler) Page(c *gin.Context) {
 		return
 	}
 
-	stats, err := h.dashboardService.GetStats(currentUser.ID)
+	stats, err := h.dashboardService.GetStatsForRole(currentUser.ID, currentUser.Role.Name)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "base", gin.H{
 			"page_template": "dashboard_content",
@@ -52,7 +52,7 @@ func (h *DashboardHandler) GetStats(c *gin.Context) {
 		return
 	}
 
-	stats, err := h.dashboardService.GetStats(currentUser.ID)
+	stats, err := h.dashboardService.GetStatsForRole(currentUser.ID, currentUser.Role.Name)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,

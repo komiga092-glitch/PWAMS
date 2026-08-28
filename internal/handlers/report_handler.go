@@ -20,20 +20,20 @@ func (h *ReportHandler) Page(c *gin.Context) {
 	donations, donationsErr := h.reportService.GetDonationReport()
 	aidRequests, aidErr := h.reportService.GetAidRequestReport()
 	if dashboardErr != nil || donationsErr != nil || aidErr != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 			"page_template": "reports_content",
 			"title":         "Reports",
 			"error":         "Unable to retrieve reports",
-		})
+		}))
 		return
 	}
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "reports_content",
 		"title":         "Reports",
 		"dashboard":     dashboard,
 		"donations":     donations,
 		"aid_requests":  aidRequests,
-	})
+	}))
 }
 
 func (h *ReportHandler) GetDashboardReport(c *gin.Context) {

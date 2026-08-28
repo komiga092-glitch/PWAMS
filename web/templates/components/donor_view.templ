@@ -1,0 +1,52 @@
+package components
+
+type DonorViewData struct {
+	ID      uint
+	Name    string
+	Email   string
+	Phone   string
+	Type    string
+	Status  string
+}
+
+templ DonorViewPage(d DonorViewData) {
+	@Base("PWAMS - Donor Details") {
+		<section class="person-page">
+			<div class="form-page-header">
+				<div>
+					<h1>Donor Details</h1>
+					<p>{ d.Name }</p>
+				</div>
+				<div class="table-actions">
+					<a href="/donors/page" class="btn btn-secondary">← Back</a>
+					<a href={ "/donors/" + itoa(int(d.ID)) + "/edit" } class="btn btn-primary">Edit</a>
+				</div>
+			</div>
+			<div class="person-form-card">
+				<div class="form-section">
+					<h2>Donor Information</h2>
+					<div class="form-row">
+						<div class="form-field"><label>Name</label><div>{ d.Name }</div></div>
+						<div class="form-field"><label>Email</label><div>{ d.Email }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field"><label>Phone</label><div>{ d.Phone }</div></div>
+						<div class="form-field"><label>Type</label><div>{ d.Type }</div></div>
+					</div>
+					<div class="form-row">
+						<div class="form-field">
+							<label>Status</label>
+							<div>
+								if d.Status == "Active" {
+									<span class="badge badge-success">Active</span>
+								} else {
+									<span class="badge badge-muted">{ d.Status }</span>
+								}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

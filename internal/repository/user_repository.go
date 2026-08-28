@@ -253,6 +253,15 @@ func (r *UserRepository) UpdatePassword(
 	return nil
 }
 
+func (r *UserRepository) UpdateLoginAttempts(user *models.User) error {
+	return r.db.Model(user).Updates(map[string]interface{}{
+		"failed_login_attempts": user.FailedLoginAttempts,
+		"locked_until":          user.LockedUntil,
+		"status":                user.Status,
+		"updated_at":            time.Now().UTC(),
+	}).Error
+}
+
 func (r *UserRepository) SoftDelete(user *models.User) error {
 	if err := r.db.Delete(user).Error; err != nil {
 		return fmt.Errorf("failed to delete user: %w", err)

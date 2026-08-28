@@ -24,10 +24,10 @@ func RegisterAuditLogRoutes(
 	protected.GET(
 		"/audit-logs/page",
 		func(c *gin.Context) {
-			c.HTML(http.StatusOK, "base", gin.H{
+			c.HTML(http.StatusOK, "base", handlers.PageData(c, gin.H{
 				"page_template": "audit_logs_content",
 				"title":         "Audit Logs",
-			})
+			}))
 		},
 	)
 

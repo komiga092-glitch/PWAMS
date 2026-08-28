@@ -52,6 +52,6 @@ func (r *DashboardRepository) Sum(table, column, where string, args ...any) (flo
 
 func (r *DashboardRepository) NetRevenue() (float64, error) {
 	var total float64
-	err := r.db.Raw(`SELECT COALESCE(SUM(CASE WHEN record_type = 'income' THEN amount ELSE -amount END), 0) FROM revenue_records WHERE deleted_at IS NULL`).Scan(&total).Error
+	err := r.db.Raw(`SELECT COALESCE(SUM(CASE WHEN record_type = 'income' THEN amount ELSE -amount END), 0) FROM revenue_records WHERE deleted_at IS NULL AND is_deleted = FALSE`).Scan(&total).Error
 	return total, err
 }

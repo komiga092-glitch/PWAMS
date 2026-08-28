@@ -25,6 +25,9 @@ async function submitRevenue(event) {
     event.preventDefault();
     if (!revenueForm)
         return;
+    const submitButton = revenueForm.querySelector('button[type="submit"]');
+    if (submitButton)
+        submitButton.disabled = true;
     const data = Object.fromEntries(new FormData(revenueForm));
     const requestBody = { ...data, amount: Number(data.amount || 0) };
     try {
@@ -53,6 +56,10 @@ async function submitRevenue(event) {
     }
     catch (error) {
         alert(error instanceof Error ? error.message : "Unable to save revenue record.");
+    }
+    finally {
+        if (submitButton)
+            submitButton.disabled = false;
     }
 }
 async function deleteRevenueRecord(id) {

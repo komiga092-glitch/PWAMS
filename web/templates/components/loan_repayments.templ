@@ -1,0 +1,86 @@
+package components
+
+type LoanRepayment struct {
+	ID         uint
+	LoanID     uint
+	PersonName string
+	Amount     string
+	Date       string
+	Method     string
+	Status     string
+}
+
+templ LoanRepaymentsPage(repayments []LoanRepayment, search string, errorMsg string) {
+	@Base("PWAMS - Loan Repayments") {
+		<section class="page">
+			<div class="page-heading">
+				<div>
+					<h1>Loan Repayments</h1>
+					<p>Track repayment collections.</p>
+				</div>
+				<button
+					type="button"
+					class="btn btn-primary"
+					data-roles="Super Admin,Admin,Staff"
+					hx-get="/loan-repayments/new"
+					hx-target="body"
+					hx-swap="innerHTML"
+				>+ Record Repayment</button>
+			</div>
+			<div class="panel students-filter-panel">
+				<div class="panel-body">
+					<form class="students-filter" hx-get="/loan-repayments/page" hx-target="#repayments-list" hx-swap="innerHTML" hx-trigger="submit">
+						<div>
+							<label for="repayment-search">Search</label>
+							<input id="repayment-search" type="text" name="search" placeholder="Search person or loan..." value={ search } hx-trigger="keyup changed delay:300ms" hx-get="/loan-repayments/page" hx-target="#repayments-list"/>
+						</div>
+						<div class="students-filter-action">
+							<button type="submit" class="btn btn-secondary">Search</button>
+						</div>
+					</form>
+				</div>
+			</div>
+			if errorMsg != "" {
+				<div class="alert alert-danger">{ errorMsg }</div>
+			}
+			<div id="repayments-list">
+				<div class="panel">
+					<div class="panel-header">
+						<h2>Repayment List</h2>
+						<span class="badge">{ itoa(len(repayments)) } Records</span>
+					</div>
+					<div class="table-wrap">
+						<table class="data-table">
+							<thead>
+								<tr><th>Loan</th><th>Person</th><th>Amount</th><th>Date</th><th>Method</th><th>Status</th></tr>
+							</thead>
+							<tbody>
+								for _, r := range repayments {
+									<tr>
+										<td>{ itoa(int(r.LoanID)) }</td>
+										<td>{ r.PersonName }</td>
+										<td>{ r.Amount }</td>
+										<td>{ r.Date }</td>
+										<td>{ r.Method }</td>
+										<td>
+											if r.Status == "Completed" {
+												<span class="badge badge-success">Completed</span>
+											} else if r.Status == "Pending" {
+												<span class="badge badge-warning">Pending</span>
+											} else {
+												<span class="badge badge-muted">{ r.Status }</span>
+											}
+										</td>
+									</tr>
+								}
+								if len(repayments) == 0 {
+									<tr><td colspan="6" class="empty">No repayments found.</td></tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

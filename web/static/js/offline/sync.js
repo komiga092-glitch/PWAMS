@@ -1,5 +1,6 @@
 import { isOnline } from "./connectivity.js";
-import { getPendingMutations, updateMutationStatus } from "./db.js";
+import { getPendingMutations, updateMutationStatus, pruneSyncedOutboxEntries } from "./db.js";
+import { getCsrfToken } from "./csrf.js";
 const SYNC_ENDPOINT = "/api/v1/sync/push";
 let syncPromise;
 export function syncPendingMutations() {
@@ -9,6 +10,31 @@ export function syncPendingMutations() {
         syncPromise = undefined;
     });
     return syncPromise;
+}
+export async function requestBackgroundSync() {
+    if (!("serviceWorker" in navigator) || !("SyncManager" in window)) {
+        return;
+    }
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const syncManager = registration.sync;
+        if (syncManager) {
+            await syncManager.register("pwams-background-sync");
+        }
+    }
+    catch {
+        console.warn("Background sync registration failed");
+    }
+}
+export function setupPeriodicSync(intervalMs = 5 * 60 * 1000) {
+    if (!isOnline())
+        return;
+    setInterval(async () => {
+        if (isOnline()) {
+            await syncPendingMutations();
+            await pruneSyncedOutboxEntries();
+        }
+    }, intervalMs);
 }
 async function runSyncPendingMutations() {
     if (!isOnline()) {
@@ -38,6 +64,7 @@ async function runSyncPendingMutations() {
                 headers: {
                     "Content-Type": "application/json",
                     "Idempotency-Key": mutation.operationId,
+                    "X-CSRF-Token": getCsrfToken(),
                 },
                 body: JSON.stringify({
                     operations: [
