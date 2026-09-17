@@ -2,8 +2,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Messages</h1>
-      <p>Send and manage private messages.</p>
+      <h1>{{t .Lang "messages.title"}}</h1>
+      <p>{{t .Lang "messages.subtitle"}}</p>
     </div>
     <button
       id="compose-message-btn"
@@ -11,7 +11,7 @@
       type="button"
       data-roles="Super Admin,Admin,Staff,Volunteer,Donor,Beneficiary"
     >
-      + Compose Message
+      {{t .Lang "messages.compose"}}
     </button>
   </div>
 
@@ -23,7 +23,7 @@
     aria-live="polite"
   ></div>
 
-  <div class="messages-tabs" role="tablist" aria-label="Message folders">
+  <div class="messages-tabs" role="tablist" aria-label="{{t .Lang "messages.title"}}">
     <button
       class="messages-tab active"
       type="button"
@@ -31,7 +31,7 @@
       role="tab"
       aria-selected="true"
     >
-      Inbox
+      {{t .Lang "messages.inbox"}}
     </button>
     <button
       class="messages-tab"
@@ -40,7 +40,7 @@
       role="tab"
       aria-selected="false"
     >
-      Sent
+      {{t .Lang "messages.sent"}}
     </button>
     <button
       class="messages-tab"
@@ -49,31 +49,31 @@
       role="tab"
       aria-selected="false"
     >
-      Unread
+      {{t .Lang "messages.unread"}}
       <span id="messages-page-unread-count" class="messages-count">0</span>
     </button>
   </div>
 
   <div class="panel messages-panel">
     <div class="panel-header">
-      <h2 id="message-list-title">Inbox</h2>
-      <span id="message-list-count" class="badge badge-muted">0 Records</span>
+      <h2 id="message-list-title">{{t .Lang "messages.inbox"}}</h2>
+      <span id="message-list-count" class="badge badge-muted">0 {{t .Lang "common.records"}}</span>
     </div>
 
     <div class="table-wrap">
-      <div id="messages-loading" class="empty">Loading messages...</div>
-      <div id="messages-empty" class="empty" hidden>No messages found.</div>
+      <div id="messages-loading" class="empty">{{t .Lang "messages.loading"}}</div>
+      <div id="messages-empty" class="empty" hidden>{{t .Lang "messages.empty"}}</div>
       <div id="messages-error" class="empty messages-error" hidden>
-        Unable to load messages.
+        {{t .Lang "messages.load_error"}}
       </div>
       <table id="messages-table" class="data-table" hidden>
         <thead>
           <tr>
-            <th id="message-person-heading">Sender</th>
-            <th>Subject</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th id="message-person-heading">{{t .Lang "messages.sender"}}</th>
+            <th>{{t .Lang "messages.subject"}}</th>
+            <th>{{t .Lang "messages.date"}}</th>
+            <th>{{t .Lang "common.status"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
         <tbody id="messages-table-body"></tbody>
@@ -82,11 +82,11 @@
 
     <div id="messages-pagination" class="pagination messages-pagination" hidden>
       <button id="messages-previous" class="btn btn-secondary" type="button">
-        ← Previous
+        ← {{t .Lang "files.prev"}}
       </button>
       <span id="messages-page-info"></span>
       <button id="messages-next" class="btn btn-secondary" type="button">
-        Next →
+        {{t .Lang "files.next"}} →
       </button>
     </div>
   </div>
@@ -97,8 +97,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>Compose Message</h2>
-        <p>Send a private message to another user.</p>
+        <h2>{{t .Lang "messages.compose_title"}}</h2>
+        <p>{{t .Lang "messages.compose_subtitle"}}</p>
       </div>
       <button
         id="compose-message-close"
@@ -113,13 +113,13 @@
     <form id="compose-message-form" class="form">
       <div class="form-grid">
         <div class="form-group">
-          <label for="message-recipient">Recipient *</label>
+          <label for="message-recipient">{{t .Lang "messages.recipient"}} *</label>
           <select id="message-recipient" name="recipient_id" required>
-            <option value="">Select recipient</option>
+            <option value="">{{t .Lang "messages.select_recipient"}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="message-subject">Subject *</label>
+          <label for="message-subject">{{t .Lang "messages.subject"}} *</label>
           <input
             id="message-subject"
             name="subject"
@@ -129,7 +129,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="message-body">Message *</label>
+          <label for="message-body">{{t .Lang "messages.message"}} *</label>
           <textarea id="message-body" name="body" rows="7" required></textarea>
         </div>
         <div id="compose-message-feedback" class="form-message" hidden></div>
@@ -140,14 +140,14 @@
           class="btn btn-secondary"
           type="button"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
         <button
           id="compose-message-submit"
           class="btn btn-primary"
           type="submit"
         >
-          Send Message
+          {{t .Lang "messages.send"}}
         </button>
       </div>
     </form>
@@ -174,15 +174,15 @@
     <div class="modal-body message-view-body">
       <dl class="message-details">
         <div>
-          <dt>From</dt>
+          <dt>{{t .Lang "messages.from"}}</dt>
           <dd id="message-view-sender"></dd>
         </div>
         <div>
-          <dt>To</dt>
+          <dt>{{t .Lang "messages.to"}}</dt>
           <dd id="message-view-recipient"></dd>
         </div>
         <div>
-          <dt>Status</dt>
+          <dt>{{t .Lang "common.status"}}</dt>
           <dd id="message-view-status"></dd>
         </div>
       </dl>
@@ -190,10 +190,10 @@
     </div>
     <div class="form-actions">
       <button id="message-view-delete" class="btn btn-danger" type="button">
-        Delete
+        {{t .Lang "common.delete"}}
       </button>
       <button id="message-view-cancel" class="btn btn-secondary" type="button">
-        Close
+        {{t .Lang "messages.close"}}
       </button>
     </div>
   </div>

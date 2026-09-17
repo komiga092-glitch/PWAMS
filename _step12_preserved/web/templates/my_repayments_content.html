@@ -1,0 +1,61 @@
+{{ define "my_repayments_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>My Repayments</h1>
+      <p>Your loan repayment schedule.</p>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Repayment Schedule</h2>
+      <span class="badge">{{ len .repayments }} Records</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>LOAN</th>
+            <th>INSTALLMENT</th>
+            <th>AMOUNT</th>
+            <th>PAID</th>
+            <th>DUE DATE</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .repayments }}
+          <tr>
+            <td>{{ printf "%.4s" .LoanID }}</td>
+            <td>{{ .InstallmentNumber }}</td>
+            <td>{{ printf "%.2f" .Amount }}</td>
+            <td>{{ printf "%.2f" .PaidAmount }}</td>
+            <td>{{ .DueDate.Format "2006-01-02" }}</td>
+            <td>
+              {{ if eq .Status "Paid" }}
+              <span class="status-badge status-active">Paid</span>
+              {{ else if eq .Status "Overdue" }}
+              <span class="status-badge status-inactive">Overdue</span>
+              {{ else if eq .Status "Cancelled" }}
+              <span class="status-badge status-inactive">Cancelled</span>
+              {{ else }}
+              <span class="status-badge">Pending</span>
+              {{ end }}
+            </td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td colspan="6" class="empty">No repayments found.</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{{ end }}

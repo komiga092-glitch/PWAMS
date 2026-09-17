@@ -98,6 +98,7 @@ func (s *PersonService) CreatePerson(
 
 func (s *PersonService) ListPersons(
 	query models.PersonListQuery,
+	actor Actor,
 ) ([]models.Person, int64, int, int, error) {
 	page := query.Page
 	if page < 1 {
@@ -113,11 +114,17 @@ func (s *PersonService) ListPersons(
 		pageSize = 100
 	}
 
+	ownerID, ok := ownershipFilter(actor)
+	if !ok {
+		return nil, 0, page, pageSize, ErrRecordAccessDenied
+	}
+
 	persons, total, err := s.personRepo.List(
 		query.Search,
 		query.Status,
 		page,
 		pageSize,
+		ownerID,
 	)
 	if err != nil {
 		return nil, 0, page, pageSize, err
@@ -126,7 +133,10 @@ func (s *PersonService) ListPersons(
 	return persons, total, page, pageSize, nil
 }
 
-func (s *PersonService) GetPersonByID(id string) (*models.Person, error) {
+func (s *PersonService) GetPersonByID(
+	id string,
+	actor Actor,
+) (*models.Person, error) {
 	id = strings.TrimSpace(id)
 
 	if _, err := uuid.Parse(id); err != nil {
@@ -136,6 +146,10 @@ func (s *PersonService) GetPersonByID(id string) (*models.Person, error) {
 	person, err := s.personRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, person.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	return person, nil
@@ -155,6 +169,7 @@ func isValidPersonStatus(status string) bool {
 func (s *PersonService) UpdatePerson(
 	id string,
 	request models.UpdatePersonRequest,
+	actor Actor,
 ) (*models.Person, error) {
 	id = strings.TrimSpace(id)
 
@@ -165,6 +180,10 @@ func (s *PersonService) UpdatePerson(
 	person, err := s.personRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, person.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	fullName := strings.TrimSpace(request.FullName)
@@ -230,6 +249,7 @@ func (s *PersonService) UpdatePerson(
 
 func (s *PersonService) UpdatePersonStatus(
 	id, status string,
+	actor Actor,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
@@ -242,6 +262,15 @@ func (s *PersonService) UpdatePersonStatus(
 		return ErrInvalidPersonStatus
 	}
 
+	person, err := s.personRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if !CanAccessRecord(actor, person.CreatedByID) {
+		return ErrRecordAccessDenied
+	}
+
 	if err := s.personRepo.UpdateStatus(id, status); err != nil {
 		return err
 	}
@@ -249,7 +278,7 @@ func (s *PersonService) UpdatePersonStatus(
 	return nil
 }
 
-func (s *PersonService) DeletePerson(id string) error {
+func (s *PersonService) DeletePerson(id string, actor Actor) error {
 	id = strings.TrimSpace(id)
 
 	if _, err := uuid.Parse(id); err != nil {
@@ -259,6 +288,10 @@ func (s *PersonService) DeletePerson(id string) error {
 	person, err := s.personRepo.FindByID(id)
 	if err != nil {
 		return err
+	}
+
+	if !CanAccessRecord(actor, person.CreatedByID) {
+		return ErrRecordAccessDenied
 	}
 
 	if err := s.personRepo.SoftDelete(person); err != nil {

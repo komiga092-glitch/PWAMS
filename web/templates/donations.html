@@ -3,8 +3,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Donations</h1>
-      <p>Manage and track donations received by PWAMS.</p>
+      <h1>{{t .Lang "donations.title"}}</h1>
+      <p>{{t .Lang "donations.subtitle"}}</p>
     </div>
 
     <button
@@ -13,15 +13,15 @@
       onclick="openDonationModal()"
       data-roles="Super Admin,Admin,Staff"
     >
-      + New Donation
+      {{t .Lang "donations.add"}}
     </button>
   </div>
 
   <div class="panel">
     <div class="panel-header">
       <div>
-        <h2>Donation Records</h2>
-        <p>View and manage donation transactions.</p>
+        <h2>{{t .Lang "donations.records_title"}}</h2>
+        <p>{{t .Lang "donations.records_subtitle"}}</p>
       </div>
     </div>
 
@@ -29,12 +29,12 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>DONOR</th>
-            <th>AMOUNT</th>
-            <th>DATE</th>
-            <th>PURPOSE</th>
-            <th>STATUS</th>
-            <th>ACTIONS</th>
+            <th>{{t .Lang "donations.donor"}}</th>
+            <th>{{t .Lang "donations.amount"}}</th>
+            <th>{{t .Lang "donations.date"}}</th>
+            <th>{{t .Lang "donations.purpose"}}</th>
+            <th>{{t .Lang "common.status"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -53,11 +53,11 @@
             <td>
               {{ if eq .Status "Confirmed" }}
 
-              <span class="status-badge status-active"> Completed </span>
+              <span class="status-badge status-active"> {{t .Lang "donations.completed"}} </span>
 
               {{ else if eq .Status "Cancelled" }}
 
-              <span class="status-badge status-inactive"> Cancelled </span>
+              <span class="status-badge status-inactive"> {{t .Lang "donations.cancelled"}} </span>
 
               {{ else }}
 
@@ -67,14 +67,14 @@
             </td>
 
             <td class="actions">
-              <a class="btn btn-small" href="/donations/{{ .ID }}"> View </a>
+              <a class="btn btn-small" href="/donations/{{ .ID }}"> {{t .Lang "donations.view"}} </a>
             </td>
           </tr>
 
           {{ else }}
 
           <tr>
-            <td colspan="6" class="empty">No donation records found.</td>
+            <td colspan="6" class="empty">{{t .Lang "donations.empty"}}</td>
           </tr>
 
           {{ end }}
@@ -92,8 +92,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>New Donation</h2>
-        <p>Record a new donation.</p>
+        <h2>{{t .Lang "donations.new_modal_title"}}</h2>
+        <p>{{t .Lang "donations.new_modal_subtitle"}}</p>
       </div>
 
       <button type="button" class="modal-close" onclick="closeDonationModal()">
@@ -110,34 +110,34 @@
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="donorID">Donor *</label>
+          <label for="donorID">{{t .Lang "donations.donor_label"}}</label>
           {{ if .donors }}
           <select id="donorID" name="donor_id" required>
-            <option value="">Select donor</option>
+            <option value="">{{t .Lang "donations.select_donor"}}</option>
             {{ range .donors }}
             <option value="{{ .ID }}">{{ .Name }}</option>
             {{ end }}
           </select>
           {{ else }}
-          <p class="form-help">No active donors are available.</p>
+          <p class="form-help">{{t .Lang "donations.no_active_donors"}}</p>
           {{ end }}
         </div>
         <div class="form-group">
-          <label for="donationType">Donation Type *</label>
+          <label for="donationType">{{t .Lang "donations.donation_type"}}</label>
 
           <select id="donationType" name="donation_type" required>
-            <option value="">Select type</option>
-            <option value="Cash">Cash</option>
-            <option value="Food">Food</option>
-            <option value="Medical">Medical</option>
-            <option value="Education">Education</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Equipment">Equipment</option>
-            <option value="Other">Other</option>
+            <option value="">{{t .Lang "donations.select_type"}}</option>
+            <option value="Cash">{{t .Lang "donations.cash"}}</option>
+            <option value="Food">{{t .Lang "donations.food"}}</option>
+            <option value="Medical">{{t .Lang "donations.medical"}}</option>
+            <option value="Education">{{t .Lang "donations.education"}}</option>
+            <option value="Clothing">{{t .Lang "donations.clothing"}}</option>
+            <option value="Equipment">{{t .Lang "donations.equipment"}}</option>
+            <option value="Other">{{t .Lang "donations.other"}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="donationAmount"> Amount * </label>
+          <label for="donationAmount"> {{t .Lang "donations.amount_label"}} </label>
 
           <input
             id="donationAmount"
@@ -151,7 +151,7 @@
         </div>
 
         <div class="form-group">
-          <label for="donationItemName"> Item Name </label>
+          <label for="donationItemName"> {{t .Lang "donations.item_name"}} </label>
           <input
             id="donationItemName"
             type="text"
@@ -161,7 +161,7 @@
         </div>
 
         <div class="form-group">
-          <label for="donationQuantity"> Quantity </label>
+          <label for="donationQuantity"> {{t .Lang "donations.quantity"}} </label>
           <input
             id="donationQuantity"
             type="number"
@@ -172,24 +172,24 @@
         </div>
 
         <div class="form-group">
-          <label for="donationUnit"> Unit </label>
+          <label for="donationUnit"> {{t .Lang "donations.unit"}} </label>
           <input id="donationUnit" type="text" name="unit" maxlength="30" />
         </div>
 
         <div class="form-group">
-          <label for="donationDate"> Donation Date * </label>
+          <label for="donationDate"> {{t .Lang "donations.donation_date"}} </label>
 
           <input id="donationDate" type="date" name="donation_date" required />
         </div>
 
         <div class="form-group">
-          <label for="donationDescription"> Description </label>
+          <label for="donationDescription"> {{t .Lang "donations.description"}} </label>
 
           <input
             id="donationDescription"
             type="text"
             name="description"
-            placeholder="Donation description"
+            placeholder="{{t .Lang "donations.description_placeholder"}}"
           />
         </div>
       </div>
@@ -200,10 +200,10 @@
           class="btn btn-secondary"
           onclick="closeDonationModal()"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">Save Donation</button>
+        <button type="submit" class="btn btn-primary">{{t .Lang "donations.save"}}</button>
       </div>
     </form>
   </div>

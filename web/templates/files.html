@@ -2,8 +2,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>File Management</h1>
-      <p>Upload and manage your files.</p>
+      <h1>{{t .Lang "files.title"}}</h1>
+      <p>{{t .Lang "files.subtitle"}}</p>
     </div>
     <button
       id="open-file-upload"
@@ -11,7 +11,7 @@
       type="button"
       data-roles="Super Admin,Admin,Staff"
     >
-      + Upload File
+      {{t .Lang "files.upload"}}
     </button>
   </div>
 
@@ -24,21 +24,21 @@
   ></div>
   <div class="panel">
     <div class="panel-header">
-      <h2>Your Files</h2>
-      <span id="file-count" class="badge badge-muted">0 Records</span>
+      <h2>{{t .Lang "files.your_files"}}</h2>
+      <span id="file-count" class="badge badge-muted">0 {{t .Lang "common.records"}}</span>
     </div>
     <div class="table-wrap">
-      <div id="file-loading" class="empty">Loading files...</div>
-      <div id="file-empty" class="empty" hidden>No files uploaded.</div>
+      <div id="file-loading" class="empty">{{t .Lang "files.loading"}}</div>
+      <div id="file-empty" class="empty" hidden>{{t .Lang "files.empty"}}</div>
       <div id="file-error" class="empty" hidden></div>
       <table id="file-table" class="data-table" hidden>
         <thead>
           <tr>
-            <th>FILE</th>
-            <th>TYPE</th>
-            <th>SIZE</th>
-            <th>DATE</th>
-            <th>ACTIONS</th>
+            <th>{{t .Lang "files.col_file"}}</th>
+            <th>{{t .Lang "files.col_type"}}</th>
+            <th>{{t .Lang "files.col_size"}}</th>
+            <th>{{t .Lang "files.col_date"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
         <tbody id="file-table-body"></tbody>
@@ -46,11 +46,11 @@
     </div>
     <div id="file-pagination" class="pagination" hidden>
       <button id="file-previous" class="btn btn-secondary" type="button">
-        ← Previous
+        ← {{t .Lang "files.prev"}}
       </button>
       <span id="file-page-info"></span>
       <button id="file-next" class="btn btn-secondary" type="button">
-        Next →
+        {{t .Lang "files.next"}} →
       </button>
     </div>
   </div>
@@ -61,8 +61,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>Upload File</h2>
-        <p>Select a JPEG, PNG, WebP, or PDF file up to 2 MB.</p>
+        <h2>{{t .Lang "files.upload"}}</h2>
+        <p>{{t .Lang "files.upload_subtitle"}}</p>
       </div>
       <button
         id="file-upload-close"
@@ -76,7 +76,7 @@
     <form id="file-upload-form" class="form" enctype="multipart/form-data">
       <div class="form-grid">
         <div class="form-group">
-          <label for="file-input">File *</label>
+          <label for="file-input">{{t .Lang "files.file_label"}} *</label>
           <input
             id="file-input"
             type="file"
@@ -90,10 +90,10 @@
       </div>
       <div class="form-actions">
         <button id="file-upload-cancel" class="btn btn-secondary" type="button">
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
         <button id="file-upload-submit" class="btn btn-primary" type="submit">
-          Upload File
+          {{t .Lang "files.upload"}}
         </button>
       </div>
     </form>

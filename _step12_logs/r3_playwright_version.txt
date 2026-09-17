@@ -1,0 +1,2 @@
+﻿Version 1.63.0
+[2026-09-09 07:47:21] CAPTURED r3_playwright_version exit=0

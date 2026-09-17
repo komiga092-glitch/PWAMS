@@ -1,0 +1,213 @@
+﻿{{ define "report_page_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{ .report_title }}</h1>
+      <p>{{t .Lang "reports.generated_from_live"}}</p>
+    </div>
+    <a href="/reports/page" class="btn btn-secondary">{{t .Lang "reports.back_to_reports"}}</a>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ else }}
+
+  {{ if .is_detail }}
+  {{ template "report_detail_table" . }}
+  {{ else }}
+  {{ template "report_kpi_dashboard" . }}
+  {{ end }}
+
+  {{ end }}
+</section>
+{{ end }}
+
+{{ define "report_kpi_dashboard" }}
+<div class="stats-grid">
+  {{ if .report.TotalUsers }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_users"}}</div><div class="stat-value">{{ .report.TotalUsers }}</div></div>{{ end }}
+  {{ if .report.TotalPersons }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_persons"}}</div><div class="stat-value">{{ .report.TotalPersons }}</div></div>{{ end }}
+  {{ if .report.TotalStudents }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_students"}}</div><div class="stat-value">{{ .report.TotalStudents }}</div></div>{{ end }}
+  {{ if .report.TotalDonors }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_donors"}}</div><div class="stat-value">{{ .report.TotalDonors }}</div></div>{{ end }}
+  {{ if .report.TotalDonations }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_donations"}}</div><div class="stat-value">{{ .report.TotalDonations }}</div></div>{{ end }}
+  {{ if .report.TotalAidRequests }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_aid_requests"}}</div><div class="stat-value">{{ .report.TotalAidRequests }}</div></div>{{ end }}
+  {{ if .report.TotalCareProvided }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_care_provided"}}</div><div class="stat-value">{{ .report.TotalCareProvided }}</div></div>{{ end }}
+  {{ if .report.ActiveUsers }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.active_users"}}</div><div class="stat-value">{{ .report.ActiveUsers }}</div></div>{{ end }}
+  {{ if .report.DisabledUsers }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.disabled_users"}}</div><div class="stat-value">{{ .report.DisabledUsers }}</div></div>{{ end }}
+  {{ if .report.LockedUsers }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.locked_users"}}</div><div class="stat-value">{{ .report.LockedUsers }}</div></div>{{ end }}
+  {{ if .report.TotalAmount }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_amount"}}</div><div class="stat-value">{{ printf "%.2f" .report.TotalAmount }}</div></div>{{ end }}
+  {{ if .report.TotalIncome }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_income"}}</div><div class="stat-value">{{ printf "%.2f" .report.TotalIncome }}</div></div>{{ end }}
+  {{ if .report.TotalExpenses }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_expenses"}}</div><div class="stat-value">{{ printf "%.2f" .report.TotalExpenses }}</div></div>{{ end }}
+  {{ if .report.Net }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.net"}}</div><div class="stat-value">{{ printf "%.2f" .report.Net }}</div></div>{{ end }}
+  {{ if .report.TotalRecords }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_records"}}</div><div class="stat-value">{{ .report.TotalRecords }}</div></div>{{ end }}
+  {{ if .report.Completed }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.completed"}}</div><div class="stat-value">{{ .report.Completed }}</div></div>{{ end }}
+  {{ if .report.Pending }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.pending"}}</div><div class="stat-value">{{ .report.Pending }}</div></div>{{ end }}
+  {{ if .report.Cancelled }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.cancelled"}}</div><div class="stat-value">{{ .report.Cancelled }}</div></div>{{ end }}
+  {{ if .report.Paid }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.paid"}}</div><div class="stat-value">{{ .report.Paid }}</div></div>{{ end }}
+  {{ if .report.Overdue }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.overdue"}}</div><div class="stat-value">{{ .report.Overdue }}</div></div>{{ end }}
+  {{ if .report.TotalEntries }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.total_entries"}}</div><div class="stat-value">{{ .report.TotalEntries }}</div></div>{{ end }}
+  {{ if .report.ActiveLoans }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.active_loans"}}</div><div class="stat-value">{{ .report.ActiveLoans }}</div></div>{{ end }}
+  {{ if .report.PendingLoans }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.pending_loans"}}</div><div class="stat-value">{{ .report.PendingLoans }}</div></div>{{ end }}
+  {{ if .report.ApprovedLoans }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.approved_loans"}}</div><div class="stat-value">{{ .report.ApprovedLoans }}</div></div>{{ end }}
+  {{ if .report.CompletedLoans }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.completed_loans"}}</div><div class="stat-value">{{ .report.CompletedLoans }}</div></div>{{ end }}
+  {{ if .report.ActivePersons }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.active_persons"}}</div><div class="stat-value">{{ .report.ActivePersons }}</div></div>{{ end }}
+  {{ if .report.InactiveCount }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.inactive"}}</div><div class="stat-value">{{ .report.InactiveCount }}</div></div>{{ end }}
+  {{ if .report.ActiveStudents }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.active_students"}}</div><div class="stat-value">{{ .report.ActiveStudents }}</div></div>{{ end }}
+  {{ if .report.ActiveDonors }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.active_donors"}}</div><div class="stat-value">{{ .report.ActiveDonors }}</div></div>{{ end }}
+  {{ if .report.PendingRequests }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.pending_requests"}}</div><div class="stat-value">{{ .report.PendingRequests }}</div></div>{{ end }}
+  {{ if .report.ApprovedRequests }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.approved_requests"}}</div><div class="stat-value">{{ .report.ApprovedRequests }}</div></div>{{ end }}
+  {{ if .report.RejectedRequests }}<div class="stat-card"><div class="stat-label">{{t .Lang "reports.rejected_requests"}}</div><div class="stat-value">{{ .report.RejectedRequests }}</div></div>{{ end }}
+</div>
+
+{{ if .report.ByRole }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_role"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByRole }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByStatus }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_status"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByStatus }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByType }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_type"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByType }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByGender }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_gender"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByGender }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByGrade }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_grade"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByGrade }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByAcademicYear }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_academic_year"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByAcademicYear }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByPriority }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_priority"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByPriority }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByAction }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_action"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByAction }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByEntity }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_entity"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByEntity }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ if .report.ByCategory }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.by_category"}}</h2></div>
+  <div class="panel-body">
+    {{ range $key, $val := .report.ByCategory }}
+    <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span>{{ $key }}</span><strong>{{ printf "%.2f" $val }}</strong>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+
+{{ end }}
+{{ define "report_detail_table" }}
+<div class="panel">
+  <div class="panel-header"><h2>{{t .Lang "reports.report_details"}}</h2></div>
+  <div class="panel-body">
+    {{ if .report.TotalRecords }}<p>{{t .Lang "reports.total_records"}}: {{ .report.TotalRecords }}</p>{{ end }}
+    {{ if .report.TotalUsers }}<p>{{t .Lang "reports.total_users"}}: {{ .report.TotalUsers }}</p>{{ end }}
+    {{ if .report.TotalPersons }}<p>{{t .Lang "reports.total_persons"}}: {{ .report.TotalPersons }}</p>{{ end }}
+    {{ if .report.TotalStudents }}<p>{{t .Lang "reports.total_students"}}: {{ .report.TotalStudents }}</p>{{ end }}
+    {{ if .report.TotalDonors }}<p>{{t .Lang "reports.total_donors"}}: {{ .report.TotalDonors }}</p>{{ end }}
+    {{ if .report.TotalDonations }}<p>{{t .Lang "reports.total_donations"}}: {{ .report.TotalDonations }}</p>{{ end }}
+    {{ if .report.TotalAidRequests }}<p>{{t .Lang "reports.total_aid_requests"}}: {{ .report.TotalAidRequests }}</p>{{ end }}
+    {{ if .report.TotalCareProvided }}<p>{{t .Lang "reports.total_care_provided"}}: {{ .report.TotalCareProvided }}</p>{{ end }}
+    {{ if .report.ActiveUsers }}<p>{{t .Lang "reports.active_users"}}: {{ .report.ActiveUsers }}</p>{{ end }}
+    {{ if .report.DisabledUsers }}<p>{{t .Lang "reports.disabled_users"}}: {{ .report.DisabledUsers }}</p>{{ end }}
+    {{ if .report.LockedUsers }}<p>{{t .Lang "reports.locked_users"}}: {{ .report.LockedUsers }}</p>{{ end }}
+    {{ if .report.TotalAmount }}<p>{{t .Lang "reports.total_amount"}}: {{ printf "%.2f" .report.TotalAmount }}</p>{{ end }}
+    {{ if .report.TotalIncome }}<p>{{t .Lang "reports.total_income"}}: {{ printf "%.2f" .report.TotalIncome }}</p>{{ end }}
+    {{ if .report.TotalExpenses }}<p>{{t .Lang "reports.total_expenses"}}: {{ printf "%.2f" .report.TotalExpenses }}</p>{{ end }}
+    {{ if .report.Net }}<p>{{t .Lang "reports.net"}}: {{ printf "%.2f" .report.Net }}</p>{{ end }}
+  </div>
+</div>
+{{ end }}

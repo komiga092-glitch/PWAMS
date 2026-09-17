@@ -5,10 +5,12 @@ import { renderConflictStatus } from "./conflicts.js";
 import { pullSync } from "./pull.js";
 import { syncPendingMediaUploads } from "./media.js";
 import {
+  clearOfflineSession,
   isOfflineSessionValid,
   revalidateOnlineSession,
-  OFFLINE_SESSION_EXPIRED_MESSAGE,
+  offlineSessionExpiredMessage,
 } from "./session.js";
+import { localize } from "./i18n.js";
 
 /* =========================================================
    OFFLINE SESSION WINDOW GUARD (spec §7)
@@ -28,9 +30,9 @@ function showOfflineSessionLock(): void {
   lock.setAttribute("aria-modal", "true");
   lock.innerHTML = `
     <div class="offline-session-lock-card">
-      <h2>Session locked</h2>
-      <p>${OFFLINE_SESSION_EXPIRED_MESSAGE}</p>
-      <button type="button" data-session-reconnect>Reconnect</button>
+      <h2>${localize("offline.session_locked", "Session locked")}</h2>
+      <p>${offlineSessionExpiredMessage()}</p>
+      <button type="button" data-session-reconnect>${localize("offline.reconnect", "Reconnect")}</button>
       <p class="offline-session-lock-status" data-session-lock-status hidden></p>
     </div>
   `;
@@ -49,14 +51,19 @@ function showOfflineSessionLock(): void {
       );
       if (status) {
         status.hidden = false;
-        status.textContent = "Checking connection...";
+        status.textContent = localize(
+          "offline.checking_connection",
+          "Checking connection...",
+        );
       }
 
       if (await revalidateOnlineSession()) {
         hideOfflineSessionLock();
       } else if (status) {
-        status.textContent =
-          "Still offline or session rejected. Try again once connectivity returns.";
+        status.textContent = localize(
+          "offline.reconnect_failed",
+          "Still offline or session rejected. Try again once connectivity returns.",
+        );
         button.disabled = false;
       }
     })();
@@ -98,7 +105,10 @@ async function checkStorageQuota(): Promise<void> {
         "[data-offline-status]",
       );
       if (indicator) {
-        indicator.title = "Low device storage - sync may fail.";
+        indicator.title = localize(
+          "offline.storage_warning",
+          "Low device storage - sync may fail.",
+        );
       }
     }
   } catch {
@@ -112,7 +122,10 @@ async function synchronizeOfflineChanges(): Promise<void> {
       "[data-offline-status]",
     );
     if (indicator) {
-      indicator.textContent = "Authentication required";
+      indicator.textContent = localize(
+        "offline.auth_required",
+        "Authentication required",
+      );
       indicator.dataset.state = "offline";
     }
     return;
@@ -155,9 +168,12 @@ function updateStatusIndicator(online: boolean): void {
     "[data-offline-status]",
   );
   if (!indicator) return;
-  indicator.textContent = online ? "Online" : "Offline";
+  const label = online
+    ? localize("status.online", "Online")
+    : localize("status.offline", "Offline");
+  indicator.textContent = label;
   indicator.dataset.state = online ? "online" : "offline";
-  indicator.setAttribute("aria-label", online ? "Online" : "Offline");
+  indicator.setAttribute("aria-label", label);
 }
 
 window.addEventListener("pwams:offline-mutation", () => {
@@ -165,8 +181,72 @@ window.addEventListener("pwams:offline-mutation", () => {
     "[data-offline-status]",
   );
   if (!indicator || navigator.onLine) return;
-  indicator.textContent = "Offline - Pending changes";
+  indicator.textContent = localize(
+    "status.offline_pending",
+    "Offline - Pending changes",
+  );
   indicator.dataset.state = "offline";
+});
+
+/* =========================================================
+   ACCOUNT BOUNDARY (logout / account switch)
+   The templates log out via <form method="post" action="/logout">.
+   Before the browser leaves the page, every account-bound offline
+   artefact (timestamp, owner, cached entities, outbox) is wiped so
+   another account on the same device can never reach them.
+   ========================================================= */
+
+function isLogoutTarget(rawUrl: string): boolean {
+  try {
+    return new URL(rawUrl, window.location.origin).pathname === "/logout";
+  } catch {
+    return false;
+  }
+}
+
+document.addEventListener(
+  "submit",
+  (event) => {
+    const form = event.target as HTMLFormElement | null;
+    if (!form || !isLogoutTarget(form.action)) return;
+    // Programmatic form.submit() bypasses the submit event, so this runs once.
+    event.preventDefault();
+    void (async () => {
+      try {
+        await clearOfflineSession();
+      } catch (error) {
+        console.error("Offline identity cleanup on logout failed", error);
+      }
+      form.submit();
+    })();
+  },
+  true,
+);
+
+document.addEventListener(
+  "click",
+  (event) => {
+    const anchor = (event.target as HTMLElement | null)?.closest?.(
+      "a[href]",
+    ) as HTMLAnchorElement | null | undefined;
+    if (!anchor || !isLogoutTarget(anchor.getAttribute("href") ?? "")) return;
+    event.preventDefault();
+    void (async () => {
+      try {
+        await clearOfflineSession();
+      } catch (error) {
+        console.error("Offline identity cleanup on logout failed", error);
+      }
+      window.location.href = anchor.href;
+    })();
+  },
+  true,
+);
+
+window.addEventListener("pwams:logout", () => {
+  void clearOfflineSession().catch((error) =>
+    console.error("Offline identity cleanup failed", error),
+  );
 });
 
 async function initializeOfflineFoundation(): Promise<void> {

@@ -146,6 +146,14 @@ function setupScrollRestoration() {
 function setupHtmx() {
     if (!hasHtmx())
         return;
+    // CSP hardening: htmx must never compile expressions with eval/new
+    // Function (the runtime reason 'unsafe-eval' existed). All dynamic
+    // behaviour is wired through server-rendered attributes and the
+    // event listeners below instead of hx-on:* script attributes.
+    const htmxGlobal = window["htmx"];
+    if (htmxGlobal?.config) {
+        htmxGlobal.config.allowEval = false;
+    }
     document.addEventListener("htmx:configRequest", (event) => {
         const configEvent = event;
         const token = getCookie("pwams_csrf") ||
@@ -154,6 +162,20 @@ function setupHtmx() {
             "";
         if (token) {
             configEvent.detail.headers["X-CSRF-Token"] = token;
+        }
+    });
+    // Person modal wiring (replaces the removed inline hx-on::after-request
+    // script attributes so script-src can drop 'unsafe-eval').
+    document.addEventListener("htmx:afterRequest", (event) => {
+        const detail = event.detail;
+        const elt = detail?.elt;
+        if (!elt)
+            return;
+        if (elt.id === "add-person-btn" && detail.successful) {
+            document.getElementById("person-modal")?.classList.remove("hidden");
+        }
+        if (elt.id === "person-create-form" && detail.successful) {
+            elt.closest(".modal")?.classList.add("hidden");
         }
     });
     document.addEventListener("htmx:responseError", (event) => {

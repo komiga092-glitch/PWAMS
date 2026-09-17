@@ -30,19 +30,19 @@ func (h *DashboardHandler) Page(c *gin.Context) {
 
 	stats, err := h.dashboardService.GetStatsForRole(currentUser.ID, currentUser.Role.Name)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "base", gin.H{
+		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
 			"page_template": "dashboard_content",
 			"title":         "PWAMS Dashboard",
 			"error":         constants.ErrUnableToRetrieveDashboardStats,
-		})
+		}))
 		return
 	}
 
-	c.HTML(http.StatusOK, "base", gin.H{
+	c.HTML(http.StatusOK, "base", PageData(c, gin.H{
 		"page_template": "dashboard_content",
 		"title":         "PWAMS Dashboard",
 		"stats":         stats,
-	})
+	}))
 }
 
 // GetStats returns dashboard statistics as JSON.

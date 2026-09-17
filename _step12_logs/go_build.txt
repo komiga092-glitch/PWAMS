@@ -1,0 +1,2 @@
+﻿[2026-09-09 07:42:42] === RUN go_build ===
+[2026-09-09 07:42:46] CAPTURED go_build exit=0

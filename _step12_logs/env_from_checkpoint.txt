@@ -1,0 +1,7 @@
+﻿git : fatal: path '.env' does not exist in '0109a1f'
+At line:1 char:1
++ git -C e:\PWAMS show 0109a1f:.env 2>&1 | Out-File -Encoding utf8 e:\P ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (fatal: path '.e...st in '0109a1f':String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

@@ -32,6 +32,7 @@ func NewPersonSyncService(
 
 func (s *PersonSyncService) Apply(
 	operation models.SyncOperation,
+	tenantID *uuid.UUID,
 ) (*models.SyncResult, error) {
 	entityType := strings.ToLower(
 		strings.TrimSpace(operation.EntityType),
@@ -43,13 +44,13 @@ func (s *PersonSyncService) Apply(
 
 	switch strings.ToUpper(strings.TrimSpace(operation.Operation)) {
 	case models.SyncOperationCreate:
-		return s.create(operation)
+		return s.create(operation, tenantID)
 
 	case models.SyncOperationUpdate:
-		return s.update(operation)
+		return s.update(operation, tenantID)
 
 	case models.SyncOperationDelete:
-		return s.delete(operation)
+		return s.delete(operation, tenantID)
 
 	default:
 		return nil, ErrPersonSyncUnsupported
@@ -58,6 +59,7 @@ func (s *PersonSyncService) Apply(
 
 func (s *PersonSyncService) create(
 	operation models.SyncOperation,
+	tenantID *uuid.UUID,
 ) (*models.SyncResult, error) {
 	if operation.ID == uuid.Nil {
 		return nil, errors.New("invalid sync operation id")
@@ -90,6 +92,10 @@ func (s *PersonSyncService) create(
 	person.UpdatedBy = &operation.UserID
 	person.Version = 1
 	person.IsDeleted = false
+	// The tenant comes from the authenticated principal, never from
+	// the client payload. A principal without a tenant (single-tenant
+	// deployment) records a NULL tenant.
+	person.TenantID = tenantID
 
 	if err := s.personRepo.Create(&person); err != nil {
 		return nil, err
@@ -107,6 +113,7 @@ func (s *PersonSyncService) create(
 
 func (s *PersonSyncService) update(
 	operation models.SyncOperation,
+	tenantID *uuid.UUID,
 ) (*models.SyncResult, error) {
 	if operation.ID == uuid.Nil {
 		return nil, errors.New("invalid sync operation id")
@@ -124,6 +131,12 @@ func (s *PersonSyncService) update(
 		operation.RecordID.String(),
 	)
 	if err != nil {
+		return nil, err
+	}
+
+	// Tenant isolation: a tenant-bound principal may only mutate
+	// records that belong to its own tenant.
+	if err := ensureSyncTenant(person, tenantID); err != nil {
 		return nil, err
 	}
 
@@ -164,6 +177,8 @@ func (s *PersonSyncService) update(
 	incoming.UpdatedBy = &operation.UserID
 	incoming.Version = person.Version + 1
 	incoming.IsDeleted = false
+	// The tenant of an existing record is immutable for clients.
+	incoming.TenantID = person.TenantID
 
 	if err := s.personRepo.Update(&incoming); err != nil {
 		return nil, err
@@ -181,6 +196,7 @@ func (s *PersonSyncService) update(
 
 func (s *PersonSyncService) delete(
 	operation models.SyncOperation,
+	tenantID *uuid.UUID,
 ) (*models.SyncResult, error) {
 	if operation.ID == uuid.Nil {
 		return nil, errors.New("invalid sync operation id")
@@ -198,6 +214,12 @@ func (s *PersonSyncService) delete(
 		operation.RecordID.String(),
 	)
 	if err != nil {
+		return nil, err
+	}
+
+	// Tenant isolation: a tenant-bound principal may only delete
+	// records that belong to its own tenant.
+	if err := ensureSyncTenant(person, tenantID); err != nil {
 		return nil, err
 	}
 

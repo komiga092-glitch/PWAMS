@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"sort"
@@ -17,15 +18,23 @@ import (
 type DonationHandler struct {
 	donationService *services.DonationService
 	donorService    *services.DonorService
+	auditLogService *services.AuditLogService
 }
 
 func NewDonationHandler(
 	donationService *services.DonationService,
 	donorService *services.DonorService,
+	auditLogServices ...*services.AuditLogService,
 ) *DonationHandler {
+	var auditLogService *services.AuditLogService
+	if len(auditLogServices) > 0 {
+		auditLogService = auditLogServices[0]
+	}
+
 	return &DonationHandler{
 		donationService: donationService,
 		donorService:    donorService,
+		auditLogService: auditLogService,
 	}
 }
 
@@ -54,8 +63,15 @@ func (h *DonationHandler) Page(c *gin.Context) {
 		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "donors": donors, "error": "Invalid query parameters"}))
 		return
 	}
-	donationRecords, _, _, _, err := h.donationService.ListDonations(query)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	donationRecords, _, _, _, err := h.donationService.ListDonations(query, actor)
 	if err != nil {
+		if errors.Is(err, services.ErrRecordAccessDenied) {
+			c.HTML(http.StatusForbidden, "base", PageData(c, gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "donors": donors, "error": "You do not have permission to view donations"}))
+			return
+		}
 		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "donations_content", "title": "Donations", "data": []gin.H{}, "donors": donors, "error": "Unable to retrieve donations"}))
 		return
 	}
@@ -107,6 +123,18 @@ func (h *DonationHandler) Create(c *gin.Context) {
 		return
 	}
 
+	if currentUser, ok := getCurrentUser(c); ok {
+		if err := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"CREATE",
+			"donations",
+			donation.ID.String(),
+			"Donation registered successfully",
+		); err != nil {
+			// Audit logging failure must not fail the donation creation.
+		}
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": "Donation registered successfully",
@@ -140,11 +168,15 @@ func (h *DonationHandler) List(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	donations, total, page, pageSize, err :=
-		h.donationService.ListDonations(query)
+		h.donationService.ListDonations(query, actor)
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to retrieve donations",
+			errorResponseMapping{err: services.ErrRecordAccessDenied, status: http.StatusForbidden, message: services.ErrRecordAccessDenied.Error()},
 			errorResponseMapping{err: services.ErrInvalidDonorID, status: http.StatusBadRequest, message: "Invalid donor ID"},
 			errorResponseMapping{err: services.ErrInvalidPersonID, status: http.StatusBadRequest, message: constants.ErrInvalidPersonID},
 			errorResponseMapping{err: services.ErrInvalidDonationType, status: http.StatusUnprocessableEntity, message: err.Error()},
@@ -202,12 +234,17 @@ func (h *DonationHandler) List(c *gin.Context) {
 func (h *DonationHandler) GetByID(c *gin.Context) {
 	donationID := c.Param("id")
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	donation, err := h.donationService.GetDonationByID(
 		donationID,
+		actor,
 	)
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToRetrieveDonation,
+			errorResponseMapping{err: services.ErrRecordAccessDenied, status: http.StatusForbidden, message: services.ErrRecordAccessDenied.Error()},
 			errorResponseMapping{err: services.ErrInvalidDonationID, status: http.StatusBadRequest, message: constants.ErrInvalidDonationID},
 			errorResponseMapping{err: repository.ErrDonationNotFound, status: http.StatusNotFound, message: constants.ErrDonationNotFound},
 		)
@@ -278,9 +315,13 @@ func (h *DonationHandler) Update(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	donation, err := h.donationService.UpdateDonation(
 		donationID,
 		request,
+		actor,
 	)
 
 	if err != nil {
@@ -332,9 +373,13 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	err := h.donationService.UpdateDonationStatus(
 		donationID,
 		request.Status,
+		actor,
 	)
 
 	if err != nil {
@@ -354,7 +399,10 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 func (h *DonationHandler) Delete(c *gin.Context) {
 	donationID := c.Param("id")
 
-	err := h.donationService.DeleteDonation(donationID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	err := h.donationService.DeleteDonation(donationID, actor)
 	if err != nil {
 		log.Printf("delete donation error: %T - %v", err, err)
 

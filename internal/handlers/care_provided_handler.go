@@ -15,13 +15,21 @@ import (
 
 type CareProvidedHandler struct {
 	careProvidedService *services.CareProvidedService
+	auditLogService     *services.AuditLogService
 }
 
 func NewCareProvidedHandler(
 	careProvidedService *services.CareProvidedService,
+	auditLogServices ...*services.AuditLogService,
 ) *CareProvidedHandler {
+	var auditLogService *services.AuditLogService
+	if len(auditLogServices) > 0 {
+		auditLogService = auditLogServices[0]
+	}
+
 	return &CareProvidedHandler{
 		careProvidedService: careProvidedService,
+		auditLogService:     auditLogService,
 	}
 }
 
@@ -64,6 +72,18 @@ func (h *CareProvidedHandler) Create(c *gin.Context) {
 			"message": err.Error(),
 		})
 		return
+	}
+
+	if currentUser, ok := getCurrentUser(c); ok {
+		if err := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"CREATE",
+			"care_provided",
+			record.ID.String(),
+			"Care provided record created successfully",
+		); err != nil {
+			// Audit logging failure must not fail the care record creation.
+		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{

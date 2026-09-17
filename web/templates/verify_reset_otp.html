@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ .Lang }}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Verify OTP - PWAMS</title>
+    <title>{{t .Lang "otp.title"}}</title>
     <link rel="stylesheet" href="/static/css/app.css" />
   </head>
   <body>
@@ -11,22 +11,22 @@
       <section class="login-brand">
         <div class="brand-mark">PWA</div>
 
-        <h1 style="margin-top: 24px">Verify Your Identity</h1>
+        <h1 style="margin-top: 24px">{{t .Lang "otp.heading"}}</h1>
 
-        <p>Enter the 6-digit OTP sent to your registered email address.</p>
+        <p>{{t .Lang "otp.intro"}}</p>
       </section>
 
       <section class="login-form-side">
         <div class="login-card">
-          <h2>Verify OTP</h2>
+          <h2>{{t .Lang "otp.card_title"}}</h2>
 
-          <p class="subtitle">Check your email for the OTP.</p>
+          <p class="subtitle">{{t .Lang "otp.card_subtitle"}}</p>
 
           <div id="message" class="alert" style="display: none"></div>
 
           <form id="verifyOtpForm">
             <div class="form-group" style="margin-bottom: 16px">
-              <label class="form-label" for="email"> Email </label>
+              <label class="form-label" for="email"> {{t .Lang "otp.email_label"}} </label>
 
               <input
                 class="form-control"
@@ -39,7 +39,7 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 18px">
-              <label class="form-label" for="otp"> 6-Digit OTP </label>
+              <label class="form-label" for="otp"> {{t .Lang "otp.otp_label"}} </label>
 
               <input
                 class="form-control"
@@ -49,13 +49,13 @@
                 inputmode="numeric"
                 maxlength="6"
                 pattern="[0-9]{6}"
-                placeholder="Enter 6-digit OTP"
+                placeholder="{{t .Lang "otp.otp_placeholder"}}"
                 required
               />
             </div>
 
             <button class="btn btn-primary" style="width: 100%" type="submit">
-              Verify OTP
+              {{t .Lang "otp.verify"}}
             </button>
           </form>
 
@@ -64,7 +64,7 @@
               href="/forgot-password"
               style="color: var(--primary); font-size: 13px; font-weight: 700"
             >
-              Send OTP Again
+              {{t .Lang "otp.send_again"}}
             </a>
           </div>
         </div>

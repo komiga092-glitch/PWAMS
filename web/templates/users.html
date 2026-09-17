@@ -3,8 +3,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Users</h1>
-      <p>Manage PWAMS system users, roles and account status.</p>
+      <h1>{{t .Lang "users.title"}}</h1>
+      <p>{{t .Lang "users.subtitle"}}</p>
     </div>
 
     <button
@@ -13,7 +13,7 @@
       onclick="openUserModal()"
       data-roles="Super Admin,Admin"
     >
-      + Add User
+      {{t .Lang "users.add_user"}}
     </button>
   </div>
 
@@ -26,47 +26,47 @@
           class="form-control search"
           type="search"
           name="search"
-          placeholder="Search username or email..."
+          placeholder="{{t .Lang "users.search_placeholder"}}"
         />
 
         <select class="form-control" name="role" style="max-width: 190px">
-          <option value="">All Roles</option>
+          <option value="">{{t .Lang "users.all_roles"}}</option>
           <option value="Super Admin">Super Admin</option>
-          <option value="Admin">Admin</option>
-          <option value="Staff">Staff</option>
-          <option value="Volunteer">Volunteer</option>
-          <option value="Donor">Donor</option>
-          <option value="Beneficiary">Beneficiary</option>
+          <option value="Admin">{{t .Lang "role.admin"}}</option>
+          <option value="Staff">{{t .Lang "role.staff"}}</option>
+          <option value="Volunteer">{{t .Lang "role.volunteer"}}</option>
+          <option value="Donor">{{t .Lang "role.donor"}}</option>
+          <option value="Beneficiary">{{t .Lang "role.beneficiary"}}</option>
         </select>
 
-        <button class="btn btn-light" type="submit">Search</button>
+        <button class="btn btn-light" type="submit">{{t .Lang "common.search"}}</button>
       </form>
     </div>
   </div>
 
   <div class="panel" style="margin-top: 18px">
     <div class="panel-header">
-      <h2>System Users</h2>
-      <span class="badge badge-muted" id="user-count">0 Records</span>
+      <h2>{{t .Lang "users.system_users"}}</h2>
+      <span class="badge badge-muted" id="user-count">0 {{t .Lang "users.records"}}</span>
     </div>
 
     <div class="table-wrap">
       <table class="data-table">
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Last Login</th>
-            <th>Actions</th>
+            <th>{{t .Lang "users.username"}}</th>
+            <th>{{t .Lang "users.email"}}</th>
+            <th>{{t .Lang "users.role"}}</th>
+            <th>{{t .Lang "users.status"}}</th>
+            <th>{{t .Lang "users.last_login"}}</th>
+            <th>{{t .Lang "users.actions"}}</th>
           </tr>
         </thead>
 
         <tbody id="users-table">
           <tr>
             <td colspan="6">
-              <div class="empty">Loading users...</div>
+              <div class="empty">{{t .Lang "users.loading"}}</div>
             </td>
           </tr>
         </tbody>
@@ -83,8 +83,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2 id="user-modal-title">Add User</h2>
-        <p>Create or update a PWAMS account.</p>
+        <h2 id="user-modal-title">{{t .Lang "users.add_user_title"}}</h2>
+        <p>{{t .Lang "users.create_update"}}</p>
       </div>
 
       <button class="modal-close" type="button" onclick="closeUserModal()">
@@ -98,7 +98,7 @@
       <div class="modal-body">
         <div class="form-grid">
           <div class="form-group">
-            <label class="form-label">Username *</label>
+            <label class="form-label">{{t .Lang "users.username_field"}}</label>
             <input
               class="form-control"
               id="user-username"
@@ -110,7 +110,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Email *</label>
+            <label class="form-label">{{t .Lang "users.email_field"}}</label>
             <input
               class="form-control"
               id="user-email"
@@ -121,7 +121,7 @@
           </div>
 
           <div class="form-group" id="password-group">
-            <label class="form-label">Password *</label>
+            <label class="form-label">{{t .Lang "users.password_field"}}</label>
             <input
               class="form-control"
               id="user-password"
@@ -132,26 +132,25 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Role *</label>
+            <label class="form-label">{{t .Lang "users.role"}} *</label>
 
             <select class="form-control" id="user-role" name="role" required>
-              <option value="Admin">Admin</option>
-              <option value="Staff">Staff</option>
-              <option value="Volunteer">Volunteer</option>
-              <option value="Donor">Donor</option>
-              <option value="Beneficiary">Beneficiary</option>
+              <option value="Admin">{{t .Lang "role.admin"}}</option>
+              <option value="Staff">{{t .Lang "role.staff"}}</option>
+              <option value="Volunteer">{{t .Lang "role.volunteer"}}</option>
+              <option value="Donor">{{t .Lang "role.donor"}}</option>
+              <option value="Beneficiary">{{t .Lang "role.beneficiary"}}</option>
               <option value="Super Admin">Super Admin</option>
             </select>
           </div>
 
           <div class="form-group" id="status-group" style="display: none">
-            <label class="form-label">Status *</label>
+            <label class="form-label">{{t .Lang "users.status"}} *</label>
 
             <select class="form-control" id="user-status" name="status">
-              <option value="Active">Active</option>
-              <option value="Disabled">Disabled</option>
-              <option value="Locked">Locked</option>
-              <option value="Pending">Pending</option>
+              <option value="Active">{{t .Lang "common.active"}}</option>
+              <option value="Disabled">{{t .Lang "common.disabled"}}</option>
+              <option value="Locked">{{t .Lang "common.locked"}}</option>
             </select>
           </div>
         </div>
@@ -163,10 +162,10 @@
           class="btn btn-secondary"
           onclick="closeUserModal()"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">Save User</button>
+        <button type="submit" class="btn btn-primary">{{t .Lang "users.add_user_title"}}</button>
       </div>
     </form>
   </div>
@@ -178,8 +177,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>Reset Password</h2>
-        <p>Set a new password for this user.</p>
+        <h2>{{t .Lang "rp.card_title"}}</h2>
+        <p>{{t .Lang "rp.card_subtitle"}}</p>
       </div>
 
       <button class="modal-close" type="button" onclick="closePasswordModal()">
@@ -193,7 +192,7 @@
       <div class="modal-body">
         <div class="form-grid">
           <div class="form-group full">
-            <label class="form-label">New Password *</label>
+            <label class="form-label">{{t .Lang "users.new_password_field"}}</label>
 
             <input
               class="form-control"
@@ -212,10 +211,10 @@
           class="btn btn-secondary"
           onclick="closePasswordModal()"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">Change Password</button>
+        <button type="submit" class="btn btn-primary">{{t .Lang "profile.change_password_btn"}}</button>
       </div>
     </form>
   </div>
@@ -363,7 +362,7 @@
     table.innerHTML = `
         <tr>
             <td colspan="6">
-                <div class="empty">Loading users...</div>
+                <div class="empty">{{t .Lang "users.loading"}}</div>
             </td>
         </tr>
     `;
@@ -392,7 +391,7 @@
         table.innerHTML = `
                 <tr>
                     <td colspan="6">
-                        <div class="empty">No users found.</div>
+                        <div class="empty">{{t .Lang "users.empty"}}</div>
                     </td>
                 </tr>
             `;

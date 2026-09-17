@@ -243,8 +243,16 @@ func generateDonationReference() string {
 
 func (s *DonationService) ListDonations(
 	query models.DonationListQuery,
+	actor Actor,
 ) ([]models.Donation, int64, int, int, error) {
 	page, pageSize := normalizePagination(query.Page, query.PageSize)
+
+	// Fail closed for unauthenticated/invalid actors; scope non-
+	// privileged roles to their own donations.
+	ownerID, ok := ownershipFilter(actor)
+	if !ok {
+		return nil, 0, page, pageSize, ErrRecordAccessDenied
+	}
 
 	donorID := strings.TrimSpace(query.DonorID)
 	if donorID != "" {
@@ -288,7 +296,7 @@ func (s *DonationService) ListDonations(
 	query.Page = page
 	query.PageSize = pageSize
 
-	donations, total, err := s.donationRepo.List(query)
+	donations, total, err := s.donationRepo.List(query, ownerID)
 	if err != nil {
 		return nil, 0, page, pageSize, err
 	}
@@ -298,6 +306,7 @@ func (s *DonationService) ListDonations(
 
 func (s *DonationService) GetDonationByID(
 	id string,
+	actor Actor,
 ) (*models.Donation, error) {
 	id = strings.TrimSpace(id)
 
@@ -308,6 +317,10 @@ func (s *DonationService) GetDonationByID(
 	donation, err := s.donationRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, donation.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	return donation, nil
@@ -316,6 +329,7 @@ func (s *DonationService) GetDonationByID(
 func (s *DonationService) UpdateDonation(
 	id string,
 	request models.UpdateDonationRequest,
+	actor Actor,
 ) (*models.Donation, error) {
 	id = strings.TrimSpace(id)
 
@@ -326,6 +340,10 @@ func (s *DonationService) UpdateDonation(
 	donation, err := s.donationRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, donation.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	personID, err := s.resolveDonationPersonID(request.PersonID)
@@ -465,6 +483,7 @@ func applyDonationUpdate(
 
 func (s *DonationService) UpdateDonationStatus(
 	id, status string,
+	actor Actor,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
@@ -477,6 +496,15 @@ func (s *DonationService) UpdateDonationStatus(
 		return ErrInvalidDonationStatus
 	}
 
+	donation, err := s.donationRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if !CanAccessRecord(actor, donation.CreatedByID) {
+		return ErrRecordAccessDenied
+	}
+
 	if err := s.donationRepo.UpdateStatus(id, status); err != nil {
 		return err
 	}
@@ -484,7 +512,7 @@ func (s *DonationService) UpdateDonationStatus(
 	return nil
 }
 
-func (s *DonationService) DeleteDonation(id string) error {
+func (s *DonationService) DeleteDonation(id string, actor Actor) error {
 	id = strings.TrimSpace(id)
 
 	if _, err := uuid.Parse(id); err != nil {
@@ -494,6 +522,10 @@ func (s *DonationService) DeleteDonation(id string) error {
 	donation, err := s.donationRepo.FindByID(id)
 	if err != nil {
 		return err
+	}
+
+	if !CanAccessRecord(actor, donation.CreatedByID) {
+		return ErrRecordAccessDenied
 	}
 
 	if donation.Status == models.DonationStatusConfirmed {

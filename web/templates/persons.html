@@ -5,8 +5,8 @@
     <!-- Page Header -->
     <div class="page-heading">
         <div>
-            <h1>Care Seekers</h1>
-            <p>Manage people receiving or requesting support.</p>
+            <h1>{{t .Lang "persons.title"}}</h1>
+            <p>{{t .Lang "persons.subtitle"}}</p>
         </div>
 
         <button
@@ -14,7 +14,7 @@
             type="button"
             class="btn btn-primary"
             data-roles="Super Admin,Admin,Staff">
-            + Add Care Seeker
+            {{t .Lang "persons.add"}}
         </button>
     </div>
 
@@ -31,20 +31,20 @@
 
                 <div>
                     <label for="person-search">
-                        Search
+                        {{t .Lang "common.search"}}
                     </label>
 
                     <input
                         id="person-search"
                         type="text"
                         name="search"
-                        placeholder="Search name, phone or NIC..."
+                        placeholder="{{t .Lang "persons.search_placeholder"}}"
                         value="{{ .search }}">
                 </div>
 
                 <div>
                     <label for="person-status">
-                        Status
+                        {{t .Lang "common.status"}}
                     </label>
 
                     <select
@@ -52,25 +52,25 @@
                         name="status">
 
                         <option value="">
-                            All Status
+                            {{t .Lang "persons.all_status"}}
                         </option>
 
                         <option
                             value="Active"
                             {{ if eq .status "Active" }}selected{{ end }}>
-                            Active
+                            {{t .Lang "common.active"}}
                         </option>
 
                         <option
                             value="Inactive"
                             {{ if eq .status "Inactive" }}selected{{ end }}>
-                            Inactive
+                            {{t .Lang "persons.inactive"}}
                         </option>
 
                         <option
                             value="Pending"
                             {{ if eq .status "Pending" }}selected{{ end }}>
-                            Pending
+                            {{t .Lang "persons.pending"}}
                         </option>
 
                     </select>
@@ -81,7 +81,7 @@
                     <button
                         type="submit"
                         class="btn btn-secondary">
-                        Search
+                        {{t .Lang "common.search"}}
                     </button>
 
                 </div>
@@ -108,10 +108,10 @@
 
         <div class="panel-header">
 
-            <h2>Care Seeker List</h2>
+            <h2>{{t .Lang "persons.list_title"}}</h2>
 
             <span class="badge">
-                {{ len .persons }} Records
+                {{ len .persons }} {{t .Lang "persons.records"}}
             </span>
 
         </div>
@@ -124,12 +124,12 @@
                 <thead>
 
                     <tr>
-                        <th>Name</th>
-                        <th>NIC / Passport</th>
-                        <th>Phone</th>
-                        <th>Gender</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{{t .Lang "persons.name"}}</th>
+                        <th>{{t .Lang "persons.nic_passport"}}</th>
+                        <th>{{t .Lang "persons.phone"}}</th>
+                        <th>{{t .Lang "persons.gender"}}</th>
+                        <th>{{t .Lang "common.status"}}</th>
+                        <th>{{t .Lang "common.actions"}}</th>
                     </tr>
 
                 </thead>
@@ -162,19 +162,19 @@
                             {{ if eq .Status "Active" }}
 
                             <span class="badge badge-success">
-                                Active
+                                {{t .Lang "common.active"}}
                             </span>
 
                             {{ else if eq .Status "Pending" }}
 
                             <span class="badge badge-warning">
-                                Pending
+                                {{t .Lang "persons.pending"}}
                             </span>
 
                             {{ else }}
 
                             <span class="badge badge-muted">
-                                Inactive
+                                {{t .Lang "persons.inactive"}}
                             </span>
 
                             {{ end }}
@@ -188,13 +188,13 @@
                                 <a
                                     href="/persons/{{ .ID }}/view"
                                     class="btn btn-secondary">
-                                    View
+                                    {{t .Lang "common.view"}}
                                 </a>
 
                                 <a
                                     href="/persons/{{ .ID }}/edit"
                                     class="btn btn-primary">
-                                    Edit
+                                    {{t .Lang "common.edit"}}
                                 </a>
 
                             </div>
@@ -211,7 +211,7 @@
                             colspan="6"
                             class="empty">
 
-                            No care seekers found.
+                            {{t .Lang "persons.empty"}}
 
                         </td>
 
@@ -244,10 +244,10 @@
         <div class="modal-header">
 
             <div>
-                <h2>Add Care Seeker</h2>
+                <h2>{{t .Lang "persons.add_modal_title"}}</h2>
 
                 <p>
-                    Enter the person's basic information.
+                    {{t .Lang "persons.add_modal_subtitle"}}
                 </p>
             </div>
 
@@ -278,7 +278,7 @@
                             class="form-label"
                             for="person_full_name">
 
-                            Full Name *
+                            {{t .Lang "persons.full_name"}} *
 
                         </label>
 
@@ -301,7 +301,7 @@
                             class="form-label"
                             for="person_nic">
 
-                            NIC / Passport
+                            {{t .Lang "persons.nic_passport"}}
 
                         </label>
 
@@ -323,7 +323,7 @@
                             class="form-label"
                             for="person_phone">
 
-                            Phone
+                            {{t .Lang "persons.phone"}}
 
                         </label>
 
@@ -344,7 +344,7 @@
                             class="form-label"
                             for="person_gender">
 
-                            Gender
+                            {{t .Lang "persons.gender"}}
 
                         </label>
 
@@ -354,19 +354,19 @@
                             class="form-control">
 
                             <option value="">
-                                Select Gender
+                                {{t .Lang "persons.select_gender"}}
                             </option>
 
                             <option value="Male">
-                                Male
+                                {{t .Lang "persons.male"}}
                             </option>
 
                             <option value="Female">
-                                Female
+                                {{t .Lang "persons.female"}}
                             </option>
 
                             <option value="Other">
-                                Other
+                                {{t .Lang "persons.other"}}
                             </option>
 
                         </select>
@@ -381,7 +381,7 @@
                             class="form-label"
                             for="person_date_of_birth">
 
-                            Date of Birth
+                            {{t .Lang "persons.date_of_birth"}}
 
                         </label>
 
@@ -401,7 +401,7 @@
                             class="form-label"
                             for="person_address">
 
-                            Address
+                            {{t .Lang "persons.address"}}
 
                         </label>
 
@@ -422,7 +422,7 @@
                             class="form-label"
                             for="person_remarks">
 
-                            Remarks
+                            {{t .Lang "persons.remarks"}}
 
                         </label>
 
@@ -446,7 +446,7 @@
                         type="button"
                         class="btn btn-secondary">
 
-                        Cancel
+                        {{t .Lang "common.cancel"}}
 
                     </button>
 
@@ -454,7 +454,7 @@
                         type="submit"
                         class="btn btn-primary">
 
-                        Save Care Seeker
+                        {{t .Lang "persons.save"}}
 
                     </button>
 

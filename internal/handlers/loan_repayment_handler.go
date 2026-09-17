@@ -31,7 +31,11 @@ func NewLoanRepaymentHandler(
 
 func (h *LoanRepaymentHandler) Page(c *gin.Context) {
 	query := models.LoanRepaymentListQuery{LoanID: c.Query("loan_id"), Status: c.Query("status")}
-	repayments, _, _, _, err := h.repaymentService.List(query)
+
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	repayments, _, _, _, err := h.repaymentService.List(query, actor)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "loan_repayments_content", "title": "Loan Repayments", "data": []gin.H{}, "error": "Unable to retrieve repayments"}))
 		return
@@ -55,7 +59,10 @@ func (h *LoanRepaymentHandler) Create(c *gin.Context) {
 		return
 	}
 
-	repayment, err := h.repaymentService.Create(request)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	repayment, err := h.repaymentService.Create(request, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanID),
@@ -106,7 +113,10 @@ func (h *LoanRepaymentHandler) Create(c *gin.Context) {
 func (h *LoanRepaymentHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
 
-	repayment, err := h.repaymentService.GetByID(id)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	repayment, err := h.repaymentService.GetByID(id, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanRepaymentID):
@@ -149,8 +159,11 @@ func (h *LoanRepaymentHandler) List(c *gin.Context) {
 		PageSize: pageSize,
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	repayments, total, currentPage, currentPageSize, err :=
-		h.repaymentService.List(query)
+		h.repaymentService.List(query, actor)
 
 	if err != nil {
 		switch {
@@ -201,7 +214,10 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 		return
 	}
 
-	repayment, err := h.repaymentService.Pay(id, request)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	repayment, err := h.repaymentService.Pay(id, request, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanRepaymentID):
@@ -286,7 +302,6 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 			"loan_repayments",
 			id,
 			details,
-			c.ClientIP(),
 		)
 	}
 }
@@ -295,7 +310,10 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 func (h *LoanRepaymentHandler) Cancel(c *gin.Context) {
 	id := c.Param("id")
 
-	if err := h.repaymentService.Cancel(id); err != nil {
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	if err := h.repaymentService.Cancel(id, actor); err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanRepaymentID):
 			c.JSON(http.StatusBadRequest, gin.H{

@@ -1,0 +1,15 @@
+﻿?   	github.com/komiga092-glitch/pwams/cmd/server	[no test files]
+?   	github.com/komiga092-glitch/pwams/docs	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/config	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/constants	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/database	[no test files]
+ok  	github.com/komiga092-glitch/pwams/internal/handlers	0.372s
+ok  	github.com/komiga092-glitch/pwams/internal/middleware	0.366s
+ok  	github.com/komiga092-glitch/pwams/internal/models	0.987s
+?   	github.com/komiga092-glitch/pwams/internal/repository	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/routes	[no test files]
+ok  	github.com/komiga092-glitch/pwams/internal/services	1.176s
+?   	github.com/komiga092-glitch/pwams/internal/services/email	[no test files]
+ok  	github.com/komiga092-glitch/pwams/internal/utils	0.882s
+?   	github.com/komiga092-glitch/pwams/web/templates/components	[no test files]
+[2026-09-09 07:42:57] CAPTURED go_test_count2 exit=0

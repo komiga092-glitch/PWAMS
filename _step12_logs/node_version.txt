@@ -1,0 +1,2 @@
+﻿v26.1.0
+[2026-09-09 07:41:36] CAPTURED node_version exit=0

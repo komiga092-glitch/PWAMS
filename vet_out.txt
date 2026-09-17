@@ -1,0 +1,5 @@
+# github.com/komiga092-glitch/pwams/internal/services_test
+# [github.com/komiga092-glitch/pwams/internal/services_test]
+vet.exe: internal\services\authz_donation_test.go:86:5: too many arguments in call to donationSvc.UpdateDonation
+	have (string, models.UpdateDonationRequest, services.Actor)
+	want (string, models.UpdateDonationRequest)

@@ -3,16 +3,16 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Care Seeker Details</h1>
-      <p>View care seeker information and records.</p>
+      <h1>{{t .Lang "persons.details_title"}}</h1>
+      <p>{{t .Lang "persons.details_subtitle"}}</p>
     </div>
 
     <div style="display: flex; gap: 10px">
       <a href="/persons/{{ .person.ID }}/edit" class="btn btn-primary">
-        Edit Care Seeker
+        {{t .Lang "persons.edit"}}
       </a>
 
-      <a href="/persons/page" class="btn btn-secondary"> Back </a>
+      <a href="/persons/page" class="btn btn-secondary"> {{t .Lang "persons.back"}} </a>
     </div>
   </div>
 
@@ -24,19 +24,19 @@
 
   <div class="panel">
     <div class="panel-header">
-      <h2>Personal Information</h2>
+      <h2>{{t .Lang "persons.personal_info"}}</h2>
 
       {{ if eq .person.Status "Active" }}
 
-      <span class="badge badge-success"> Active </span>
+      <span class="badge badge-success"> {{t .Lang "common.active"}} </span>
 
       {{ else if eq .person.Status "Pending" }}
 
-      <span class="badge badge-warning"> Pending </span>
+      <span class="badge badge-warning"> {{t .Lang "persons.pending"}} </span>
 
       {{ else }}
 
-      <span class="badge badge-muted"> Inactive </span>
+      <span class="badge badge-muted"> {{t .Lang "persons.inactive"}} </span>
 
       {{ end }}
     </div>
@@ -44,55 +44,55 @@
     <div class="panel-body">
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label"> Full Name </label>
+          <label class="form-label"> {{t .Lang "persons.full_name"}} </label>
 
           <div class="form-control">{{ .person.FullName }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> NIC / Passport </label>
+          <label class="form-label"> {{t .Lang "persons.nic_passport"}} </label>
 
           <div class="form-control">{{ .person.NICPassport }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Date of Birth </label>
+          <label class="form-label"> {{t .Lang "persons.date_of_birth"}} </label>
 
           <div class="form-control">{{ .person.DateOfBirth }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Gender </label>
+          <label class="form-label"> {{t .Lang "persons.gender"}} </label>
 
           <div class="form-control">{{ .person.Gender }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Phone </label>
+          <label class="form-label"> {{t .Lang "persons.phone"}} </label>
 
           <div class="form-control">{{ .person.Phone }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Email </label>
+          <label class="form-label"> {{t .Lang "persons.email"}} </label>
 
           <div class="form-control">{{ .person.Email }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Occupation </label>
+          <label class="form-label"> {{t .Lang "persons.occupation"}} </label>
 
           <div class="form-control">{{ .person.Occupation }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Monthly Income </label>
+          <label class="form-label"> {{t .Lang "persons.monthly_income"}} </label>
 
           <div class="form-control">{{ .person.MonthlyIncome }}</div>
         </div>
 
         <div class="form-group full">
-          <label class="form-label"> Address </label>
+          <label class="form-label"> {{t .Lang "persons.address"}} </label>
 
           <div class="form-control">{{ .person.Address }}</div>
         </div>

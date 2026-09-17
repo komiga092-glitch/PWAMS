@@ -2,8 +2,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Aid Requests</h1>
-      <p>Review and manage assistance requests.</p>
+      <h1>{{t .Lang "aid_requests.title"}}</h1>
+      <p>{{t .Lang "aid_requests.subtitle"}}</p>
     </div>
 
     <button
@@ -12,7 +12,7 @@
       onclick="openAidRequestModal()"
       data-roles="Super Admin,Admin,Staff"
     >
-      + New Aid Request
+      {{t .Lang "aid_requests.new"}}
     </button>
   </div>
 
@@ -24,20 +24,20 @@
         <input
           type="text"
           name="search"
-          placeholder="Search person, request or description..."
+          placeholder="{{t .Lang "aid_requests.search_placeholder"}}"
           value="{{ .search }}"
         />
 
         <select name="status">
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-          <option value="cancelled">Cancelled</option>
-          <option value="completed">Completed</option>
+          <option value="">{{t .Lang "aid_requests.all_status"}}</option>
+          <option value="pending">{{t .Lang "aid_requests.pending"}}</option>
+          <option value="approved">{{t .Lang "aid_requests.approved"}}</option>
+          <option value="rejected">{{t .Lang "aid_requests.rejected"}}</option>
+          <option value="cancelled">{{t .Lang "aid_requests.cancelled"}}</option>
+          <option value="completed">{{t .Lang "aid_requests.completed"}}</option>
         </select>
 
-        <button class="btn btn-secondary" type="submit">Search</button>
+        <button class="btn btn-secondary" type="submit">{{t .Lang "common.search"}}</button>
       </form>
     </div>
   </div>
@@ -46,10 +46,10 @@
 
   <div class="panel">
     <div class="panel-header">
-      <h2>Aid Request List</h2>
+      <h2>{{t .Lang "aid_requests.list_title"}}</h2>
 
       <span class="badge">
-        {{ if .data }} {{ len .data }} Records {{ else }} 0 Records {{ end }}
+        {{ if .data }} {{ len .data }} {{t .Lang "aid_requests.records"}} {{ else }} 0 {{t .Lang "aid_requests.records"}} {{ end }}
       </span>
     </div>
 
@@ -57,12 +57,12 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>PERSON</th>
-            <th>REQUEST TYPE</th>
-            <th>AMOUNT</th>
-            <th>DATE</th>
-            <th>STATUS</th>
-            <th>ACTIONS</th>
+            <th>{{t .Lang "aid_requests.person"}}</th>
+            <th>{{t .Lang "aid_requests.request_type"}}</th>
+            <th>{{t .Lang "aid_requests.amount"}}</th>
+            <th>{{t .Lang "aid_requests.date"}}</th>
+            <th>{{t .Lang "common.status"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -81,36 +81,36 @@
             <td>
               {{ if eq .Status "Approved" }}
 
-              <span class="status-badge status-active"> Approved </span>
+              <span class="status-badge status-active"> {{t .Lang "aid_requests.approved"}} </span>
 
               {{ else if eq .Status "Rejected" }}
 
-              <span class="status-badge status-inactive"> Rejected </span>
+              <span class="status-badge status-inactive"> {{t .Lang "aid_requests.rejected"}} </span>
 
               {{ else if eq .Status "Cancelled" }}
 
-              <span class="status-badge status-inactive"> Cancelled </span>
+              <span class="status-badge status-inactive"> {{t .Lang "aid_requests.cancelled"}} </span>
 
               {{ else if eq .Status "Completed" }}
 
-              <span class="status-badge status-active"> Completed </span>
+              <span class="status-badge status-active"> {{t .Lang "aid_requests.completed"}} </span>
 
               {{ else }}
 
-              <span class="status-badge"> Pending </span>
+              <span class="status-badge"> {{t .Lang "aid_requests.pending"}} </span>
 
               {{ end }}
             </td>
 
             <td class="actions">
-              <a class="btn btn-small" href="/aid-requests/{{ .ID }}"> View </a>
+              <a class="btn btn-small" href="/aid-requests/{{ .ID }}"> {{t .Lang "common.view"}} </a>
             </td>
           </tr>
 
           {{ else }}
 
           <tr>
-            <td colspan="6" class="empty">No aid requests found.</td>
+            <td colspan="6" class="empty">{{t .Lang "aid_requests.empty"}}</td>
           </tr>
 
           {{ end }}
@@ -128,8 +128,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>New Aid Request</h2>
-        <p>Create a new assistance request.</p>
+        <h2>{{t .Lang "aid_requests.new_modal_title"}}</h2>
+        <p>{{t .Lang "aid_requests.new_modal_subtitle"}}</p>
       </div>
 
       <button
@@ -150,35 +150,35 @@
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="personID">Beneficiary *</label>
+          <label for="personID">{{t .Lang "aid_requests.beneficiary"}} *</label>
 
           <select id="personID" name="person_id" required>
-            <option value="">Select Person</option>
+            <option value="">{{t .Lang "aid_requests.select_person"}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="requestType"> Request Type * </label>
+          <label for="requestType"> {{t .Lang "aid_requests.request_type"}} * </label>
 
           <select id="requestType" name="aid_type" required>
-            <option value="">Select request type</option>
+            <option value="">{{t .Lang "aid_requests.select_request_type"}}</option>
 
-            <option value="Medical">Medical</option>
+            <option value="Medical">{{t .Lang "aid_requests.medical"}}</option>
 
-            <option value="Food">Food</option>
+            <option value="Food">{{t .Lang "aid_requests.food"}}</option>
 
-            <option value="Education">Education</option>
+            <option value="Education">{{t .Lang "aid_requests.education"}}</option>
 
-            <option value="Housing">Housing</option>
+            <option value="Housing">{{t .Lang "aid_requests.housing"}}</option>
 
-            <option value="Emergency">Emergency</option>
+            <option value="Emergency">{{t .Lang "aid_requests.emergency"}}</option>
 
-            <option value="Other">Other</option>
+            <option value="Other">{{t .Lang "aid_requests.other"}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="aidAmount"> Amount </label>
+          <label for="aidAmount"> {{t .Lang "aid_requests.amount"}} </label>
 
           <input
             id="aidAmount"
@@ -191,18 +191,18 @@
         </div>
 
         <div class="form-group">
-          <label for="priority"> Priority </label>
+          <label for="priority"> {{t .Lang "aid_requests.priority"}} </label>
 
           <select id="priority" name="priority">
-            <option value="Medium">Medium</option>
+            <option value="Medium">{{t .Lang "aid_requests.priority_medium"}}</option>
 
-            <option value="High">High</option>
+            <option value="High">{{t .Lang "aid_requests.priority_high"}}</option>
 
-            <option value="Critical">Critical</option>
+            <option value="Critical">{{t .Lang "aid_requests.priority_critical"}}</option>
           </select>
         </div>
         <div class="form-group form-full">
-          <label for="aidTitle">Title *</label>
+          <label for="aidTitle">{{t .Lang "aid_requests.title_label"}} *</label>
 
           <input
             id="aidTitle"
@@ -211,18 +211,18 @@
             minlength="3"
             maxlength="200"
             required
-            placeholder="Request title"
+            placeholder="{{t .Lang "aid_requests.request_title_placeholder"}}"
           />
         </div>
         <div class="form-group form-full">
-          <label for="aidDescription"> Description * </label>
+          <label for="aidDescription"> {{t .Lang "aid_requests.description"}} * </label>
 
           <textarea
             id="aidDescription"
             name="description"
             rows="4"
             required
-            placeholder="Describe the assistance required"
+            placeholder="{{t .Lang "aid_requests.description_placeholder"}}"
           ></textarea>
         </div>
       </div>
@@ -233,10 +233,10 @@
           class="btn btn-secondary"
           onclick="closeAidRequestModal()"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">Submit Request</button>
+        <button type="submit" class="btn btn-primary">{{t .Lang "aid_requests.submit"}}</button>
         <br /><br /><br />
       </div>
     </form>

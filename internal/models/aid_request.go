@@ -44,7 +44,7 @@ type AidRequest struct {
 
 	RequestedAmount decimal.Decimal `gorm:"type:numeric(14,2);default:0" json:"requested_amount"`
 	ApprovedAmount  decimal.Decimal `gorm:"type:numeric(14,2);default:0" json:"approved_amount"`
-	Currency        string  `gorm:"size:10;default:LKR" json:"currency"`
+	Currency        string          `gorm:"size:10;default:LKR" json:"currency"`
 
 	RequestDate time.Time  `gorm:"not null;index" json:"request_date"`
 	NeededBy    *time.Time `gorm:"index" json:"needed_by,omitempty"`

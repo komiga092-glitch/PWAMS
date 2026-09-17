@@ -7,7 +7,7 @@ import {
 } from "./db.js";
 import {
   isOfflineSessionValid,
-  OFFLINE_SESSION_EXPIRED_MESSAGE,
+  offlineSessionExpiredMessage,
 } from "./session.js";
 
 const STORE_BY_ENTITY: Record<OfflineEntityType, OfflineStoreName> = {
@@ -47,7 +47,7 @@ export async function savePendingMutation<T extends Record<string, unknown>>(
   recordId = typeof payload.id === "string" ? payload.id : createOfflineId(),
 ): Promise<string> {
   if (!(await isOfflineSessionValid())) {
-    throw new Error(OFFLINE_SESSION_EXPIRED_MESSAGE);
+    throw new Error(offlineSessionExpiredMessage());
   }
 
   const now = new Date().toISOString();

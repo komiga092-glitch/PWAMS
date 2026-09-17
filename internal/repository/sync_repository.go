@@ -79,9 +79,21 @@ func (r *SyncRepository) CreateIdempotencyRecord(
 	return record, nil
 }
 
+// applyTenantFilter constrains a sync query to the authenticated
+// principal's tenant. A nil tenantID means the principal is not
+// tenant-bound (single-tenant deployment) and the query stays
+// unfiltered — the same contract as middleware.WithTenantScope.
+func applyTenantFilter(query *gorm.DB, tenantID *uuid.UUID) *gorm.DB {
+	if tenantID == nil {
+		return query
+	}
+	return query.Where("tenant_id = ?", *tenantID)
+}
+
 func (r *SyncRepository) PullPersons(
 	cursor time.Time,
 	limit int,
+	tenantID *uuid.UUID,
 ) ([]models.SyncPullRecord, time.Time, bool, error) {
 	if limit <= 0 {
 		limit = 500
@@ -93,7 +105,7 @@ func (r *SyncRepository) PullPersons(
 
 	var records []models.Person
 
-	query := r.db.
+	query := applyTenantFilter(r.db, tenantID).
 		Where("updated_at > ?", cursor).
 		Order("updated_at ASC").
 		Limit(limit + 1)
@@ -139,6 +151,7 @@ func (r *SyncRepository) PullPersons(
 func (r *SyncRepository) PullEntities(
 	cursor time.Time,
 	limit int,
+	tenantID *uuid.UUID,
 ) ([]models.SyncPullRecord, time.Time, bool, error) {
 	if limit <= 0 || limit > 500 {
 		limit = 500
@@ -171,7 +184,11 @@ func (r *SyncRepository) PullEntities(
 	result := make([]models.SyncPullRecord, 0)
 	for _, table := range tables {
 		var rows []map[string]any
-		if err := r.db.Table(table.name).Unscoped().Where("updated_at > ?", cursor).Order("updated_at ASC").Limit(limit + 1).Find(&rows).Error; err != nil {
+		if err := applyTenantFilter(r.db.Table(table.name).Unscoped(), tenantID).
+			Where("updated_at > ?", cursor).
+			Order("updated_at ASC").
+			Limit(limit + 1).
+			Find(&rows).Error; err != nil {
 			return nil, cursor, false, fmt.Errorf("failed to pull %s: %w", table.label, err)
 		}
 		for _, row := range rows {

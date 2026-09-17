@@ -13,14 +13,22 @@ import (
 )
 
 type DonorHandler struct {
-	donorService *services.DonorService
+	donorService    *services.DonorService
+	auditLogService *services.AuditLogService
 }
 
 func NewDonorHandler(
 	donorService *services.DonorService,
+	auditLogServices ...*services.AuditLogService,
 ) *DonorHandler {
+	var auditLogService *services.AuditLogService
+	if len(auditLogServices) > 0 {
+		auditLogService = auditLogServices[0]
+	}
+
 	return &DonorHandler{
-		donorService: donorService,
+		donorService:    donorService,
+		auditLogService: auditLogService,
 	}
 }
 
@@ -54,6 +62,18 @@ func (h *DonorHandler) Create(c *gin.Context) {
 			errorResponseMapping{err: services.ErrDonorAlreadyExists, status: http.StatusConflict, message: err.Error()},
 		)
 		return
+	}
+
+	if currentUser, ok := getCurrentUser(c); ok {
+		if err := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"CREATE",
+			"donors",
+			donor.ID.String(),
+			"Donor registered successfully",
+		); err != nil {
+			// Audit logging failure must not fail the donor creation.
+		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{

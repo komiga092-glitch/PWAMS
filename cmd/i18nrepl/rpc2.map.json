@@ -1,0 +1,30 @@
+{
+  "web/templates/report_page_content.html": [
+    ["<div class=\"panel-header\"><h2>By Role</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_role\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Status</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_status\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Type</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_type\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Gender</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_gender\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Grade</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_grade\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Academic Year</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_academic_year\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Priority</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_priority\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Action</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_action\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Entity</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_entity\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>By Category</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.by_category\"}}</h2></div>"],
+    ["<div class=\"panel-header\"><h2>Report Details</h2></div>", "<div class=\"panel-header\"><h2>{{t .Lang \"reports.report_details\"}}</h2></div>"],
+    ["<p>Total Records: {{ .report.TotalRecords }}</p>", "<p>{{t .Lang \"reports.total_records\"}}: {{ .report.TotalRecords }}</p>"],
+    ["<p>Total Users: {{ .report.TotalUsers }}</p>", "<p>{{t .Lang \"reports.total_users\"}}: {{ .report.TotalUsers }}</p>"],
+    ["<p>Total Persons: {{ .report.TotalPersons }}</p>", "<p>{{t .Lang \"reports.total_persons\"}}: {{ .report.TotalPersons }}</p>"],
+    ["<p>Total Students: {{ .report.TotalStudents }}</p>", "<p>{{t .Lang \"reports.total_students\"}}: {{ .report.TotalStudents }}</p>"],
+    ["<p>Total Donors: {{ .report.TotalDonors }}</p>", "<p>{{t .Lang \"reports.total_donors\"}}: {{ .report.TotalDonors }}</p>"],
+    ["<p>Total Donations: {{ .report.TotalDonations }}</p>", "<p>{{t .Lang \"reports.total_donations\"}}: {{ .report.TotalDonations }}</p>"],
+    ["<p>Total Aid Requests: {{ .report.TotalAidRequests }}</p>", "<p>{{t .Lang \"reports.total_aid_requests\"}}: {{ .report.TotalAidRequests }}</p>"],
+    ["<p>Total Care Provided: {{ .report.TotalCareProvided }}</p>", "<p>{{t .Lang \"reports.total_care_provided\"}}: {{ .report.TotalCareProvided }}</p>"],
+    ["<p>Active Users: {{ .report.ActiveUsers }}</p>", "<p>{{t .Lang \"reports.active_users\"}}: {{ .report.ActiveUsers }}</p>"],
+    ["<p>Disabled Users: {{ .report.DisabledUsers }}</p>", "<p>{{t .Lang \"reports.disabled_users\"}}: {{ .report.DisabledUsers }}</p>"],
+    ["<p>Locked Users: {{ .report.LockedUsers }}</p>", "<p>{{t .Lang \"reports.locked_users\"}}: {{ .report.LockedUsers }}</p>"],
+    ["<p>Total Amount: {{ printf \"%.2f\" .report.TotalAmount }}</p>", "<p>{{t .Lang \"reports.total_amount\"}}: {{ printf \"%.2f\" .report.TotalAmount }}</p>"],
+    ["<p>Total Income: {{ printf \"%.2f\" .report.TotalIncome }}</p>", "<p>{{t .Lang \"reports.total_income\"}}: {{ printf \"%.2f\" .report.TotalIncome }}</p>"],
+    ["<p>Total Expenses: {{ printf \"%.2f\" .report.TotalExpenses }}</p>", "<p>{{t .Lang \"reports.total_expenses\"}}: {{ printf \"%.2f\" .report.TotalExpenses }}</p>"],
+    ["<p>Net: {{ printf \"%.2f\" .report.Net }}</p>", "<p>{{t .Lang \"reports.net\"}}: {{ printf \"%.2f\" .report.Net }}</p>"]
+  ]
+}

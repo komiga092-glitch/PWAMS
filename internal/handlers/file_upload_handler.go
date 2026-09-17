@@ -240,11 +240,11 @@ func (h *FileUploadHandler) Upload(c *gin.Context) {
 	extension := strings.ToLower(filepath.Ext(fileHeader.Filename))
 
 	allowedExtensions := map[string]bool{
-		".jpg": true,
+		".jpg":  true,
 		".jpeg": true,
-		".png": true,
+		".png":  true,
 		".webp": true,
-		".pdf": true,
+		".pdf":  true,
 	}
 	if !allowedExtensions[extension] {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -493,7 +493,7 @@ func (h *FileUploadHandler) audit(action string, file *models.FileUpload, userID
 	} else if len(ids) > 0 {
 		entityID = ids[0]
 	}
-	_ = h.auditLogService.Create(userID, action, "file_uploads", entityID, details, c.ClientIP())
+	_ = h.auditLogService.Create(userID, action, "file_uploads", entityID, details)
 }
 
 func filePagination(c *gin.Context) (int, int, bool) {

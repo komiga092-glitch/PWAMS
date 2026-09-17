@@ -52,11 +52,21 @@ func (r *LoanRepaymentRepository) FindByID(
 
 func (r *LoanRepaymentRepository) List(
 	query models.LoanRepaymentListQuery,
+	ownerID uuid.UUID,
 ) ([]models.LoanRepayment, int64, error) {
 	var repayments []models.LoanRepayment
 	var total int64
 
 	db := r.db.Model(&models.LoanRepayment{})
+
+	// Ownership is inherited through the parent loan: repayment rows are
+	// scoped to the principal that created the loan they belong to.
+	// Privileged callers receive uuid.Nil (unrestricted).
+	if ownerID != uuid.Nil {
+		db = db.
+			Joins("JOIN loans ON loans.id = loan_repayments.loan_id").
+			Where("loans.created_by_id = ?", ownerID)
+	}
 
 	if query.LoanID != "" {
 		db = db.Where("loan_id = ?", query.LoanID)

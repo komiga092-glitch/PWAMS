@@ -1,0 +1,2915 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "documentName": "pwams",
+  "documentNamespace": "https://example.com/spdx/pwams-1.0.0",
+  "creationInfo": {
+    "created": "2026-09-09T13:01:20.112Z",
+    "creators": [
+      "Tool: manual-sbom-generator-1.0.0"
+    ]
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-1",
+      "name": "pwams",
+      "versionInfo": "1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "379cded15b3f2b5cd001ff884f99e0a1b10ff149"
+      },
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:github/komiga092-glitch/pwams@1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-2",
+      "name": "github.com/a-h/templ",
+      "versionInfo": "v0.3.1020",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "9bf1afd0c777b9b43c3ab5c6c0dc9658be2428ee"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/a-h/templ@v0.3.1020"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-3",
+      "name": "github.com/gin-gonic/gin",
+      "versionInfo": "v1.12.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "2178d586ccde1d5206e866856e1104ad541f4f90"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/gin-gonic/gin@v1.12.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-4",
+      "name": "github.com/google/uuid",
+      "versionInfo": "v1.6.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "0a7957f2b29ea798fd3c8510b138bffed8bee4f2"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/google/uuid@v1.6.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-5",
+      "name": "github.com/joho/godotenv",
+      "versionInfo": "v1.5.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "7b17bb6dd9fb38a40d2125d5e4b4e7a8e241bcdc"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/joho/godotenv@v1.5.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-6",
+      "name": "github.com/shopspring/decimal",
+      "versionInfo": "v1.4.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "7af6c10afa774d7526b57703ad2df7e53d8daf0c"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/shopspring/decimal@v1.4.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-7",
+      "name": "github.com/swaggo/files",
+      "versionInfo": "v1.0.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "5525e9ad0689be4e0baa387f7979a2677af5941a"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/swaggo/files@v1.0.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-8",
+      "name": "github.com/swaggo/gin-swagger",
+      "versionInfo": "v1.6.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b6261d8a597e6374f4b48be499f588e94e83eb06"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/swaggo/gin-swagger@v1.6.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-9",
+      "name": "github.com/swaggo/swag",
+      "versionInfo": "v1.16.6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a2044f082f2587e3d1e16976b4f9a1080798e6bf"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/swaggo/swag@v1.16.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-10",
+      "name": "golang.org/x/crypto",
+      "versionInfo": "v0.55.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "25791cb2f290166f188b6e164b29917069c00c72"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/crypto@v0.55.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-11",
+      "name": "gorm.io/driver/postgres",
+      "versionInfo": "v1.6.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "954516ef007c97053fb59d61b6a62b7853d90fd0"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/gorm.io/driver/postgres@v1.6.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-12",
+      "name": "gorm.io/gorm",
+      "versionInfo": "v1.31.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "02bbf47399a06e13893b52b14c64dd5f9fe99526"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/gorm.io/gorm@v1.31.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-13",
+      "name": "github.com/KyleBanks/depth",
+      "versionInfo": "v1.2.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "2808267e2198c4a3aa444e0fbd76fef848f4646d"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/KyleBanks/depth@v1.2.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-14",
+      "name": "github.com/PuerkitoBio/purell",
+      "versionInfo": "v1.1.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "e4c7437ce1f9e647a5491dfbe7f4ba6443cc1dde"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/PuerkitoBio/purell@v1.1.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-15",
+      "name": "github.com/PuerkitoBio/urlesc",
+      "versionInfo": "v0.0.0-20170810143723-de5bf2ad4578",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "af8045393e2a080f106a3ba0dee784d8bbd9e6e2"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/PuerkitoBio/urlesc@v0.0.0-20170810143723-de5bf2ad4578"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-16",
+      "name": "github.com/a-h/parse",
+      "versionInfo": "v0.0.0-20250122154542-74294addb73e",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "8e825d6a0284947ea268072f08e8646df7fa7746"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/a-h/parse@v0.0.0-20250122154542-74294addb73e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-17",
+      "name": "github.com/andybalholm/brotli",
+      "versionInfo": "v1.1.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "18660d6cb7cf971687364b846317b36e5ea0792a"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/andybalholm/brotli@v1.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-18",
+      "name": "github.com/bytedance/gopkg",
+      "versionInfo": "v0.1.4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "eb7d6fc8da1c091c0437f3742b046b44c7fafd6c"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/bytedance/gopkg@v0.1.4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-19",
+      "name": "github.com/bytedance/sonic",
+      "versionInfo": "v1.15.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "7d79527f2c711b361f3cf740a1b01a00dfd2d758"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/bytedance/sonic@v1.15.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-20",
+      "name": "github.com/bytedance/sonic/loader",
+      "versionInfo": "v0.5.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "dcef954df13b811441e459cb2874b0d612865aba"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/bytedance/sonic/loader@v0.5.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-21",
+      "name": "github.com/cenkalti/backoff/v4",
+      "versionInfo": "v4.3.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "42047a7c5ebb915364b37aea8c198bfec117a13a"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/cenkalti/backoff/v4@v4.3.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-22",
+      "name": "github.com/chenzhuoyu/base64x",
+      "versionInfo": "v0.0.0-20221115062448-fe3a3abad311",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "7497b2f552ad1a5b7e4619b4e9090e6ed8b1ad39"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/chenzhuoyu/base64x@v0.0.0-20221115062448-fe3a3abad311"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-23",
+      "name": "github.com/cli/browser",
+      "versionInfo": "v1.3.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "1f84d8caeab40f3136891624db77d7946c1701de"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/cli/browser@v1.3.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-24",
+      "name": "github.com/cloudwego/base64x",
+      "versionInfo": "v0.1.7",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "18c542c00c64282c884260300f136718521801e1"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/cloudwego/base64x@v0.1.7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-25",
+      "name": "github.com/cpuguy83/go-md2man/v2",
+      "versionInfo": "v2.0.0-20190314233015-f79a8a8ca69d",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "2deeab151d18b781e485386842bd96b3691c28d9"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/cpuguy83/go-md2man/v2@v2.0.0-20190314233015-f79a8a8ca69d"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-26",
+      "name": "github.com/creack/pty",
+      "versionInfo": "v1.1.9",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "18406cf5ea3d310ada656c952f498b44fa35cbd8"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/creack/pty@v1.1.9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-27",
+      "name": "github.com/davecgh/go-spew",
+      "versionInfo": "v1.1.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a3fe0798cbdcc9ecdb16165fc52921491e64b4f7"
+      },
+      "licenseConcluded": "ISC",
+      "licenseDeclared": "ISC",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/davecgh/go-spew@v1.1.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-28",
+      "name": "github.com/fatih/color",
+      "versionInfo": "v1.16.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "f4aaca897cb715f8537c57ca807f48137c6ed587"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/fatih/color@v1.16.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-29",
+      "name": "github.com/fsnotify/fsnotify",
+      "versionInfo": "v1.7.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "3f80caee7f01ad31ddbf54e082f5ca0ff25cf53c"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/fsnotify/fsnotify@v1.7.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-30",
+      "name": "github.com/gabriel-vasile/mimetype",
+      "versionInfo": "v1.4.15",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b1e3c3a9ced9a21f502d39e3700dae1e219a3c99"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/gabriel-vasile/mimetype@v1.4.15"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-31",
+      "name": "github.com/gin-contrib/gzip",
+      "versionInfo": "v0.0.6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "e97789d8620057586f667fcee86ad27ce338adfc"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/gin-contrib/gzip@v0.0.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-32",
+      "name": "github.com/gin-contrib/sse",
+      "versionInfo": "v1.1.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "5784b40be609cefabc588bbe83d68b0dd96583fe"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/gin-contrib/sse@v1.1.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-33",
+      "name": "github.com/go-openapi/jsonpointer",
+      "versionInfo": "v0.19.5",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "762750a84f68ca10ff501c79e731b86ddca354f7"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-openapi/jsonpointer@v0.19.5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-34",
+      "name": "github.com/go-openapi/jsonreference",
+      "versionInfo": "v0.19.6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "4a154631be88ec00640daf01992b2724cfccea39"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-openapi/jsonreference@v0.19.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-35",
+      "name": "github.com/go-openapi/spec",
+      "versionInfo": "v0.20.4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "6de72721492b3fedd011d7cbb5461e975b57b308"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-openapi/spec@v0.20.4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-36",
+      "name": "github.com/go-openapi/swag",
+      "versionInfo": "v0.19.15",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "6881c3f8c874e326e807c3b1a490afb865bd1698"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-openapi/swag@v0.19.15"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-37",
+      "name": "github.com/go-playground/assert/v2",
+      "versionInfo": "v2.2.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "5dbd21a0d0d41978c53887dd65b7eac0661df7b4"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-playground/assert/v2@v2.2.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-38",
+      "name": "github.com/go-playground/locales",
+      "versionInfo": "v0.14.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "3b018a54e823bd2ef61dddfa08507fdcb874c58d"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-playground/locales@v0.14.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-39",
+      "name": "github.com/go-playground/universal-translator",
+      "versionInfo": "v0.18.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "921ed27c346aa4ad1773a33008e68255128d1100"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-playground/universal-translator@v0.18.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-40",
+      "name": "github.com/go-playground/validator/v10",
+      "versionInfo": "v10.30.3",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "e6d8b9df5f990a787f9cdc516a630456816a59a6"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/go-playground/validator/v10@v10.30.3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-41",
+      "name": "github.com/goccy/go-json",
+      "versionInfo": "v0.10.6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "4312e9935c144e24bafe3fcdebad8ec10303d2de"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/goccy/go-json@v0.10.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-42",
+      "name": "github.com/goccy/go-yaml",
+      "versionInfo": "v1.19.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "001d31ea192c61afb63bd00ab46a42a92ec684f7"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/goccy/go-yaml@v1.19.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-43",
+      "name": "github.com/golang/protobuf",
+      "versionInfo": "v1.5.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "445b461bb829b60baffc4dcbef5e71566f8672ef"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/golang/protobuf@v1.5.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-44",
+      "name": "github.com/google/go-cmp",
+      "versionInfo": "v0.7.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "8f91fa2755e7050c82a2c13e5f9632cfb8ebaf24"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/google/go-cmp@v0.7.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-45",
+      "name": "github.com/google/gofuzz",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "d0af5734bd4b425ed59c3709d406e99c054ddeae"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/google/gofuzz@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-46",
+      "name": "github.com/jackc/pgpassfile",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "6a86055be86125d2b9d5c28b165869cc96fa7f81"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jackc/pgpassfile@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-47",
+      "name": "github.com/jackc/pgservicefile",
+      "versionInfo": "v0.0.0-20240606120523-5a60cdf6a761",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "6673406b6ac5458449a4e13705120dc95c1045ea"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jackc/pgservicefile@v0.0.0-20240606120523-5a60cdf6a761"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-48",
+      "name": "github.com/jackc/pgx/v5",
+      "versionInfo": "v5.10.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "ba732cc89954e8a84b975692b3769a8e83a4e822"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jackc/pgx/v5@v5.10.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-49",
+      "name": "github.com/jackc/puddle/v2",
+      "versionInfo": "v2.2.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b34e25b48cd0fb2988003a934c783a49cdd08660"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jackc/puddle/v2@v2.2.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-50",
+      "name": "github.com/jinzhu/inflection",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "847b8f34e08ab2c441fba50a741dfb5a45196e6b"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jinzhu/inflection@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-51",
+      "name": "github.com/jinzhu/now",
+      "versionInfo": "v1.1.5",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "7a3d7163d15ee968dc7a6410d9ded12e5335088b"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jinzhu/now@v1.1.5"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-52",
+      "name": "github.com/jordanlewis/gcassert",
+      "versionInfo": "v0.0.0-20250430164644-389ef753e22e",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a00d1444672feb2bb298e9f908bea9dcb377ece8"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/jordanlewis/gcassert@v0.0.0-20250430164644-389ef753e22e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-53",
+      "name": "github.com/josharian/intern",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "ecebdac85ee23e72762ec6ab26f1e17d1025bd0c"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/josharian/intern@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-54",
+      "name": "github.com/json-iterator/go",
+      "versionInfo": "v1.1.12",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "34f7e6d5c8033b243a331daf854fa8773452f74a"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/json-iterator/go@v1.1.12"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-55",
+      "name": "github.com/klauspost/compress",
+      "versionInfo": "v1.17.6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "34b6062c87f8b109f1fc78d75a02fe5ac0ea3b12"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/klauspost/compress@v1.17.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-56",
+      "name": "github.com/klauspost/cpuid/v2",
+      "versionInfo": "v2.4.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "622b022c065f2176597c680ab145f9de33974dd7"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/klauspost/cpuid/v2@v2.4.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-57",
+      "name": "github.com/kr/pretty",
+      "versionInfo": "v0.3.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "9da3d98f03d04f9bf1ee02323e6051f0070c2a77"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/kr/pretty@v0.3.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-58",
+      "name": "github.com/kr/pty",
+      "versionInfo": "v1.1.9",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "f5fa460e2ba6f08ad86bd8a5f8669b8dc87048cc"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/kr/pty@v1.1.9"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-59",
+      "name": "github.com/kr/text",
+      "versionInfo": "v0.2.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "73c8b34f7a0cb97d11b35d02a9f0fb1ab831bdad"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/kr/text@v0.2.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-60",
+      "name": "github.com/leodido/go-urn",
+      "versionInfo": "v1.5.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "aab38ff568896798d9ffab924bebbac5285c1a06"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/leodido/go-urn@v1.5.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-61",
+      "name": "github.com/mailru/easyjson",
+      "versionInfo": "v0.7.6",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "5bba70ece17567edb8d90e771d50ec9725326595"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/mailru/easyjson@v0.7.6"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-62",
+      "name": "github.com/mattn/go-colorable",
+      "versionInfo": "v0.1.13",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "84cee2996ef9c5937fb6d7afce990ee0dc866a9f"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/mattn/go-colorable@v0.1.13"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-63",
+      "name": "github.com/mattn/go-isatty",
+      "versionInfo": "v0.0.24",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "deb46d9c2bf2b4d6a0e71f159c192f1568e4728f"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/mattn/go-isatty@v0.0.24"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-64",
+      "name": "github.com/mattn/go-sqlite3",
+      "versionInfo": "v1.14.22",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "2f3f7aea913879ec6b924bd1c4c1899014196a8a"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/mattn/go-sqlite3@v1.14.22"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-65",
+      "name": "github.com/modern-go/concurrent",
+      "versionInfo": "v0.0.0-20180306012644-bacd9c7ef1dd",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "adefd52d3c3eaadcc8463f4eafce6689b5828501"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/modern-go/concurrent@v0.0.0-20180306012644-bacd9c7ef1dd"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-66",
+      "name": "github.com/modern-go/reflect2",
+      "versionInfo": "v1.0.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b1de6c7b6737ae7d0c406a348abcc4a0d50f72d5"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/modern-go/reflect2@v1.0.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-67",
+      "name": "github.com/natefinch/atomic",
+      "versionInfo": "v1.0.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a9f2c613eaf3d887382780b978ce10477ff93378"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/natefinch/atomic@v1.0.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-68",
+      "name": "github.com/niemeyer/pretty",
+      "versionInfo": "v0.0.0-20200227124842-a10e7caefd8e",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "e4f8d6af9737a461b459977ca0187aab69590ba9"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/niemeyer/pretty@v0.0.0-20200227124842-a10e7caefd8e"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-69",
+      "name": "github.com/pelletier/go-toml/v2",
+      "versionInfo": "v2.4.3",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "ee746d7816506f02c31889f2cca4131af4518834"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/pelletier/go-toml/v2@v2.4.3"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-70",
+      "name": "github.com/pmezard/go-difflib",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "cbda1b99c2528ac01d27623befa9e00cb4d6c5ca"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/pmezard/go-difflib@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-71",
+      "name": "github.com/quic-go/go-ossfuzz-seeds",
+      "versionInfo": "v0.1.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "c36405f4c6f6f6050843cab4862f3cd765e2bccf"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/quic-go/go-ossfuzz-seeds@v0.1.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-72",
+      "name": "github.com/quic-go/qpack",
+      "versionInfo": "v0.6.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "9a80b98d09753abb61afaa28b2cd3013e8582d83"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/quic-go/qpack@v0.6.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-73",
+      "name": "github.com/quic-go/quic-go",
+      "versionInfo": "v0.61.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "8fbe02ac373e50353f2a3bfe83a6231ade1ac92d"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/quic-go/quic-go@v0.61.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-74",
+      "name": "github.com/rogpeppe/go-internal",
+      "versionInfo": "v1.10.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a159960ebe0518a85d63d1b443a228312838a7b7"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/rogpeppe/go-internal@v1.10.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-75",
+      "name": "github.com/rs/cors",
+      "versionInfo": "v1.11.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "62c0ea18e7f8d87c681af3048093592d0e25595c"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/rs/cors@v1.11.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-76",
+      "name": "github.com/russross/blackfriday/v2",
+      "versionInfo": "v2.0.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "daa79b25c07d3e45ba8e192049b2583dbf6dcced"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/russross/blackfriday/v2@v2.0.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-77",
+      "name": "github.com/shurcooL/sanitized_anchor_name",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "50d69b840c08211727f5ebae3038d82978d93671"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/shurcooL/sanitized_anchor_name@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-78",
+      "name": "github.com/stretchr/objx",
+      "versionInfo": "v0.5.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "1c9126532aabb7ae196430243b25f86350cbfa51"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/stretchr/objx@v0.5.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-79",
+      "name": "github.com/stretchr/testify",
+      "versionInfo": "v1.11.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "10f3ef4751b1674fc66468213406b216612b5ee4"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/stretchr/testify@v1.11.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-80",
+      "name": "github.com/twitchyliquid64/golang-asm",
+      "versionInfo": "v0.15.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "5bfc205ee30e6198a22c337b52315230974c1dd8"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/twitchyliquid64/golang-asm@v0.15.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-81",
+      "name": "github.com/ugorji/go/codec",
+      "versionInfo": "v1.3.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "06254e6248eb69f76536cac9ef8832131f8c44df"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/ugorji/go/codec@v1.3.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-82",
+      "name": "github.com/urfave/cli/v2",
+      "versionInfo": "v2.3.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a8302cb0d7395f99d380f38fce89a431fef24f5b"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/urfave/cli/v2@v2.3.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-83",
+      "name": "github.com/xdg-go/pbkdf2",
+      "versionInfo": "v1.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "dbfea05b12197f5b583dbc0c22790ad1b26c001d"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/xdg-go/pbkdf2@v1.0.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-84",
+      "name": "github.com/xdg-go/scram",
+      "versionInfo": "v1.2.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "3a379aadda62e1877e5ebf157e22f325673c2767"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/xdg-go/scram@v1.2.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-85",
+      "name": "github.com/xdg-go/stringprep",
+      "versionInfo": "v1.0.4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "72e25ebc4bf8da6df83102bfe73647d9efe04ffa"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/xdg-go/stringprep@v1.0.4"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-86",
+      "name": "github.com/youmark/pkcs8",
+      "versionInfo": "v0.0.0-20240726163527-a2c0da244d78",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "044390f42634cc930bf2be7f49c00bd97790a324"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/youmark/pkcs8@v0.0.0-20240726163527-a2c0da244d78"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-87",
+      "name": "github.com/yuin/goldmark",
+      "versionInfo": "v1.4.13",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "86dcd89aace313afaead87e1ba8688fbe52ee2d8"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/github.com/yuin/goldmark@v1.4.13"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-88",
+      "name": "go.mongodb.org/mongo-driver/v2",
+      "versionInfo": "v2.8.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "c0dcbf09676d98135b560fb40e68f18c79b4dabc"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/go.mongodb.org/mongo-driver/v2@v2.8.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-89",
+      "name": "go.uber.org/mock",
+      "versionInfo": "v0.6.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "19a13626595fc09fbaf8ba271bf35f85a3032a2a"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/go.uber.org/mock@v0.6.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-90",
+      "name": "golang.org/x/arch",
+      "versionInfo": "v0.30.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "394d692ec2f9a153d35c270eeeec772fa4945bb1"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/arch@v0.30.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-91",
+      "name": "golang.org/x/mod",
+      "versionInfo": "v0.38.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "4a70f4764a627d5ef96bbdf6036f3967569abfbb"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/mod@v0.38.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-92",
+      "name": "golang.org/x/net",
+      "versionInfo": "v0.58.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "fa5fcb29a1725a7a806c28cbdcd4c32024cbacd5"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/net@v0.58.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-93",
+      "name": "golang.org/x/sync",
+      "versionInfo": "v0.22.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "c917e51fb8b4c7de858cfe4400220ebc30aa192b"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/sync@v0.22.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-94",
+      "name": "golang.org/x/sys",
+      "versionInfo": "v0.47.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "49e5893d318484ec683c83dbd6feced22cd71e21"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/sys@v0.47.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-95",
+      "name": "golang.org/x/telemetry",
+      "versionInfo": "v0.0.0-20260708182218-49f421fb7959",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "d5052eeb23e8916d77c9bdcca5584193ca5dbe64"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/telemetry@v0.0.0-20260708182218-49f421fb7959"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-96",
+      "name": "golang.org/x/term",
+      "versionInfo": "v0.45.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "ca31c717dc71263bc0a6d10f26768fbb17e32d38"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/term@v0.45.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-97",
+      "name": "golang.org/x/text",
+      "versionInfo": "v0.41.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "9e327df0b231533f46b83d4ca437b19c63f069b7"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/text@v0.41.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-98",
+      "name": "golang.org/x/tools",
+      "versionInfo": "v0.48.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "523d37c605955700b209deb110285484792cdcf0"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/tools@v0.48.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-99",
+      "name": "golang.org/x/xerrors",
+      "versionInfo": "v0.0.0-20190717185122-a985d3407aa7",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "22e74006578c875957b2502e667bf9f86b000f39"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/golang.org/x/xerrors@v0.0.0-20190717185122-a985d3407aa7"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-100",
+      "name": "google.golang.org/protobuf",
+      "versionInfo": "v1.36.12",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "455b298348c490ec4b9532367b6fa59db0033a83"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/google.golang.org/protobuf@v1.36.12"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-101",
+      "name": "gopkg.in/check.v1",
+      "versionInfo": "v1.0.0-20201130134442-10cb98267c6c",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "73991611b4134cc3dd10040dc732fbd766a829c1"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/gopkg.in/check.v1@v1.0.0-20201130134442-10cb98267c6c"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-102",
+      "name": "gopkg.in/yaml.v2",
+      "versionInfo": "v2.4.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "17eb86a1a117eb0fbb4eb9947663904d836f33f5"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/gopkg.in/yaml.v2@v2.4.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-103",
+      "name": "gopkg.in/yaml.v3",
+      "versionInfo": "v3.0.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b270062b4790fdd3738dd3a61472eae69f730fd1"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/gopkg.in/yaml.v3@v3.0.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-104",
+      "name": "rsc.io/pdf",
+      "versionInfo": "v0.1.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "588be88e41c018229e387030e162cd0a5c88b1fa"
+      },
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/rsc.io/pdf@v0.1.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-105",
+      "name": "sigs.k8s.io/yaml",
+      "versionInfo": "v1.3.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "2f574d26eadbe54facf8a49411e971b9bf7c175f"
+      },
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:golang/sigs.k8s.io/yaml@v1.3.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-106",
+      "name": "typescript",
+      "versionInfo": "7.0.2",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "18746a265734d835f1d87659319bd42bb20e2bed"
+      },
+      "licenseConcluded": "Apache-2.0",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/typescript@7.0.2"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-107",
+      "name": "golang",
+      "versionInfo": "1.25-alpine",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "a13ef63af12abbde972fc505efeed3dc99e6f9a2"
+      },
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/golang@1.25-alpine"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-108",
+      "name": "alpine",
+      "versionInfo": "3.19",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "24d54adee9aa7897714f80cee1675ee3d5b29077"
+      },
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/alpine@3.19"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-109",
+      "name": "nginx",
+      "versionInfo": "alpine",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b2102f8947577501c60300f33543c3495e895fc0"
+      },
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/nginx@alpine"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-110",
+      "name": "postgres",
+      "versionInfo": "16-alpine",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b8be9e344dc3a5afdb15cd0784615e0910226b3e"
+      },
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:docker/postgres@16-alpine"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-111",
+      "name": "go",
+      "versionInfo": "1.26.4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "verificationCode": {
+        "packageVerificationCodeValue": "b80c45625188c6c9266614bf1330e5c90ecd36b4"
+      },
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:generic/go@1.26.4"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-1"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-2"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-3"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-4"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-5"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-6"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-7"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-8"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-9"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-10"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-11"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-12"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-13"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-14"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-15"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-16"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-17"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-18"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-19"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-20"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-21"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-22"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-23"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-24"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-25"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-26"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-27"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-28"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-29"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-30"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-31"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-32"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-33"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-34"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-35"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-36"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-37"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-38"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-39"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-40"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-41"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-42"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-43"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-44"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-45"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-46"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-47"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-48"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-49"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-50"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-51"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-52"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-53"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-54"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-55"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-56"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-57"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-58"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-59"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-60"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-61"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-62"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-63"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-64"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-65"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-66"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-67"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-68"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-69"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-70"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-71"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-72"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-73"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-74"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-75"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-76"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-77"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-78"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-79"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-80"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-81"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-82"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-83"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-84"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-85"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-86"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-87"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-88"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-89"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-90"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-91"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-92"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-93"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-94"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-95"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-96"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-97"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-98"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-99"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-100"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-101"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-102"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-103"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-104"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-105"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-106"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-107"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-108"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-109"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-110"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-1",
+      "relationshipType": "DEPENDS_ON",
+      "relatedSpdxElement": "SPDXRef-Package-111"
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "id": "GO-2026-6091",
+      "description": "Javascript regexp context tracking in html/template",
+      "severity": "high",
+      "affects": [
+        {
+          "purl": "pkg:generic/go@1.26.4"
+        }
+      ],
+      "recommendation": "Upgrade Go to 1.26.6"
+    },
+    {
+      "id": "GO-2026-6090",
+      "description": "Limit handshake messages post-handshake in crypto/tls",
+      "severity": "high",
+      "affects": [
+        {
+          "purl": "pkg:generic/go@1.26.4"
+        }
+      ],
+      "recommendation": "Upgrade Go to 1.26.6"
+    },
+    {
+      "id": "GO-2026-6089",
+      "description": "ReadHeaderTimeout in net/http",
+      "severity": "medium",
+      "affects": [
+        {
+          "purl": "pkg:generic/go@1.26.4"
+        }
+      ],
+      "recommendation": "Upgrade Go to 1.26.6"
+    },
+    {
+      "id": "GO-2026-6088",
+      "description": "Recursion depth guard in encoding/xml",
+      "severity": "high",
+      "affects": [
+        {
+          "purl": "pkg:generic/go@1.26.4"
+        }
+      ],
+      "recommendation": "Upgrade Go to 1.26.6"
+    },
+    {
+      "id": "GO-2026-5972",
+      "description": "Maximum recursion depth in encoding/asn1",
+      "severity": "high",
+      "affects": [
+        {
+          "purl": "pkg:generic/go@1.26.4"
+        }
+      ],
+      "recommendation": "Upgrade Go to 1.26.6"
+    },
+    {
+      "id": "GO-2026-5856",
+      "description": "Encrypted Client Hello privacy leak in crypto/tls",
+      "severity": "high",
+      "affects": [
+        {
+          "purl": "pkg:generic/go@1.26.4"
+        }
+      ],
+      "recommendation": "Upgrade Go to 1.26.5"
+    },
+    {
+      "id": "GO-2026-6355",
+      "description": "DoS on deadlocked established channel in golang.org/x/crypto/ssh",
+      "severity": "medium",
+      "affects": [
+        {
+          "purl": "pkg:golang/golang.org/x/crypto@v0.55.0"
+        }
+      ],
+      "recommendation": "Upgrade golang.org/x/crypto to v0.56.0"
+    },
+    {
+      "id": "GO-2026-6354",
+      "description": "DoS on deadlocked undecided channel in golang.org/x/crypto/ssh",
+      "severity": "medium",
+      "affects": [
+        {
+          "purl": "pkg:golang/golang.org/x/crypto@v0.55.0"
+        }
+      ],
+      "recommendation": "Upgrade golang.org/x/crypto to v0.56.0"
+    },
+    {
+      "id": "GO-2026-6180",
+      "description": "Ignore unrelated unauthenticated hashes in golang.org/x/mod/sumdb",
+      "severity": "low",
+      "affects": [
+        {
+          "purl": "pkg:golang/golang.org/x/mod@v0.38.0"
+        }
+      ],
+      "recommendation": "Upgrade golang.org/x/mod to v0.40.0"
+    },
+    {
+      "id": "GO-2026-6179",
+      "description": "Transparency log tile verification bypass in golang.org/x/mod/sumdb/tlog",
+      "severity": "low",
+      "affects": [
+        {
+          "purl": "pkg:golang/golang.org/x/mod@v0.38.0"
+        }
+      ],
+      "recommendation": "Upgrade golang.org/x/mod to v0.40.0"
+    },
+    {
+      "id": "GO-2026-5932",
+      "description": "golang.org/x/crypto/openpgp is unmaintained and unsafe",
+      "severity": "high",
+      "affects": [
+        {
+          "purl": "pkg:golang/golang.org/x/crypto@v0.55.0"
+        }
+      ],
+      "recommendation": "Migrate from openpgp to a maintained library or upgrade golang.org/x/crypto"
+    }
+  ]
+}

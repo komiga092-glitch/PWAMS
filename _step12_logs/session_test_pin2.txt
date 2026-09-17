@@ -1,0 +1,10 @@
+﻿Ô£ö legacy v1 (unsalted SHA-256) PIN hash verifies and is transparently upgraded to v2 (365.9972ms)
+Ô£ö corrupt PIN hash never verifies (fail closed) (19.907ms)
+Ôä╣ tests 15
+Ôä╣ suites 0
+Ôä╣ pass 15
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 1071.5416

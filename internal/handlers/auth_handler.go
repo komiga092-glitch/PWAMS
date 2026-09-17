@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"errors"
 	"log"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/komiga092-glitch/pwams/web/templates/components"
 )
 
 const sessionCookieName = "pwams_session"
@@ -59,7 +61,6 @@ func (h *AuthHandler) writeAudit(
 		"users",
 		userID,
 		details,
-		c.ClientIP(),
 	)
 }
 
@@ -83,10 +84,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	var request models.LoginRequest
 
 	if err := c.ShouldBind(&request); err != nil {
-		c.HTML(http.StatusBadRequest, "login.html", gin.H{
-			"title": "PWAMS Login",
-			"error": "Email / username and password are required",
-		})
+		h.renderLoginPage(c, "Email / username and password are required")
 		return
 	}
 
@@ -96,18 +94,13 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	)
 	if err != nil {
 		h.writeAudit(c, "", "LOGIN_FAILED", err.Error())
-		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
-			"title": "PWAMS Login",
-		})
+		h.renderLoginPage(c, authErrorToMessage(err))
 		return
 	}
 
 	rawToken, expiresAt, err := h.sessionService.CreateSession(user.ID)
 	if err != nil {
-		c.HTML(http.StatusInternalServerError, "login.html", gin.H{
-			"title": "PWAMS Login",
-			"error": constants.ErrUnableToCreateLoginSession,
-		})
+		h.renderLoginPage(c, constants.ErrUnableToCreateLoginSession)
 		return
 	}
 
@@ -116,6 +109,39 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	h.writeAudit(c, user.ID.String(), "LOGIN_SUCCESS", "")
 
 	c.Redirect(http.StatusSeeOther, "/dashboard")
+}
+
+// renderLoginPage renders the same login page component used by
+// GET /login with an optional error message. Login form failures return
+// this page with a 200 status so the HTMX form swap keeps the login page
+// visible; an error status would trigger htmx:responseError and replace
+// the whole page with a generic alert.
+func (h *AuthHandler) renderLoginPage(c *gin.Context, message string) {
+	c.Status(http.StatusOK)
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	lang, ok := c.Get("lang")
+	if !ok {
+		lang = "en"
+	}
+	if err := components.LoginPage(message, lang.(string)).Render(context.Background(), c.Writer); err != nil {
+		c.Error(err)
+	}
+}
+
+// authErrorToMessage maps an authentication error to a safe, user-facing
+// login message. The real server-side error is preserved in the audit log
+// via writeAudit above.
+func authErrorToMessage(err error) string {
+	switch {
+	case errors.Is(err, services.ErrInvalidCredentials):
+		return "Invalid username/email or password."
+	case errors.Is(err, services.ErrUserDisabled):
+		return "Your account is disabled."
+	case errors.Is(err, services.ErrUserLocked):
+		return "Your account is locked."
+	default:
+		return "Invalid username/email or password."
+	}
 }
 
 // ForgotPassword starts the password reset process.

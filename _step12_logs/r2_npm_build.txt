@@ -1,0 +1,5 @@
+﻿
+> pwams@1.0.0 build
+> tsc && tsc -p tsconfig.offline.json
+
+[2026-09-09 07:45:58] CAPTURED r2_npm_build exit=0

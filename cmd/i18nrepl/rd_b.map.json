@@ -1,0 +1,5 @@
+{
+  "web/templates/report_detail.html": [
+    ["placeholder=\"Search item or reference...\"", "placeholder=\"{{t .Lang \"reports.search_item_placeholder\"}}\""]
+  ]
+}

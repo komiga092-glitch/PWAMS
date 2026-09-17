@@ -1,0 +1,23 @@
+﻿
+> pwams@1.0.0 build
+> tsc && tsc -p tsconfig.offline.json
+
+node:internal/modules/cjs/loader:1505
+  throw err;
+  ^
+System.Management.Automation.RemoteException
+Error: Cannot find module 'E:\PWAMS\node_modules\typescript\bin\tsc'
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1502:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1073:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1097:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1118:12)
+    at Module._load (node:internal/modules/cjs/loader:1287:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+System.Management.Automation.RemoteException
+Node.js v26.1.0
+[2026-09-09 07:42:02] CAPTURED npm_build exit=1

@@ -39,6 +39,28 @@ func NewStudentService(
 	}
 }
 
+// generateStudentCode produces a system-generated, sequential
+// Student ID (e.g. "STU-2026-000123"). Collisions are handled by
+// incrementing and re-checking.
+func (s *StudentService) generateStudentCode() (string, error) {
+	total, err := s.studentRepo.CountAll()
+	if err != nil {
+		return "", err
+	}
+	year := time.Now().Year()
+	for attempt := int64(1); attempt <= 1000; attempt++ {
+		candidate := fmt.Sprintf("STU-%d-%06d", year, total+attempt)
+		exists, err := s.studentRepo.ExistsByStudentCode(candidate)
+		if err != nil {
+			return "", err
+		}
+		if !exists {
+			return candidate, nil
+		}
+	}
+	return "", fmt.Errorf("unable to generate a unique student id")
+}
+
 func (s *StudentService) CreateStudent(
 	request models.CreateStudentRequest,
 	createdByID uuid.UUID,
@@ -58,17 +80,9 @@ func (s *StudentService) CreateStudent(
 		return nil, err
 	}
 
-	studentCode := strings.ToUpper(
-		strings.TrimSpace(request.StudentCode),
-	)
-
-	exists, err := s.studentRepo.ExistsByStudentCode(studentCode)
+	studentCode, err := s.generateStudentCode()
 	if err != nil {
 		return nil, err
-	}
-
-	if exists {
-		return nil, ErrStudentAlreadyExists
 	}
 
 	var dateOfBirth *time.Time
@@ -114,6 +128,7 @@ func (s *StudentService) CreateStudent(
 
 func (s *StudentService) ListStudents(
 	query models.StudentListQuery,
+	actor Actor,
 ) ([]models.Student, int64, int, int, error) {
 	page := query.Page
 	if page < 1 {
@@ -135,6 +150,11 @@ func (s *StudentService) ListStudents(
 		}
 	}
 
+	ownerID, ok := ownershipFilter(actor)
+	if !ok {
+		return nil, 0, page, pageSize, ErrRecordAccessDenied
+	}
+
 	students, total, err := s.studentRepo.List(
 		query.Search,
 		query.School,
@@ -143,6 +163,7 @@ func (s *StudentService) ListStudents(
 		query.PersonID,
 		page,
 		pageSize,
+		ownerID,
 	)
 	if err != nil {
 		return nil, 0, page, pageSize, err
@@ -153,6 +174,7 @@ func (s *StudentService) ListStudents(
 
 func (s *StudentService) GetStudentByID(
 	id string,
+	actor Actor,
 ) (*models.Student, error) {
 	id = strings.TrimSpace(id)
 
@@ -163,6 +185,10 @@ func (s *StudentService) GetStudentByID(
 	student, err := s.studentRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, student.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	return student, nil
@@ -183,6 +209,7 @@ func isValidStudentStatus(status string) bool {
 func (s *StudentService) UpdateStudent(
 	id string,
 	request models.UpdateStudentRequest,
+	actor Actor,
 ) (*models.Student, error) {
 	id = strings.TrimSpace(id)
 
@@ -193,6 +220,10 @@ func (s *StudentService) UpdateStudent(
 	student, err := s.studentRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, student.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	personID := strings.TrimSpace(request.PersonID)
@@ -209,6 +240,11 @@ func (s *StudentService) UpdateStudent(
 	studentCode := strings.ToUpper(
 		strings.TrimSpace(request.StudentCode),
 	)
+	if studentCode == "" {
+		// Student codes are system-generated and never user-editable.
+		// Preserve the existing code when the edit form omits it.
+		studentCode = student.StudentCode
+	}
 
 	exists, err := s.studentRepo.ExistsByStudentCodeExceptID(
 		studentCode,
@@ -273,6 +309,7 @@ func (s *StudentService) UpdateStudent(
 
 func (s *StudentService) UpdateStudentStatus(
 	id, status string,
+	actor Actor,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
@@ -285,6 +322,15 @@ func (s *StudentService) UpdateStudentStatus(
 		return ErrInvalidStudentStatus
 	}
 
+	student, err := s.studentRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if !CanAccessRecord(actor, student.CreatedByID) {
+		return ErrRecordAccessDenied
+	}
+
 	if err := s.studentRepo.UpdateStatus(id, status); err != nil {
 		return err
 	}
@@ -292,7 +338,7 @@ func (s *StudentService) UpdateStudentStatus(
 	return nil
 }
 
-func (s *StudentService) DeleteStudent(id string) error {
+func (s *StudentService) DeleteStudent(id string, actor Actor) error {
 	id = strings.TrimSpace(id)
 
 	if _, err := uuid.Parse(id); err != nil {
@@ -302,6 +348,10 @@ func (s *StudentService) DeleteStudent(id string) error {
 	student, err := s.studentRepo.FindByID(id)
 	if err != nil {
 		return err
+	}
+
+	if !CanAccessRecord(actor, student.CreatedByID) {
+		return ErrRecordAccessDenied
 	}
 
 	if err := s.studentRepo.SoftDelete(student); err != nil {

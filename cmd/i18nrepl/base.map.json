@@ -1,0 +1,13 @@
+{
+  "web/templates/layouts/base.html": [
+    ["<html lang=\"en\">", "<html lang=\"{{ .Lang }}\">"],
+    ["aria-label=\"Open menu\"", "aria-label=\"{{t .Lang \"common.open_menu\"}}\""],
+    ["href=\"/notifications/page\"\n              aria-label=\"Notifications\"", "href=\"/notifications/page\"\n              aria-label=\"{{t .Lang \"nav.notifications\"}}\""],
+    ["aria-label=\"Open profile menu\"", "aria-label=\"{{t .Lang \"common.open_profile_menu\"}}\""],
+    ["data-profile-name>Account</div>", "data-profile-name>{{t .Lang \"nav.account\"}}</div>"],
+    ["href=\"/profile\">My Profile</a>", "href=\"/profile\">{{t .Lang \"nav.my_profile\"}}</a>"],
+    ["href=\"/profile#change-password\"\n                  >Change Password</a\n                >", "href=\"/profile#change-password\"\n                  >{{t .Lang \"profile.change_password\"}}</a\n                >"],
+    ["type=\"submit\">Logout</button>", "type=\"submit\">{{t .Lang \"nav.logout\"}}</button>"],
+    ["      Online\n    </div>", "      {{t .Lang \"common.online\"}}\n    </div>"]
+  ]
+}

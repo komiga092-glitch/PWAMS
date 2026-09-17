@@ -17,6 +17,9 @@ var (
 	ErrSyncUserID      = errors.New("invalid sync user id")
 	ErrSyncOperation   = errors.New("unsupported sync operation")
 	ErrSyncConflict    = errors.New("sync conflict")
+	// ErrSyncTenantMismatch is returned when a tenant-bound principal
+	// attempts to mutate a record belonging to a different tenant.
+	ErrSyncTenantMismatch = errors.New("sync record belongs to another tenant")
 )
 
 type SyncEntityAdapter struct {
@@ -34,7 +37,7 @@ func NewEntitySyncService(adapter SyncEntityAdapter) *EntitySyncService {
 	return &EntitySyncService{adapter: adapter}
 }
 
-func (s *EntitySyncService) Apply(operation models.SyncOperation) (*models.SyncResult, error) {
+func (s *EntitySyncService) Apply(operation models.SyncOperation, tenantID *uuid.UUID) (*models.SyncResult, error) {
 	if operation.ID == uuid.Nil {
 		return nil, ErrSyncOperationID
 	}
@@ -60,7 +63,13 @@ func (s *EntitySyncService) Apply(operation models.SyncOperation) (*models.SyncR
 		setSyncField(record, "UpdatedBy", &operation.UserID)
 		setSyncField(record, "Version", 1)
 		setSyncField(record, "IsDeleted", false)
-		clearSyncField(record, "TenantID")
+		// The tenant comes from the authenticated principal, never
+		// from the client payload.
+		if tenantID != nil {
+			setSyncField(record, "TenantID", tenantID)
+		} else {
+			clearSyncField(record, "TenantID")
+		}
 		if err := s.adapter.Validate(record); err != nil {
 			return nil, err
 		}
@@ -74,6 +83,12 @@ func (s *EntitySyncService) Apply(operation models.SyncOperation) (*models.SyncR
 	case models.SyncOperationUpdate:
 		current, err := s.adapter.Find(operation.RecordID)
 		if err != nil {
+			return nil, err
+		}
+
+		// Tenant isolation: a tenant-bound principal may only mutate
+		// records that belong to its own tenant.
+		if err := ensureSyncTenant(current, tenantID); err != nil {
 			return nil, err
 		}
 
@@ -114,6 +129,13 @@ func (s *EntitySyncService) Apply(operation models.SyncOperation) (*models.SyncR
 		if err != nil {
 			return nil, err
 		}
+
+		// Tenant isolation: a tenant-bound principal may only delete
+		// records that belong to its own tenant.
+		if err := ensureSyncTenant(current, tenantID); err != nil {
+			return nil, err
+		}
+
 		serverVersion := syncVersion(current)
 		if serverVersion != operation.ClientVersion {
 			conflict := result(false)
@@ -135,6 +157,24 @@ func (s *EntitySyncService) Apply(operation models.SyncOperation) (*models.SyncR
 	default:
 		return nil, ErrSyncOperation
 	}
+}
+
+// ensureSyncTenant enforces tenant isolation for server-authoritative
+// sync mutations: a tenant-bound principal may only mutate records that
+// belong to its own tenant. Principals without a tenant (single-tenant
+// deployment) are unrestricted — the same contract as
+// middleware.WithTenantScope. A record without a tenant is invisible to
+// tenant-bound principals, matching the `tenant_id = ?` predicate.
+func ensureSyncTenant(record any, tenantID *uuid.UUID) error {
+	if tenantID == nil {
+		return nil
+	}
+
+	recordTenant, _ := syncField(record, "TenantID").(*uuid.UUID)
+	if recordTenant == nil || *recordTenant != *tenantID {
+		return ErrSyncTenantMismatch
+	}
+	return nil
 }
 
 func decodePayload(payload map[string]interface{}, target any) error {

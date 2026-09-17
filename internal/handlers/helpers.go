@@ -42,6 +42,11 @@ func PageData(c *gin.Context, data gin.H) gin.H {
 	if currentUser, ok := c.Get("current_user"); ok {
 		data["current_user"] = currentUser
 	}
+	lang, ok := c.Get("lang")
+	if !ok {
+		lang = "en"
+	}
+	data["Lang"] = lang
 	return data
 }
 

@@ -33,6 +33,14 @@ func SeedDefaultRoles(db *gorm.DB) error {
 			Name:        models.RoleBeneficiary,
 			Description: "Applies for aid or loans and views personal request status.",
 		},
+		{
+			Name:        models.RoleManager,
+			Description: "Manages NGO operations. One active Manager allowed per NGO.",
+		},
+		{
+			Name:        models.RoleStudent,
+			Description: "Student account linked to a beneficiary profile.",
+		},
 	}
 
 	for _, role := range defaultRoles {

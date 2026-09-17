@@ -1,0 +1,12 @@
+﻿chrome: 
+msedge: 
+firefox: 
+chromium: 
+G1: True
+G2: False
+E1: False
+F1: False
+PW: C:\Users\ASUS Vivobook\AppData\Roaming\npm
+ÔööÔöÇÔöÇ (empty)
+
+

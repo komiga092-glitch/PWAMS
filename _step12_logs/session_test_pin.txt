@@ -1,0 +1,23 @@
+﻿Ô£ö no timestamp recorded before any successful authentication (2.8288ms)
+Ô£ö recordSuccessfulAuthentication stores timestamp and owner (17.1712ms)
+Ô£ö 48h boundary: 47h59m59s999 is valid (0.2244ms)
+Ô£ö 48h boundary: exactly 48h is expired (0.1217ms)
+Ô£ö 48h boundary: 48h + 1ms is expired (0.1266ms)
+Ô£ö 48h boundary: clock rollback (timestamp in the future) is invalid (0.1006ms)
+Ô£ö failed revalidation (HTTP 401) does not refresh the timestamp (0.3126ms)
+Ô£ö network failure does not refresh the timestamp (0.4318ms)
+Ô£ö offline navigator never triggers revalidation (0.4199ms)
+Ô£ö successful /auth/me revalidation records timestamp + owner (single path) (28.5021ms)
+Ô£ö logout wipe removes timestamp, owner, entities and outbox atomically (61.3308ms)
+Ô£ö session valid again only after a fresh successful authentication (30.2637ms)
+Ô£ö setupOfflinePin stores the hardened v2 PBKDF2 format and verifies (489.6847ms)
+Ô£ö legacy v1 (unsalted SHA-256) PIN hash verifies and is transparently upgraded to v2 (354.9123ms)
+Ô£ö corrupt PIN hash never verifies (fail closed) (26.7962ms)
+Ôä╣ tests 15
+Ôä╣ suites 0
+Ôä╣ pass 15
+Ôä╣ fail 0
+Ôä╣ cancelled 0
+Ôä╣ skipped 0
+Ôä╣ todo 0
+Ôä╣ duration_ms 1109.4871

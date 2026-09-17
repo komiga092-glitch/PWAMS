@@ -1,0 +1,20 @@
+﻿
+Key                          Value                                                                                                                 
+---                          -----                                                                                                                 
+Content-Security-Policy      default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self...
+Cross-Origin-Embedder-Policy require-corp                                                                                                          
+Cross-Origin-Opener-Policy   same-origin                                                                                                           
+Cross-Origin-Resource-Policy same-origin                                                                                                           
+Permissions-Policy           camera=(), microphone=(), geolocation=()                                                                              
+Referrer-Policy              strict-origin-when-cross-origin                                                                                       
+Strict-Transport-Security    max-age=63072000; includeSubDomains; preload                                                                          
+X-Content-Type-Options       nosniff                                                                                                               
+X-Csrf-Token                 D6LiiHPpWO7Zf1ejQzUYq1YLmTAu5scEXwe2nibOi2M                                                                           
+X-Frame-Options              DENY                                                                                                                  
+X-Xss-Protection             0                                                                                                                     
+Transfer-Encoding            chunked                                                                                                               
+Content-Type                 text/html; charset=utf-8                                                                                              
+Date                         Wed, 09 Sep 2026 06:01:12 GMT                                                                                         
+Set-Cookie                   pwams_csrf=D6LiiHPpWO7Zf1ejQzUYq1YLmTAu5scEXwe2nibOi2M; Path=/; Max-Age=3600; SameSite=Strict                         
+
+

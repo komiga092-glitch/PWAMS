@@ -363,3 +363,55 @@ func (r *UserRepository) CountByStatus(status string) (int64, error) {
 
 	return count, nil
 }
+
+// CountActiveByRoleName returns how many Active users currently hold the
+// given role, optionally excluding one user by id. Used to enforce
+// single-holder roles such as the NGO Manager.
+func (r *UserRepository) CountActiveByRoleName(
+	roleName string,
+	excludeUserID string,
+) (int64, error) {
+	var count int64
+
+	query := r.db.
+		Model(&models.User{}).
+		Joins("JOIN roles ON roles.id = users.role_id").
+		Where("roles.name = ?", roleName).
+		Where("users.status = ?", models.UserStatusActive)
+
+	if excludeUserID != "" {
+		query = query.Where("users.id <> ?", excludeUserID)
+	}
+
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, fmt.Errorf("failed to count active users by role: %w", err)
+	}
+
+	return count, nil
+}
+
+// CountActiveAdminsExcept counts active, non-deleted users holding the
+// Admin role, excluding the given user IDs. The last-active-Admin guard
+// of the admin deletion workflow uses it to ensure a decision can never
+// remove the final active Admin account.
+func (r *UserRepository) CountActiveAdminsExcept(
+	excludeIDs ...uuid.UUID,
+) (int64, error) {
+	query := r.db.
+		Model(&models.User{}).
+		Joins("JOIN roles ON roles.id = users.role_id").
+		Where("users.status = ?", models.UserStatusActive).
+		Where("LOWER(roles.name) = ?", strings.ToLower(models.RoleAdmin))
+
+	if len(excludeIDs) > 0 {
+		query = query.Where("users.id NOT IN ?", excludeIDs)
+	}
+
+	var count int64
+	if err := query.Count(&count).Error; err != nil {
+		return 0, fmt.Errorf("failed to count active admins: %w", err)
+	}
+
+	return count, nil
+}

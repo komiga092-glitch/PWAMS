@@ -6,8 +6,9 @@ import {
 import { isOnline } from "./connectivity.js";
 import {
   isOfflineSessionValid,
-  OFFLINE_SESSION_EXPIRED_MESSAGE,
+  offlineSessionExpiredMessage,
 } from "./session.js";
+import { localize } from "./i18n.js";
 
 type OfflineRecord = Record<string, unknown> & {
   id?: string;
@@ -159,7 +160,10 @@ function setLocalIndicator(): void {
     "[data-offline-status]",
   );
   if (!indicator) return;
-  indicator.textContent = "Offline - Local data";
+  indicator.textContent = localize(
+    "status.offline_local",
+    "Offline - Local data",
+  );
   indicator.dataset.state = "offline";
 }
 
@@ -258,27 +262,56 @@ function renderOfflineDetail(record: OfflineRecord): void {
   });
 }
 
+/**
+ * Clears leftovers from a previous expired-session render so
+ * renderOfflinePage() stays idempotent across session-state changes
+ * within the same document (e.g. clock restored or re-authentication
+ * without a full page reload).
+ */
+function resetExpiredState(): void {
+  document
+    .querySelectorAll<HTMLElement>("[data-offline-session-expired]")
+    .forEach((banner) => banner.remove());
+  document
+    .querySelectorAll<HTMLElement>("main > [data-offline-hidden]")
+    .forEach((element) => {
+      element.hidden = false;
+      delete element.dataset.offlineHidden;
+    });
+}
+
 async function renderOfflinePage(): Promise<void> {
-  if (isOnline()) return;
+  // The standalone offline shell (navigation fallback) must always render
+  // local data: navigator.onLine can be wrong (captive portals, emulation),
+  // and there is no server DOM in this document to protect.
+  const offlineShell =
+    document.documentElement.dataset.offlineShell === "1";
+  if (isOnline() && !offlineShell) return;
+  resetExpiredState();
   if (!(await isOfflineSessionValid())) {
+    const expiredMessage = offlineSessionExpiredMessage();
     const indicator = document.querySelector<HTMLElement>(
       "[data-offline-status]",
     );
     if (indicator) {
-      indicator.textContent = "Offline session expired";
+      indicator.textContent = localize(
+        "offline.session_expired_short",
+        "Offline session expired",
+      );
       indicator.dataset.state = "offline";
-      indicator.setAttribute("aria-label", OFFLINE_SESSION_EXPIRED_MESSAGE);
+      indicator.setAttribute("aria-label", expiredMessage);
     }
     document
       .querySelectorAll<HTMLElement>("main > *:not([data-sync-conflicts])")
       .forEach((element) => {
         element.hidden = true;
+        element.dataset.offlineHidden = "1";
       });
     document
       .querySelector("main")
       ?.insertAdjacentHTML(
         "afterbegin",
-        `<div class="alert alert-danger" data-offline-session-expired>${OFFLINE_SESSION_EXPIRED_MESSAGE}</div>`,
+        `<div class="alert alert-danger" data-offline-session-expired>${expiredMessage}</div>`,
       );
     return;
   }

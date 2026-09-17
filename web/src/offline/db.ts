@@ -175,6 +175,86 @@ export async function clearOfflineSessionLastAuthenticatedAt(): Promise<void> {
   });
 }
 
+const OFFLINE_SESSION_OWNER_ID = "offline_session_owner";
+
+/** Account that last completed a server-validated authentication. */
+export async function getOfflineSessionOwner(): Promise<string | null> {
+  const database = await openOfflineDatabase();
+  return new Promise<string | null>((resolve, reject) => {
+    const request = database
+      .transaction(OFFLINE_STORES.metadata, "readonly")
+      .objectStore(OFFLINE_STORES.metadata)
+      .get(OFFLINE_SESSION_OWNER_ID);
+    request.onsuccess = () => {
+      const value = request.result as { username?: string } | undefined;
+      resolve(
+        typeof value?.username === "string" && value.username.length > 0
+          ? value.username
+          : null,
+      );
+    };
+    request.onerror = () =>
+      reject(
+        request.error ?? new Error("Unable to read offline session owner"),
+      );
+  });
+}
+
+export async function setOfflineSessionOwner(
+  username: string,
+): Promise<void> {
+  const database = await openOfflineDatabase();
+  await new Promise<void>((resolve, reject) => {
+    const transaction = database.transaction(
+      OFFLINE_STORES.metadata,
+      "readwrite",
+    );
+    transaction
+      .objectStore(OFFLINE_STORES.metadata)
+      .put({ id: OFFLINE_SESSION_OWNER_ID, username });
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(
+        transaction.error ?? new Error("Unable to store offline session owner"),
+      );
+  });
+}
+
+/**
+ * Account-boundary wipe (logout / account switch).
+ *
+ * Removes every account-bound offline artefact in a single atomic
+ * transaction: the session timestamp, the session owner, the sync cursor,
+ * every cached entity store, and the entire mutation outbox.
+ *
+ * Pending work is intentionally NOT preserved across a logout: offline data
+ * has no cross-account encryption boundary, so keeping A's pending mutations
+ * where account B can reach them (or where B's sync could replay them) would
+ * leak A's data. Secure deletion is the documented architecture.
+ */
+export async function clearOfflineIdentity(): Promise<void> {
+  const database = await openOfflineDatabase();
+  await new Promise<void>((resolve, reject) => {
+    const stores = Object.values(OFFLINE_STORES);
+    const transaction = database.transaction(stores, "readwrite");
+    transaction
+      .objectStore(OFFLINE_STORES.metadata)
+      .delete(OFFLINE_SESSION_METADATA_ID);
+    transaction
+      .objectStore(OFFLINE_STORES.metadata)
+      .delete(OFFLINE_SESSION_OWNER_ID);
+    for (const store of stores) {
+      if (store === OFFLINE_STORES.metadata) continue;
+      transaction.objectStore(store).clear();
+    }
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () =>
+      reject(
+        transaction.error ?? new Error("Unable to clear offline identity"),
+      );
+  });
+}
+
 const STORE_BY_ENTITY: Record<OfflineEntityType, OfflineStoreName> = {
   person: OFFLINE_STORES.persons,
   student: OFFLINE_STORES.students,

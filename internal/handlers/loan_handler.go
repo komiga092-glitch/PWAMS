@@ -14,14 +14,22 @@ import (
 )
 
 type LoanHandler struct {
-	loanService *services.LoanService
+	loanService     *services.LoanService
+	auditLogService *services.AuditLogService
 }
 
 func NewLoanHandler(
 	loanService *services.LoanService,
+	auditLogServices ...*services.AuditLogService,
 ) *LoanHandler {
+	var auditLogService *services.AuditLogService
+	if len(auditLogServices) > 0 {
+		auditLogService = auditLogServices[0]
+	}
+
 	return &LoanHandler{
-		loanService: loanService,
+		loanService:     loanService,
+		auditLogService: auditLogService,
 	}
 }
 
@@ -31,7 +39,11 @@ func (h *LoanHandler) Page(c *gin.Context) {
 		c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Invalid query parameters"}))
 		return
 	}
-	loans, _, _, _, err := h.loanService.ListLoans(query)
+
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	loans, _, _, _, err := h.loanService.ListLoans(query, actor)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "loans_content", "title": "Loans", "data": []gin.H{}, "error": "Unable to retrieve loans"}))
 		return
@@ -118,6 +130,16 @@ func (h *LoanHandler) Create(c *gin.Context) {
 		return
 	}
 
+	if err := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"CREATE",
+		"loans",
+		loan.ID.String(),
+		"Loan created successfully",
+	); err != nil {
+		// Audit logging failure must not fail the loan creation.
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": "Loan created successfully",
@@ -128,7 +150,10 @@ func (h *LoanHandler) Create(c *gin.Context) {
 func (h *LoanHandler) GetByID(c *gin.Context) {
 	id := c.Param("id")
 
-	loan, err := h.loanService.GetLoanByID(id)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	loan, err := h.loanService.GetLoanByID(id, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanID):
@@ -170,8 +195,11 @@ func (h *LoanHandler) List(c *gin.Context) {
 		PageSize: pageSize,
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	loans, total, currentPage, currentPageSize, err :=
-		h.loanService.ListLoans(query)
+		h.loanService.ListLoans(query, actor)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -231,10 +259,13 @@ func (h *LoanHandler) Review(c *gin.Context) {
 		return
 	}
 
+	actor, _ := services.ActorFromUser(currentUser)
+
 	loan, err := h.loanService.ReviewLoan(
 		id,
 		request,
 		currentUser.ID,
+		actor,
 	)
 
 	if err != nil {

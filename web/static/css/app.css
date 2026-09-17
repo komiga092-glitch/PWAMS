@@ -660,58 +660,51 @@ textarea {
 
 .login-page {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-}
-.login-brand {
-  background: var(--primary);
-  color: #fff;
-  padding: 60px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.login-brand h1 {
-  font-size: 42px;
-  max-width: 600px;
-  line-height: 1.1;
-}
-.login-brand p {
-  margin-top: 16px;
-  max-width: 520px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.75);
-}
-.login-features {
-  margin-top: 30px;
-  display: grid;
-  gap: 12px;
-}
-.login-feature {
-  display: flex;
-  gap: 12px;
   align-items: center;
-}
-.login-form-side {
-  background: var(--bg);
-  display: grid;
-  place-items: center;
-  padding: 30px;
+  justify-content: center;
+  padding: 24px;
+  background: #f4f5f7;
 }
 .login-card {
-  width: min(430px, 100%);
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  width: min(520px, 100%);
+  background-color: #fdf8e3;
+  border-radius: 16px;
   padding: 32px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 12px 40px rgba(41, 55, 127, 0.18);
+  background-image: url('/static/images/world-map-watermark.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 140% auto;
+  background-blend-mode: normal;
+}
+/* Light cream overlay keeps the watermark subtle and form text readable. */
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(253, 248, 227, 0.94);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Keep all card content above the watermark overlay. */
+.login-card > * {
+  position: relative;
+  z-index: 1;
+}
+.login-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.login-org-names {
+  flex: 1;
+  text-align: center;
 }
 .login-card h2 {
-  font-size: 26px;
-}
-.login-card .subtitle {
-  color: var(--muted);
-  margin: 7px 0 25px;
+  font-size: 22px;
 }
 .alert {
   border-radius: 10px;
@@ -770,11 +763,8 @@ textarea {
   .profile-role {
     display: none;
   }
-  .login-page {
-    grid-template-columns: 1fr;
-  }
-  .login-brand {
-    display: none;
+  .login-card {
+    padding: 24px;
   }
 }
 

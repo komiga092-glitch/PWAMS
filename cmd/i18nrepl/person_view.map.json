@@ -1,0 +1,21 @@
+{
+  "web/templates/person_view.html": [
+    ["<h1>Care Seeker Details</h1>", "<h1>{{t .Lang \"persons.details_title\"}}</h1>"],
+    ["<p>View care seeker information and records.</p>", "<p>{{t .Lang \"persons.details_subtitle\"}}</p>"],
+    ["class=\"btn btn-primary\">\n        Edit Care Seeker\n      </a>", "class=\"btn btn-primary\">\n        {{t .Lang \"persons.edit\"}}\n      </a>"],
+    ["class=\"btn btn-secondary\"> Back </a>", "class=\"btn btn-secondary\"> {{t .Lang \"persons.back\"}} </a>"],
+    ["<h2>Personal Information</h2>", "<h2>{{t .Lang \"persons.personal_info\"}}</h2>"],
+    ["badge badge-success\"> Active </span>", "badge badge-success\"> {{t .Lang \"common.active\"}} </span>"],
+    ["badge badge-warning\"> Pending </span>", "badge badge-warning\"> {{t .Lang \"persons.pending\"}} </span>"],
+    ["badge badge-muted\"> Inactive </span>", "badge badge-muted\"> {{t .Lang \"persons.inactive\"}} </span>"],
+    ["<label class=\"form-label\"> Full Name </label>", "<label class=\"form-label\"> {{t .Lang \"persons.full_name\"}} </label>"],
+    ["<label class=\"form-label\"> NIC / Passport </label>", "<label class=\"form-label\"> {{t .Lang \"persons.nic_passport\"}} </label>"],
+    ["<label class=\"form-label\"> Date of Birth </label>", "<label class=\"form-label\"> {{t .Lang \"persons.date_of_birth\"}} </label>"],
+    ["<label class=\"form-label\"> Gender </label>", "<label class=\"form-label\"> {{t .Lang \"persons.gender\"}} </label>"],
+    ["<label class=\"form-label\"> Phone </label>", "<label class=\"form-label\"> {{t .Lang \"persons.phone\"}} </label>"],
+    ["<label class=\"form-label\"> Email </label>", "<label class=\"form-label\"> {{t .Lang \"persons.email\"}} </label>"],
+    ["<label class=\"form-label\"> Occupation </label>", "<label class=\"form-label\"> {{t .Lang \"persons.occupation\"}} </label>"],
+    ["<label class=\"form-label\"> Monthly Income </label>", "<label class=\"form-label\"> {{t .Lang \"persons.monthly_income\"}} </label>"],
+    ["<label class=\"form-label\"> Address </label>", "<label class=\"form-label\"> {{t .Lang \"persons.address\"}} </label>"]
+  ]
+}

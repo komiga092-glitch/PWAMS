@@ -73,11 +73,6 @@ func (s *DashboardService) getStatsForRole(userID uuid.UUID, role string) (
 	if err != nil {
 		return nil, err
 	}
-
-	pendingUsers, err := s.userRepo.CountByStatus(models.UserStatusPending)
-	if err != nil {
-		return nil, err
-	}
 	usersByRole, err := s.userRepo.CountByRole()
 	if err != nil {
 		return nil, err
@@ -88,7 +83,6 @@ func (s *DashboardService) getStatsForRole(userID uuid.UUID, role string) (
 		ActiveUsers:   activeUsers,
 		DisabledUsers: disabledUsers,
 		LockedUsers:   lockedUsers,
-		PendingUsers:  pendingUsers,
 		UsersByRole:   usersByRole,
 	}
 	if s.dashboardRepo == nil {

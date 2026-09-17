@@ -51,9 +51,6 @@ func (s *AuthService) Login(
 	case models.UserStatusDisabled:
 		return nil, ErrUserDisabled
 
-	case models.UserStatusPending:
-		return nil, errors.New("user account is pending approval")
-
 	case models.UserStatusActive:
 		// Continue login.
 

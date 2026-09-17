@@ -11,7 +11,6 @@ const (
 	UserStatusActive   = "Active"
 	UserStatusDisabled = "Disabled"
 	UserStatusLocked   = "Locked"
-	UserStatusPending  = "Pending"
 )
 
 type User struct {

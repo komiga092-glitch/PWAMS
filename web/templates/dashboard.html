@@ -2,14 +2,14 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Dashboard</h1>
-      <p>Overview of PWAMS operations</p>
+      <h1>{{t .Lang "dashboard.title"}}</h1>
+      <p>{{t .Lang "dashboard.subtitle"}}</p>
     </div>
     <a
       href="/reports/dashboard"
       class="btn btn-primary"
       data-roles="Super Admin,Admin"
-      >View Reports</a
+      >{{t .Lang "dashboard.view_reports"}}</a
     >
   </div>
 
@@ -19,47 +19,47 @@
   <section class="stats-grid">
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Total Beneficiaries</span
+        <span class="stat-label">{{t .Lang "dashboard.total_beneficiaries"}}</span
         ><span class="stat-icon">♟</span>
       </div>
       <div class="stat-value">{{ .stats.TotalBeneficiaries }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Students</span><span class="stat-icon">✓</span>
+        <span class="stat-label">{{t .Lang "nav.students"}}</span><span class="stat-icon">✓</span>
       </div>
       <div class="stat-value">{{ .stats.TotalStudents }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Donors</span><span class="stat-icon">◷</span>
+        <span class="stat-label">{{t .Lang "nav.donors"}}</span><span class="stat-icon">◷</span>
       </div>
       <div class="stat-value">{{ .stats.TotalDonors }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Active Loans</span
+        <span class="stat-label">{{t .Lang "dashboard.active_loans"}}</span
         ><span class="stat-icon">⊘</span>
       </div>
       <div class="stat-value">{{ .stats.ActiveLoans }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Pending Aid Requests</span>
+        <span class="stat-label">{{t .Lang "dashboard.pending_aid_requests"}}</span>
         <span class="stat-icon">◷</span>
       </div>
       <div class="stat-value">{{ .stats.PendingAidRequests }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Revenue Summary</span>
+        <span class="stat-label">{{t .Lang "dashboard.revenue_summary"}}</span>
         <span class="stat-icon">◈</span>
       </div>
       <div class="stat-value">{{ printf "%.2f" .stats.RevenueSummary }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-top">
-        <span class="stat-label">Notifications</span>
+        <span class="stat-label">{{t .Lang "nav.notifications"}}</span>
         <span class="stat-icon">♢</span>
       </div>
       <div class="stat-value">{{ .stats.UnreadNotifications }}</div>
@@ -68,7 +68,7 @@
 
   <div class="dashboard-grid">
     <div class="panel">
-      <div class="panel-header"><h2>Quick Access</h2></div>
+      <div class="panel-header"><h2>{{t .Lang "dashboard.quick_access"}}</h2></div>
       <div class="panel-body">
         <div class="quick-grid">
           <a
@@ -76,52 +76,52 @@
             href="/persons/page"
             data-roles="Super Admin,Admin,Staff"
             ><div class="quick-icon">♙</div>
-            <div class="quick-title">Care Seekers</div>
-            <div class="quick-text">View and manage persons</div></a
+            <div class="quick-title">{{t .Lang "nav.care_seekers"}}</div>
+            <div class="quick-text">{{t .Lang "dashboard.view_manage_persons"}}</div></a
           >
           <a
             class="quick-card"
             href="/students/page"
             data-roles="Super Admin,Admin,Staff"
             ><div class="quick-icon">🎓</div>
-            <div class="quick-title">Students</div>
-            <div class="quick-text">Manage student records</div></a
+            <div class="quick-title">{{t .Lang "nav.students"}}</div>
+            <div class="quick-text">{{t .Lang "dashboard.manage_students"}}</div></a
           >
           <a
             class="quick-card"
             href="/donations/page"
             data-roles="Super Admin,Admin,Staff"
             ><div class="quick-icon">◈</div>
-            <div class="quick-title">Donations</div>
-            <div class="quick-text">Manage donations</div></a
+            <div class="quick-title">{{t .Lang "nav.donations"}}</div>
+            <div class="quick-text">{{t .Lang "dashboard.manage_donations"}}</div></a
           >
           <a
             class="quick-card"
             href="/aid-requests/page"
             data-roles="Super Admin,Admin,Staff"
             ><div class="quick-icon">▣</div>
-            <div class="quick-title">Aid Requests</div>
-            <div class="quick-text">Review assistance</div></a
+            <div class="quick-title">{{t .Lang "nav.aid_requests"}}</div>
+            <div class="quick-text">{{t .Lang "dashboard.review_assistance"}}</div></a
           >
           <a
             class="quick-card"
             href="/loans/page"
             data-roles="Super Admin,Admin,Staff"
             ><div class="quick-icon">₹</div>
-            <div class="quick-title">Loans</div>
-            <div class="quick-text">Manage loans</div></a
+            <div class="quick-title">{{t .Lang "nav.loans"}}</div>
+            <div class="quick-text">{{t .Lang "dashboard.manage_loans"}}</div></a
           >
           <a class="quick-card" href="/notifications/page"
             ><div class="quick-icon">♢</div>
-            <div class="quick-title">Notifications</div>
-            <div class="quick-text">View notifications</div></a
+            <div class="quick-title">{{t .Lang "nav.notifications"}}</div>
+            <div class="quick-text">{{t .Lang "dashboard.view_notifications"}}</div></a
           >
         </div>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-header"><h2>Users by Role</h2></div>
+      <div class="panel-header"><h2>{{t .Lang "dashboard.users_by_role"}}</h2></div>
       <div class="panel-body">
         {{ range $role, $count := .stats.UsersByRole }}
         <div
@@ -135,7 +135,7 @@
           <span>{{ $role }}</span><strong>{{ $count }}</strong>
         </div>
         {{ else }}
-        <div class="empty">No role data available.</div>
+        <div class="empty">{{t .Lang "dashboard.no_role_data"}}</div>
         {{ end }}
       </div>
     </div>

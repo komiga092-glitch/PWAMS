@@ -1,0 +1,72 @@
+{{ define "my_loans_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>My Loans</h1>
+      <p>Your loan applications and loans.</p>
+    </div>
+    {{ if index .user_permissions "loan.apply" }}
+    <a href="/my/loans/apply" class="btn btn-primary">+ Apply for Loan</a>
+    {{ end }}
+  </div>
+
+  {{ if .submitted }}
+  <div class="alert alert-success">Your loan application has been submitted and is pending review.</div>
+  {{ end }}
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Loan List</h2>
+      <span class="badge">{{ len .loans }} Records</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>AMOUNT</th>
+            <th>INTEREST</th>
+            <th>DURATION</th>
+            <th>INSTALLMENT</th>
+            <th>PURPOSE</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .loans }}
+          <tr>
+            <td>{{ .LoanAmount.StringFixed 2 }}</td>
+            <td>{{ .InterestRate.StringFixed 2 }}%</td>
+            <td>{{ .DurationMonths }} months</td>
+            <td>{{ .InstallmentAmount.StringFixed 2 }}</td>
+            <td>{{ .Purpose }}</td>
+            <td>
+              {{ if eq .Status "Approved" }}
+              <span class="status-badge status-active">Approved</span>
+              {{ else if eq .Status "Active" }}
+              <span class="status-badge status-active">Active</span>
+              {{ else if eq .Status "Completed" }}
+              <span class="status-badge status-active">Completed</span>
+              {{ else if eq .Status "Rejected" }}
+              <span class="status-badge status-inactive">Rejected</span>
+              {{ else if eq .Status "Cancelled" }}
+              <span class="status-badge status-inactive">Cancelled</span>
+              {{ else }}
+              <span class="status-badge">Pending</span>
+              {{ end }}
+            </td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td colspan="6" class="empty">No loans found.</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{{ end }}

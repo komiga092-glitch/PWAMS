@@ -3,11 +3,11 @@
 <section class="person-page">
   <div class="form-page-header">
     <div>
-      <h1>Person ID</h1>
-      <p>Care Seeker Details</p>
+      <h1>{{t .Lang "persons.person_id_title"}}</h1>
+      <p>{{t .Lang "persons.form_subtitle"}}</p>
     </div>
 
-    <a href="/" class="back-link">← Home</a>
+    <a href="/" class="back-link">← {{t .Lang "nav.dashboard"}}</a>
   </div>
 
   <div class="person-form-card">
@@ -15,27 +15,27 @@
       <!-- Person Type -->
 
       <div class="form-section">
-        <h2>Person Information</h2>
+        <h2>{{t .Lang "persons.person_info_section"}}</h2>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="person_type"> Person Type </label>
+            <label for="person_type"> {{t .Lang "persons.person_type"}} </label>
 
             <select id="person_type" name="person_type" class="input">
-              <option value="Individual">Individual</option>
-              <option value="Organization">Organization</option>
+              <option value="Individual">{{t .Lang "persons.individual"}}</option>
+              <option value="Organization">{{t .Lang "persons.organization"}}</option>
             </select>
           </div>
 
           <div class="form-field">
-            <label for="full_name"> Full Name <span>*</span> </label>
+            <label for="full_name"> {{t .Lang "persons.full_name"}} <span>*</span> </label>
 
             <input
               id="full_name"
               name="full_name"
               type="text"
               class="input"
-              placeholder="Enter full name"
+              placeholder="{{t .Lang "persons.enter_full_name"}}"
               required
             />
           </div>
@@ -43,20 +43,20 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="nic_passport"> NIC / Passport <span>*</span> </label>
+            <label for="nic_passport"> {{t .Lang "persons.nic_passport"}} <span>*</span> </label>
 
             <input
               id="nic_passport"
               name="nic_passport"
               type="text"
               class="input"
-              placeholder="Enter NIC or passport number"
+              placeholder="{{t .Lang "persons.enter_nic"}}"
               required
             />
           </div>
 
           <div class="form-field">
-            <label for="date_of_birth"> Date of Birth </label>
+            <label for="date_of_birth"> {{t .Lang "persons.date_of_birth"}} </label>
 
             <input
               id="date_of_birth"
@@ -69,54 +69,54 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="gender"> Gender </label>
+            <label for="gender"> {{t .Lang "persons.gender"}} </label>
 
             <select id="gender" name="gender" class="input">
-              <option value="">Select Gender</option>
+              <option value="">{{t .Lang "persons.select_gender"}}</option>
 
-              <option value="Male">Male</option>
+              <option value="Male">{{t .Lang "persons.male"}}</option>
 
-              <option value="Female">Female</option>
+              <option value="Female">{{t .Lang "persons.female"}}</option>
 
-              <option value="Other">Other</option>
+              <option value="Other">{{t .Lang "persons.other"}}</option>
             </select>
           </div>
 
           <div class="form-field">
-            <label for="phone"> Contact Number </label>
+            <label for="phone"> {{t .Lang "persons.contact_number"}} </label>
 
             <input
               id="phone"
               name="phone"
               type="tel"
               class="input"
-              placeholder="Enter contact number"
+              placeholder="{{t .Lang "persons.enter_contact"}}"
             />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="email"> Email </label>
+            <label for="email"> {{t .Lang "persons.email"}} </label>
 
             <input
               id="email"
               name="email"
               type="email"
               class="input"
-              placeholder="Enter email address"
+              placeholder="{{t .Lang "persons.enter_email"}}"
             />
           </div>
 
           <div class="form-field">
-            <label for="occupation"> Occupation </label>
+            <label for="occupation"> {{t .Lang "persons.occupation"}} </label>
 
             <input
               id="occupation"
               name="occupation"
               type="text"
               class="input"
-              placeholder="Enter occupation"
+              placeholder="{{t .Lang "persons.enter_occupation"}}"
             />
           </div>
         </div>
@@ -125,61 +125,61 @@
       <!-- Address -->
 
       <div class="form-section">
-        <h2>Address Information</h2>
+        <h2>{{t .Lang "persons.address_info_section"}}</h2>
 
         <div class="form-field full-field">
-          <label for="address"> Address </label>
+          <label for="address"> {{t .Lang "persons.address"}} </label>
 
           <textarea
             id="address"
             name="address"
             class="input textarea"
             rows="4"
-            placeholder="Enter address"
+            placeholder="{{t .Lang "persons.enter_address"}}"
           ></textarea>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="district"> District </label>
+            <label for="district"> {{t .Lang "persons.district"}} </label>
 
             <input
               id="district"
               name="district"
               type="text"
               class="input"
-              placeholder="Enter district"
+              placeholder="{{t .Lang "persons.enter_district"}}"
             />
           </div>
 
           <div class="form-field">
-            <label for="ds_division"> DS Division </label>
+            <label for="ds_division"> {{t .Lang "persons.ds_division"}} </label>
 
             <input
               id="ds_division"
               name="ds_division"
               type="text"
               class="input"
-              placeholder="Enter DS division"
+              placeholder="{{t .Lang "persons.enter_ds_division"}}"
             />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="gn_division"> GN Division </label>
+            <label for="gn_division"> {{t .Lang "persons.gn_division"}} </label>
 
             <input
               id="gn_division"
               name="gn_division"
               type="text"
               class="input"
-              placeholder="Enter GN division"
+              placeholder="{{t .Lang "persons.enter_gn_division"}}"
             />
           </div>
 
           <div class="form-field">
-            <label for="monthly_income"> Monthly Income </label>
+            <label for="monthly_income"> {{t .Lang "persons.monthly_income"}} </label>
 
             <input
               id="monthly_income"
@@ -197,17 +197,17 @@
       <!-- Status -->
 
       <div class="form-section">
-        <h2>Registration Information</h2>
+        <h2>{{t .Lang "persons.registration_section"}}</h2>
 
         <div class="form-field">
-          <label for="status"> Status </label>
+          <label for="status"> {{t .Lang "common.status"}} </label>
 
           <select id="status" name="status" class="input">
-            <option value="Active">Active</option>
+            <option value="Active">{{t .Lang "common.active"}}</option>
 
-            <option value="Inactive">Inactive</option>
+            <option value="Inactive">{{t .Lang "persons.inactive"}}</option>
 
-            <option value="Pending">Pending</option>
+            <option value="Pending">{{t .Lang "persons.pending"}}</option>
           </select>
         </div>
       </div>
@@ -215,9 +215,9 @@
       <!-- Buttons -->
 
       <div class="form-actions">
-        <a href="/" class="btn-secondary"> Cancel </a>
+        <a href="/" class="btn-secondary"> {{t .Lang "common.cancel"}} </a>
 
-        <button type="submit" class="btn-primary">Proceed</button>
+        <button type="submit" class="btn-primary">{{t .Lang "persons.proceed"}}</button>
       </div>
     </form>
   </div>

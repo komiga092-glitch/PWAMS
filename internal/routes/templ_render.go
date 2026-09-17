@@ -20,11 +20,16 @@ func Render(c *gin.Context, code int, templFn func(w io.Writer) error) {
 
 // RenderError renders an error page.
 func RenderError(c *gin.Context, code int, message string) {
+	lang, ok := c.Get("lang")
+	if !ok {
+		lang = "en"
+	}
 	c.HTML(code, "base", gin.H{
 		"page_template": "error_content",
 		"title":         "Error",
 		"error_code":    code,
 		"error_message": message,
+		"Lang":          lang,
 	})
 }
 

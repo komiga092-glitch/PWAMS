@@ -1,0 +1,31 @@
+PWAMS STEP 12.5 — REAL-BROWSER OFFLINE E2E (headless Chrome)
+============================================================
+node v26.1.0
+playwright 1.63.0 (installed --no-save)
+chrome: C:\Program Files\Google\Chrome\Application\chrome.exe (channel=chrome)
+http://127.0.0.1:18923
+
+INFO | static server up at http://127.0.0.1:18923
+INFO | chrome launched (channel=chrome, headless)
+PASS | seeded last_authenticated_at present in IndexedDB (type=number)
+PASS | recordSuccessfulAuthentication() stored last_authenticated_at (before=1788929460409, after=1788929460447)
+PASS | offline session owner bound to authenticated account (owner=admin)
+PASS | ONLINE /persons: server DOM untouched by offline renderer (tbody rows=0)
+PASS | OFFLINE: supported /persons renders local IndexedDB row (rows=1, has Alice=true)
+PASS | OFFLINE: no session-expired banner inside valid 48h window (count=0)
+PASS | OFFLINE CREATE: local record rendered (rows=2)
+PASS | OUTBOX: PENDING person mutation created (count=1)
+PASS | EXPIRY: last_authenticated_at=now-49h shows session-expired state (count=1)
+PASS | RESTORE: timestamp restored, local rendering resumes (rows=2, expiredBanners=0)
+OBS | offline-refresh diagnostics: {"controller":true,"url":"http://127.0.0.1:18923/persons","hasTable":true,"readStore":"function","probeRows":2,"probeError":null,"indicator":"Offline - Local data","bodyHead":"🔌\nPWAMS - Offline\n\nYou are offline. Supported pages below show data stored on this device; other fe"}
+PASS | OFFLINE REFRESH: reload while offline re-renders local data (rows=2, has Alice=true, expiredBanners=0)
+PASS | UNSUPPORTED /reports offline: no session-expired banner (count=0)
+OBS | unsupported page offline body snippet: "Reports\n\nReport content"
+PASS | RECONNECT: compiled sync.js pushed outbox entry -> status SYNCED (synced=1, pending=0)
+PASS | SERVER RECEIVED push with matching Idempotency-Key (entry={"id":"282ca176-2cb1-4011-801f-6b8aab203a70","entity_type":"person","operation":"CREATE","record_id":"p2-offline","idempotency_key":"282ca176-2cb1-4011-801f-6b8aab203a70","duplicate":false})
+PASS | IDEMPOTENCY: replayed operation id rejected as duplicate (status=duplicate_ignored)
+OBS | PostgreSQL verification NOT EXECUTED (E2E stub server; Go/Postgres layer covered by go test suite)
+OBS | conflict handling on real 409 + PostgreSQL round-trip NOT EXECUTED in this stub environment
+
+console messages (first 30):
+error: Failed to load resource: the server responded with a status of 404 (Not Found)

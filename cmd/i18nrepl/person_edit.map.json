@@ -1,0 +1,27 @@
+{
+  "web/templates/person_edit.html": [
+    ["<h1>Edit Care Seeker</h1>", "<h1>{{t .Lang \"persons.edit_title\"}}</h1>"],
+    ["<p>Update care seeker information.</p>", "<p>{{t .Lang \"persons.edit_subtitle\"}}</p>"],
+    ["class=\"btn btn-light\">\n            Cancel\n        </a>", "class=\"btn btn-light\">\n            {{t .Lang \"common.cancel\"}}\n        </a>"],
+    ["<h2>Personal Information</h2>", "<h2>{{t .Lang \"persons.personal_info\"}}</h2>"],
+    ["Full Name\n                        </label>", "{{t .Lang \"persons.full_name\"}}\n                        </label>"],
+    ["NIC / Passport\n                        </label>", "{{t .Lang \"persons.nic_passport\"}}\n                        </label>"],
+    ["Date of Birth\n                        </label>", "{{t .Lang \"persons.date_of_birth\"}}\n                        </label>"],
+    ["Gender\n                        </label>", "{{t .Lang \"persons.gender\"}}\n                        </label>"],
+    ["Select Gender\n                            </option>", "{{t .Lang \"persons.select_gender\"}}\n                            </option>"],
+    ["Male\n                            </option>", "{{t .Lang \"persons.male\"}}\n                            </option>"],
+    ["Female\n                            </option>", "{{t .Lang \"persons.female\"}}\n                            </option>"],
+    ["Other\n                            </option>", "{{t .Lang \"persons.other\"}}\n                            </option>"],
+    ["Phone\n                        </label>", "{{t .Lang \"persons.phone\"}}\n                        </label>"],
+    ["Email\n                        </label>", "{{t .Lang \"persons.email\"}}\n                        </label>"],
+    ["Occupation\n                        </label>", "{{t .Lang \"persons.occupation\"}}\n                        </label>"],
+    ["Monthly Income\n                        </label>", "{{t .Lang \"persons.monthly_income\"}}\n                        </label>"],
+    ["Status\n                        </label>", "{{t .Lang \"common.status\"}}\n                        </label>"],
+    ["Active\n                            </option>", "{{t .Lang \"common.active\"}}\n                            </option>"],
+    ["Inactive\n                            </option>", "{{t .Lang \"persons.inactive\"}}\n                            </option>"],
+    ["Pending\n                            </option>", "{{t .Lang \"persons.pending\"}}\n                            </option>"],
+    ["Address\n                        </label>", "{{t .Lang \"persons.address\"}}\n                        </label>"],
+    ["class=\"btn btn-secondary\">\n                        Cancel\n                    </a>", "class=\"btn btn-secondary\">\n                        {{t .Lang \"common.cancel\"}}\n                    </a>"],
+    ["Update Care Seeker\n                    </button>", "{{t .Lang \"persons.update\"}}\n                    </button>"]
+  ]
+}

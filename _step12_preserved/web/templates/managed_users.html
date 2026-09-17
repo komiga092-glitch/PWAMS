@@ -1,0 +1,299 @@
+{{ define "managed_users_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{ .managed_label }} Management</h1>
+      <p>Manage {{ .managed_label }} accounts, activation and access.</p>
+    </div>
+
+    {{ if index .user_permissions .managed_create_permission }}
+    <button
+      class="btn btn-primary"
+      type="button"
+      data-managed-action="open-create"
+      data-permissions="users.create"
+    >
+      + Add {{ .managed_label }}
+    </button>
+    {{ end }}
+  </div>
+
+  <div id="managed-alert" class="alert" hidden role="status" aria-live="polite"></div>
+
+  <div class="panel">
+    <div class="panel-body">
+      <form class="toolbar" id="managed-search-form">
+        <input
+          class="form-control search"
+          type="search"
+          name="search"
+          placeholder="Search name, username or email..."
+        />
+
+        <select class="form-control" name="status" style="max-width: 170px">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Disabled">Disabled</option>
+          <option value="Locked">Locked</option>
+        </select>
+
+        <button class="btn btn-light" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+
+{{ if eq .managed_role "Admin" }}
+  <!-- Pending Admin deletion requests (Part 4 / Part 7 queue): Super Admin and
+       Admin can see the queue (admin.view); Approve/Reject is rendered by the
+       client only for requests the viewer did NOT raise and does not target. -->
+  <div class="panel" style="margin-top: 18px">
+    <div class="panel-header">
+      <h2>Pending Admin Deletion Requests</h2>
+      <span class="badge badge-muted" id="deletion-queue-count">0 Pending</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Target Admin</th>
+            <th>Requester</th>
+            <th>Reason</th>
+            <th>Requested</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="deletion-queue-table">
+          <tr>
+            <td colspan="6">
+              <div class="empty">Loading pending requests...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {{ end }}
+  <div class="panel" style="margin-top: 18px">
+    <div class="panel-header">
+      <h2>{{ .managed_label }} Accounts</h2>
+      <span class="badge badge-muted" id="managed-count">0 Records</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Last Login</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="managed-table">
+          <tr>
+            <td colspan="6">
+              <div class="empty">Loading accounts...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel-body" id="managed-pagination"></div>
+  </div>
+</section>
+
+<!-- CREATE / EDIT MODAL -->
+
+<div id="managed-modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2 id="managed-modal-title">Add {{ .managed_label }}</h2>
+        <p id="managed-modal-subtitle">Create a {{ .managed_label }} account.</p>
+      </div>
+
+      <button class="modal-close" type="button" data-managed-action="close-modal">
+        ×
+      </button>
+    </div>
+
+    <form id="managed-form" class="form">
+      <input type="hidden" id="managed-id" />
+
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-control" id="managed-full-name" name="full_name" maxlength="100" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input class="form-control" id="managed-email" name="email" type="email" maxlength="100" required />
+          </div>
+
+          <div class="form-group" id="managed-username-group">
+            <label class="form-label">Username</label>
+            <input class="form-control" id="managed-username" name="username" minlength="3" maxlength="50"
+              placeholder="Leave blank to use the email address" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input class="form-control" id="managed-phone" name="phone" maxlength="30" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Language</label>
+            <select class="form-control" id="managed-language" name="language">
+              <option value="">Not set</option>
+              <option value="en">English</option>
+              <option value="ta">Tamil</option>
+              <option value="si">Sinhala</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="managed-status-group" style="display: none">
+            <label class="form-label">Account Status *</label>
+            <select class="form-control" id="managed-status" name="status">
+              <option value="Active">Active</option>
+              <option value="Disabled">Disabled</option>
+              <option value="Locked">Locked</option>
+            </select>
+          </div>
+
+          <div class="form-group full" id="managed-password-setup-group">
+            <label class="form-label">Temporary Password *</label>
+            <input class="form-control" id="managed-temp-password" name="temporary_password" type="password"
+              minlength="8" maxlength="72" autocomplete="new-password" required />
+            <small class="form-hint">The account is created Active — the user can log in immediately with this password.</small>
+          </div>
+          <div class="form-group full" id="managed-confirm-password-group">
+            <label class="form-label">Confirm Password *</label>
+            <input class="form-control" id="managed-confirm-password" name="confirm_password" type="password"
+              minlength="8" maxlength="72" autocomplete="new-password" required />
+            <small class="form-hint">Re-enter the temporary password to confirm it.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" data-managed-action="close-modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save {{ .managed_label }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+
+<div id="managed-view-modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>{{ .managed_label }} Details</h2>
+        <p>Read-only account overview.</p>
+      </div>
+
+      <button class="modal-close" type="button" data-managed-action="close-view">×</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="form-label">Full Name</label><div id="managed-view-full-name"></div></div>
+        <div class="form-group"><label class="form-label">Username</label><div id="managed-view-username"></div></div>
+        <div class="form-group"><label class="form-label">Email</label><div id="managed-view-email"></div></div>
+        <div class="form-group"><label class="form-label">Phone</label><div id="managed-view-phone"></div></div>
+        <div class="form-group"><label class="form-label">Language</label><div id="managed-view-language"></div></div>
+        <div class="form-group"><label class="form-label">Role</label><div id="managed-view-role"></div></div>
+        <div class="form-group"><label class="form-label">Status</label><div id="managed-view-status"></div></div>
+        <div class="form-group"><label class="form-label">Last Login</label><div id="managed-view-last-login"></div></div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" data-managed-action="close-view">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+
+<div id="managed-delete-modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Delete {{ .managed_label }}</h2>
+        <p>This action cannot be undone.</p>
+      </div>
+
+      <button class="modal-close" type="button" data-managed-action="close-delete">×</button>
+    </div>
+
+    <div class="modal-body">
+      <p id="managed-delete-message">
+        {{ .T "managed.delete_confirm" }} {{ .managed_label }}?
+      </p>
+      <p class="empty">
+        {{ .T "common.unsaved_changes" }}
+      </p>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-secondary" data-managed-action="close-delete">{{ .T "common.cancel" }}</button>
+      <button type="button" class="btn btn-danger" id="managed-delete-confirm">{{ .T "common.delete" }}</button>
+    </div>
+  </div>
+</div>
+
+<!-- REQUEST DELETE MODAL (Admin module only — Part 4 / Part 7) -->
+
+<div id="managed-request-delete-modal" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>Request Admin Deletion</h2>
+        <p>A second Admin must approve this request before the account is deactivated.</p>
+      </div>
+
+      <button class="modal-close" type="button" data-managed-action="close-request-delete">×</button>
+    </div>
+
+    <form id="managed-request-delete-form" class="form">
+      <input type="hidden" id="managed-request-delete-id" />
+      <input type="hidden" id="managed-request-delete-name" />
+
+      <div class="modal-body">
+        <p id="managed-request-delete-target" class="empty"></p>
+        <div class="form-group">
+          <label class="form-label">Reason</label>
+          <textarea class="form-control" id="managed-request-delete-reason" name="reason" rows="4"
+            maxlength="500" placeholder="Why does this Admin account need to be deactivated?"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" data-managed-action="close-request-delete">Cancel</button>
+        <button type="submit" class="btn btn-danger">Submit Request</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  window.PWAMS_MANAGED = {
+    label: {{ .managed_label }},
+    role: {{ .managed_role }},
+    apiBase: {{ .managed_api }},
+    deletable: {{ .managed_deletable }},
+    actorId: {{ .managed_actor_id }},
+  };
+</script>
+<script type="module" src="/static/js/managed-users.js"></script>
+{{ end }}

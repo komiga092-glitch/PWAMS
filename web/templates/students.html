@@ -8,8 +8,8 @@
     <div class="page-heading">
 
         <div>
-            <h1>Students</h1>
-            <p>Manage student information and records.</p>
+            <h1>{{t .Lang "students.title"}}</h1>
+            <p>{{t .Lang "students.subtitle"}}</p>
         </div>
 
         <button
@@ -17,7 +17,7 @@
             class="btn btn-primary"
             type="button"
             data-roles="Super Admin,Admin,Staff">
-            + Add Student
+            {{t .Lang "students.add"}}
         </button>
 
     </div>
@@ -37,21 +37,21 @@
 
                 <div>
                     <label for="student-search">
-                        Search
+                        {{t .Lang "common.search"}}
                     </label>
 
                     <input
                         id="student-search"
                         type="text"
                         name="search"
-                        placeholder="Search student..."
+                        placeholder="{{t .Lang "students.search_placeholder"}}"
                         value="{{ .search }}">
                 </div>
 
 
                 <div>
                     <label for="student-status">
-                        Status
+                        {{t .Lang "common.status"}}
                     </label>
 
                     <select
@@ -59,25 +59,25 @@
                         name="status">
 
                         <option value="">
-                            All Status
+                            {{t .Lang "students.all_status"}}
                         </option>
 
                         <option
                             value="Active"
                             {{ if eq .status "Active" }}selected{{ end }}>
-                            Active
+                            {{t .Lang "common.active"}}
                         </option>
 
                         <option
                             value="Inactive"
                             {{ if eq .status "Inactive" }}selected{{ end }}>
-                            Inactive
+                            {{t .Lang "students.inactive"}}
                         </option>
 
                         <option
                             value="Pending"
                             {{ if eq .status "Pending" }}selected{{ end }}>
-                            Pending
+                            {{t .Lang "students.pending"}}
                         </option>
 
                     </select>
@@ -89,7 +89,7 @@
                     <button
                         type="submit"
                         class="btn btn-secondary">
-                        Search
+                        {{t .Lang "common.search"}}
                     </button>
 
                 </div>
@@ -120,10 +120,10 @@
 
         <div class="panel-header">
 
-            <h2>Student List</h2>
+            <h2>{{t .Lang "students.list_title"}}</h2>
 
             <span class="badge badge-muted">
-                {{ len .students }} Records
+                {{ len .students }} {{t .Lang "students.records"}}
             </span>
 
         </div>
@@ -136,12 +136,12 @@
                 <thead>
 
                     <tr>
-                        <th>Name</th>
-                        <th>Student ID</th>
-                        <th>Phone</th>
-                        <th>School / Institution</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{{t .Lang "students.name"}}</th>
+                        <th>{{t .Lang "students.student_id"}}</th>
+                        <th>{{t .Lang "students.phone"}}</th>
+                        <th>{{t .Lang "students.school"}}</th>
+                        <th>{{t .Lang "common.status"}}</th>
+                        <th>{{t .Lang "common.actions"}}</th>
                     </tr>
 
                 </thead>
@@ -183,19 +183,19 @@
                            {{ if eq .Status "Active" }}
 
 <span class="badge badge-success">
-    Active
+    {{t .Lang "common.active"}}
 </span>
 
 {{ else if eq .Status "Pending" }}
 
 <span class="badge badge-warning">
-    Pending
+    {{t .Lang "students.pending"}}
 </span>
 
 {{ else }}
 
 <span class="badge badge-danger">
-    Inactive
+    {{t .Lang "students.inactive"}}
 </span>
 
 {{ end }}
@@ -210,13 +210,13 @@
 <a
     href="/students/{{ .ID }}/view"
     class="btn btn-secondary">
-    View
+    {{t .Lang "common.view"}}
 </a>
 
                                 <a
                                     href="/students/{{ .ID }}/edit"
                                     class="btn btn-primary">
-                                    Edit
+                                    {{t .Lang "common.edit"}}
                                 </a>
 
                             </div>
@@ -233,7 +233,7 @@
                             colspan="6"
                             class="empty">
 
-                            No students found.
+                            {{t .Lang "students.empty"}}
 
                         </td>
 
@@ -266,7 +266,7 @@
         <div class="modal-header">
 
             <div>
-                <h2>Add Student</h2>
+                <h2>{{t .Lang "students.add_modal_title"}}</h2>
             </div>
 
             <button
@@ -291,11 +291,11 @@
                 <div class="form-group">
 
                     <label for="student_person_id">
-                        Person *
+                        {{t .Lang "students.person"}} *
                     </label>
 
                     <select id="student_person_id" name="person_id" required>
-    <option value="">Select Person</option>
+    <option value="">{{t .Lang "students.select_person"}}</option>
 </select>
                     
 
@@ -306,7 +306,7 @@
                 <div class="form-group">
 
                     <label for="student_name">
-                        Full Name *
+                        {{t .Lang "students.full_name"}} *
                     </label>
 
                     <input
@@ -324,7 +324,7 @@
                 <div class="form-group">
 
                     <label for="student_school">
-                        School / Institution *
+                        {{t .Lang "students.school"}} *
                     </label>
 
                     <input
@@ -342,7 +342,7 @@
                 <div class="form-group">
 
                     <label for="student_grade">
-                        Grade *
+                        {{t .Lang "students.grade"}} *
                     </label>
 
                     <input
@@ -355,28 +355,11 @@
                 </div>
 
 
-                <!-- Student Code -->
-                <div class="form-group">
-
-                    <label for="student_code">
-                        Student Code
-                    </label>
-
-                    <input
-                        id="student_code"
-                        type="text"
-                        name="student_code"
-                        maxlength="50"
-                        placeholder="Optional">
-
-                </div>
-
-
                 <!-- Date of Birth -->
                 <div class="form-group">
 
                     <label for="student_dob">
-                        Date of Birth
+                        {{t .Lang "students.date_of_birth"}}
                     </label>
 
                     <input
@@ -391,7 +374,7 @@
                 <div class="form-group">
 
                     <label for="student_gender">
-                        Gender
+                        {{t .Lang "students.gender"}}
                     </label>
 
                     <select
@@ -399,19 +382,19 @@
                         name="gender">
 
                         <option value="">
-                            Select Gender
+                            {{t .Lang "students.select_gender"}}
                         </option>
 
                         <option value="Male">
-                            Male
+                            {{t .Lang "students.male"}}
                         </option>
 
                         <option value="Female">
-                            Female
+                            {{t .Lang "students.female"}}
                         </option>
 
                         <option value="Other">
-                            Other
+                            {{t .Lang "students.other"}}
                         </option>
 
                     </select>
@@ -423,7 +406,7 @@
                 <div class="form-group">
 
                     <label for="student_guardian">
-                        Guardian Name
+                        {{t .Lang "students.guardian_name"}}
                     </label>
 
                     <input
@@ -439,7 +422,7 @@
                 <div class="form-group">
 
                     <label for="student_guardian_phone">
-                        Guardian Phone
+                        {{t .Lang "students.guardian_phone"}}
                     </label>
 
                     <input
@@ -455,7 +438,7 @@
                 <div class="form-group">
 
                     <label for="student_academic_year">
-                        Academic Year *
+                        {{t .Lang "students.academic_year"}} *
                     </label>
 
                     <input
@@ -474,7 +457,7 @@
                 <div class="form-group">
 
                     <label for="student_remarks">
-                        Remarks
+                        {{t .Lang "students.remarks"}}
                     </label>
 
                     <textarea
@@ -492,13 +475,13 @@
                         id="student-cancel"
                         type="button"
                         class="btn btn-secondary">
-                        Cancel
+                        {{t .Lang "common.cancel"}}
                     </button>
 
                     <button
                         type="submit"
                         class="btn btn-primary">
-                        Save Student
+                        {{t .Lang "students.save"}}
                     </button>
 
                 </div>

@@ -1,0 +1,8 @@
+{
+  "web/templates/audit_logs.html": [
+    ["<span class=\"badge badge-muted\">System</span>", "<span class=\"badge badge-muted\">{{t .Lang \"audit.system\"}}</span>"]
+  ],
+  "web/templates/loan_repayments.html": [
+    [">\nCancel\n</button>\n\n<button type=\"submit\" class=\"btn btn-primary\">Save Repayment</button>", ">\n{{t .Lang \"common.cancel\"}}\n</button>\n\n<button type=\"submit\" class=\"btn btn-primary\">{{t .Lang \"repayments.save\"}}</button>"]
+  ]
+}

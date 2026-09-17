@@ -3,16 +3,16 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Student Details</h1>
-      <p>View student information and records.</p>
+      <h1>{{t .Lang "students.view_title"}}</h1>
+      <p>{{t .Lang "students.view_subtitle"}}</p>
     </div>
 
     <div style="display: flex; gap: 10px">
       <a href="/students/{{ .student.ID }}/edit" class="btn btn-primary">
-        Edit Student
+        {{t .Lang "students.edit"}}
       </a>
 
-      <a href="/students/page" class="btn btn-secondary"> Back </a>
+      <a href="/students/page" class="btn btn-secondary"> {{t .Lang "students.back"}} </a>
     </div>
   </div>
 
@@ -24,19 +24,19 @@
 
   <div class="panel">
     <div class="panel-header">
-      <h2>Student Information</h2>
+      <h2>{{t .Lang "students.info_section"}}</h2>
 
       {{ if eq .student.Status "Active" }}
 
-      <span class="badge badge-success"> Active </span>
+      <span class="badge badge-success"> {{t .Lang "common.active"}} </span>
 
       {{ else if eq .student.Status "Pending" }}
 
-      <span class="badge badge-warning"> Pending </span>
+      <span class="badge badge-warning"> {{t .Lang "students.pending"}} </span>
 
       {{ else }}
 
-      <span class="badge badge-danger"> Inactive </span>
+      <span class="badge badge-danger"> {{t .Lang "students.inactive"}} </span>
 
       {{ end }}
     </div>
@@ -44,61 +44,61 @@
     <div class="panel-body">
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label"> Full Name </label>
+          <label class="form-label"> {{t .Lang "students.full_name"}} </label>
 
           <div class="form-control">{{ .student.FullName }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Student Code </label>
+          <label class="form-label"> {{t .Lang "students.student_code"}} </label>
 
           <div class="form-control">{{ .student.StudentCode }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> School / Institution </label>
+          <label class="form-label"> {{t .Lang "students.school"}} </label>
 
           <div class="form-control">{{ .student.SchoolName }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Grade </label>
+          <label class="form-label"> {{t .Lang "students.grade"}} </label>
 
           <div class="form-control">{{ .student.Grade }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Date of Birth </label>
+          <label class="form-label"> {{t .Lang "students.date_of_birth"}} </label>
 
           <div class="form-control">{{ .student.DateOfBirth }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Gender </label>
+          <label class="form-label"> {{t .Lang "students.gender"}} </label>
 
           <div class="form-control">{{ .student.Gender }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Guardian Name </label>
+          <label class="form-label"> {{t .Lang "students.guardian_name"}} </label>
 
           <div class="form-control">{{ .student.GuardianName }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Guardian Phone </label>
+          <label class="form-label"> {{t .Lang "students.guardian_phone"}} </label>
 
           <div class="form-control">{{ .student.GuardianPhone }}</div>
         </div>
 
         <div class="form-group">
-          <label class="form-label"> Academic Year </label>
+          <label class="form-label"> {{t .Lang "students.academic_year"}} </label>
 
           <div class="form-control">{{ .student.AcademicYear }}</div>
         </div>
 
         <div class="form-group full">
-          <label class="form-label"> Remarks </label>
+          <label class="form-label"> {{t .Lang "students.remarks"}} </label>
 
           <div class="form-control">{{ .student.Remarks }}</div>
         </div>

@@ -1,0 +1,18 @@
+﻿(node:6228) Warning: Failed to load the ES module: E:\PWAMS\web\static\js\offline\session.test.js. Make sure to set "type": "module" in the nearest package.json file or use the .mjs extension.
+(Use `node --trace-warnings ...` to show where the warning was created)
+E:\PWAMS\web\static\js\offline\session.test.js:1
+import { isOfflineSessionTimestampValid, OFFLINE_SESSION_WINDOW_MS, } from "./session.js";
+^^^^^^
+System.Management.Automation.RemoteException
+SyntaxError: Cannot use import statement outside a module
+    at wrapSafe (node:internal/modules/cjs/loader:1789:18)
+    at Module._compile (node:internal/modules/cjs/loader:1830:20)
+    at Object..js (node:internal/modules/cjs/loader:1996:10)
+    at Module.load (node:internal/modules/cjs/loader:1579:32)
+    at Module._load (node:internal/modules/cjs/loader:1381:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+System.Management.Automation.RemoteException
+Node.js v26.1.0
+[2026-09-09 07:42:01] CAPTURED node_offline_session_test exit=1

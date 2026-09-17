@@ -157,6 +157,9 @@ func (h *UserHandler) Create(c *gin.Context) {
 				"message": err.Error(),
 			})
 
+		case errors.Is(err, services.ErrActiveManagerExists):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -173,7 +176,6 @@ func (h *UserHandler) Create(c *gin.Context) {
 		"users",
 		user.ID.String(),
 		"User created successfully",
-		c.ClientIP(),
 	); err != nil {
 		// Audit logging failure must not fail the user creation.
 	}
@@ -399,6 +401,9 @@ func (h *UserHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrCannotModifySuperAdmin):
 			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": err.Error()})
 
+		case errors.Is(err, services.ErrActiveManagerExists):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -415,7 +420,6 @@ func (h *UserHandler) Update(c *gin.Context) {
 		"users",
 		user.ID.String(),
 		"User updated successfully",
-		c.ClientIP(),
 	); err != nil {
 		// Audit logging failure must not fail the user update.
 	}
@@ -520,6 +524,9 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 				"message": constants.ErrUserNotFound,
 			})
 
+		case errors.Is(err, services.ErrActiveManagerExists):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -536,7 +543,6 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 		"users",
 		userID,
 		"User status changed to "+request.Status,
-		c.ClientIP(),
 	); err != nil {
 		// Audit logging failure must not fail the status update.
 	}
@@ -687,7 +693,6 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		"users",
 		targetUserID,
 		"User deleted successfully",
-		c.ClientIP(),
 	); err != nil {
 		// Audit logging failure must not fail the user deletion.
 	}

@@ -1,0 +1,59 @@
+{{ define "system_settings_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>System Settings</h1>
+      <p>Read-only overview of the PWAMS deployment configuration.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Deployment</h2>
+      <span class="badge badge-muted">Read-only</span>
+    </div>
+
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Application</label>
+          <div>PWAMS — People Welfare Association Management System</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Environment</label>
+          <div>{{ index .system_settings "environment" }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Port</label>
+          <div>{{ index .system_settings "port" }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Database</label>
+          <div>{{ index .system_settings "database" }} ({{ index .system_settings "db_host" }})</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Delivery</label>
+          <div>
+            {{ if index .system_settings "smtp_configured" }}
+              Configured
+            {{ else }}
+              Not configured — activation emails are printed to the server log
+            {{ end }}
+          </div>
+        </div>
+      </div>
+
+      <p class="empty" style="margin-top: 18px">
+        Settings administration (modifying configuration) is delivered in a
+        later release. Role permissions, audit logs and account management
+        are available from the navigation.
+      </p>
+    </div>
+  </div>
+</section>
+{{ end }}

@@ -39,10 +39,11 @@ func NewSyncService(repo *repository.SyncRepository, personSync *PersonSyncServi
 
 func (s *SyncService) ApplyOperation(
 	operation models.SyncOperation,
+	tenantID *uuid.UUID,
 ) (*models.SyncResult, error) {
 	switch strings.ToLower(strings.TrimSpace(operation.EntityType)) {
 	case "person", "persons":
-		return s.personSync.Apply(operation)
+		return s.personSync.Apply(operation, tenantID)
 
 	default:
 		entityName := strings.ToLower(strings.TrimSpace(operation.EntityType))
@@ -53,7 +54,7 @@ func (s *SyncService) ApplyOperation(
 		if !ok {
 			return nil, errors.New("unsupported sync entity type")
 		}
-		return entity.Apply(operation)
+		return entity.Apply(operation, tenantID)
 	}
 }
 
@@ -106,8 +107,8 @@ func (s *SyncService) RequestHash(
 		Payload       map[string]interface{} `json:"payload"`
 	}
 	type normalizedRequest struct {
-		UserID     uuid.UUID        `json:"user_id"`
-		Operations []normalizedOp   `json:"operations"`
+		UserID     uuid.UUID      `json:"user_id"`
+		Operations []normalizedOp `json:"operations"`
 	}
 	// UserID is not a top-level field of SyncPushRequest; the handler
 	// stamps every operation with the authenticated user's ID.
@@ -199,13 +200,15 @@ func (s *SyncService) SaveIdempotencyResponse(
 func (s *SyncService) PullPersons(
 	cursor time.Time,
 	limit int,
+	tenantID *uuid.UUID,
 ) ([]models.SyncPullRecord, time.Time, bool, error) {
-	return s.repo.PullPersons(cursor, limit)
+	return s.repo.PullPersons(cursor, limit, tenantID)
 }
 
 func (s *SyncService) Pull(
 	cursor time.Time,
 	limit int,
+	tenantID *uuid.UUID,
 ) ([]models.SyncPullRecord, time.Time, bool, error) {
-	return s.repo.PullEntities(cursor, limit)
+	return s.repo.PullEntities(cursor, limit, tenantID)
 }

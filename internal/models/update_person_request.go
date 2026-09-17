@@ -12,5 +12,5 @@ type UpdatePersonRequest struct {
 	Address       string          `json:"address"`
 	Occupation    string          `json:"occupation" binding:"omitempty,max=100"`
 	MonthlyIncome decimal.Decimal `json:"monthly_income" binding:"required"`
-	Status        string  `json:"status" binding:"required"`
+	Status        string          `json:"status" binding:"required"`
 }

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"gorm.io/gorm"
 )
@@ -59,11 +61,19 @@ func (r *DonationRepository) Create(
 
 func (r *DonationRepository) List(
 	queryParams models.DonationListQuery,
+	ownerID uuid.UUID,
 ) ([]models.Donation, int64, error) {
 	var donations []models.Donation
 	var total int64
 
 	query := r.db.Model(&models.Donation{})
+
+	// Object-level scoping: non-privileged callers receive their own user
+	// ID so they only ever see donations they created; privileged roles
+	// receive uuid.Nil (unrestricted).
+	if ownerID != uuid.Nil {
+		query = query.Where("created_by_id = ?", ownerID)
+	}
 
 	if queryParams.Search != "" {
 		searchValue := "%" +

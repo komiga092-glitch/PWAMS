@@ -1,0 +1,8 @@
+-- Rollback for 000002 is intentionally a no-op.
+--
+-- Audit logs must never record IP addresses (PII) — see STEP 15.6.4 and the
+-- DAY1/PHASE5 report. Re-adding the column on rollback would silently
+-- reintroduce the forbidden field into the schema and would let future code
+-- write IP addresses again, so the down migration refuses to do it.
+-- Restoring historical IP data, if ever truly required, must be an explicit,
+-- reviewed operator action outside the migration chain.

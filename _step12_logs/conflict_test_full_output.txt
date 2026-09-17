@@ -1,0 +1,26 @@
+﻿{
+    "success":  true,
+    "results":  [
+                    {
+                        "operation_id":  "cf14399a-1d2a-495e-bd87-025524c40c12",
+                        "entity_type":  "person",
+                        "record_id":  "9124ca29-405a-4ed9-be97-9c6858dbcde0",
+                        "success":  true,
+                        "server_version":  1,
+                        "client_version":  1
+                    }
+                ]
+}
+{
+    "success":  true,
+    "results":  [
+                    {
+                        "operation_id":  "194b5ae9-f825-4f5b-b929-97f3f2347078",
+                        "entity_type":  "person",
+                        "record_id":  "9124ca29-405a-4ed9-be97-9c6858dbcde0",
+                        "success":  true,
+                        "server_version":  2,
+                        "client_version":  1
+                    }
+                ]
+}

@@ -26,8 +26,8 @@ type Person struct {
 	Phone string `gorm:"size:20;index" json:"phone"`
 	Email string `gorm:"size:100;index" json:"email"`
 
-	Address       string  `gorm:"type:text" json:"address"`
-	Occupation    string  `gorm:"size:100" json:"occupation"`
+	Address       string          `gorm:"type:text" json:"address"`
+	Occupation    string          `gorm:"size:100" json:"occupation"`
 	MonthlyIncome decimal.Decimal `gorm:"type:numeric(12,2);default:0" json:"monthly_income"`
 
 	Status string `gorm:"size:20;not null;default:'Active';index" json:"status"`

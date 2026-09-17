@@ -9,14 +9,14 @@
   </a>
 
   <nav class="nav">
-    <div class="nav-section">Main</div>
+    <div class="nav-section">{{t .Lang "nav.main"}}</div>
 
     <a
       class="nav-link"
       href="/dashboard"
       data-roles="Super Admin,Admin,Staff,Volunteer,Donor,Beneficiary"
     >
-      <span class="nav-icon">⌂</span><span>Dashboard</span>
+      <span class="nav-icon">⌂</span><span>{{t .Lang "nav.dashboard"}}</span>
     </a>
 
     <a
@@ -24,7 +24,7 @@
       href="/persons/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">♙</span><span>Care Seekers</span>
+      <span class="nav-icon">♙</span><span>{{t .Lang "nav.care_seekers"}}</span>
     </a>
 
     <a
@@ -32,17 +32,17 @@
       href="/care-provided/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">🤝</span><span>Care Provided</span>
+      <span class="nav-icon">🤝</span><span>{{t .Lang "nav.care_provided"}}</span>
     </a>
 
-    <div class="nav-section">Management</div>
+    <div class="nav-section">{{t .Lang "nav.management"}}</div>
 
     <a
       class="nav-link"
       href="/students/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">🎓</span><span>Students</span>
+      <span class="nav-icon">🎓</span><span>{{t .Lang "nav.students"}}</span>
     </a>
 
     <a
@@ -50,7 +50,7 @@
       href="/donors/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">♡</span><span>Donors</span>
+      <span class="nav-icon">♡</span><span>{{t .Lang "nav.donors"}}</span>
     </a>
 
     <a
@@ -58,7 +58,7 @@
       href="/donations/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">◈</span><span>Donations</span>
+      <span class="nav-icon">◈</span><span>{{t .Lang "nav.donations"}}</span>
     </a>
 
     <a
@@ -66,11 +66,11 @@
       href="/aid-requests/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">▣</span><span>Aid Requests</span>
+      <span class="nav-icon">▣</span><span>{{t .Lang "nav.aid_requests"}}</span>
     </a>
 
     <a class="nav-link" href="/loans/page" data-roles="Super Admin,Admin,Staff">
-      <span class="nav-icon">₹</span><span>Loans</span>
+      <span class="nav-icon">₹</span><span>{{t .Lang "nav.loans"}}</span>
     </a>
 
     <a
@@ -78,34 +78,34 @@
       href="/loan-repayments/page"
       data-roles="Super Admin,Admin,Staff"
     >
-      <span class="nav-icon">↻</span><span>Repayments</span>
+      <span class="nav-icon">↻</span><span>{{t .Lang "nav.repayments"}}</span>
     </a>
 
     <a class="nav-link" href="/revenue/page" data-roles="Super Admin,Admin">
-      <span class="nav-icon">¤</span><span>Revenue</span>
+      <span class="nav-icon">¤</span><span>{{t .Lang "nav.revenue"}}</span>
     </a>
 
-    <div class="nav-section">Account</div>
+    <div class="nav-section">{{t .Lang "nav.account"}}</div>
     <a class="nav-link" href="/profile">
-      <span class="nav-icon">◉</span><span>My Profile</span>
+      <span class="nav-icon">◉</span><span>{{t .Lang "nav.my_profile"}}</span>
     </a>
 
     <a class="nav-link" href="/notifications/page">
-      <span class="nav-icon">♢</span><span>Notifications</span>
+      <span class="nav-icon">♢</span><span>{{t .Lang "nav.notifications"}}</span>
       <span id="notifications-unread-count" class="nav-count" hidden>0</span>
     </a>
 
     <a class="nav-link" href="/messages/page">
-      <span class="nav-icon">✉</span><span>Messages</span>
+      <span class="nav-icon">✉</span><span>{{t .Lang "nav.messages"}}</span>
       <span id="messages-unread-count" class="nav-count" hidden>0</span>
     </a>
 
     <a class="nav-link" href="/files/page" data-roles="Super Admin,Admin,Staff">
-      <span class="nav-icon">▤</span><span>Files</span>
+      <span class="nav-icon">▤</span><span>{{t .Lang "nav.files"}}</span>
     </a>
 
     <a class="nav-link" href="/users/page" data-roles="Super Admin,Admin">
-      <span class="nav-icon">♟</span><span>Users</span>
+      <span class="nav-icon">♟</span><span>{{t .Lang "nav.users"}}</span>
     </a>
 
     <a
@@ -113,18 +113,25 @@
       href="/reports/dashboard/page"
       data-roles="Super Admin,Admin"
     >
-      <span class="nav-icon">▥</span><span>Reports</span>
+      <span class="nav-icon">▥</span><span>{{t .Lang "nav.reports"}}</span>
     </a>
 
     <a class="nav-link" href="/audit-logs/page" data-roles="Super Admin,Admin">
-      <span class="nav-icon">◫</span><span>Audit Logs</span>
+      <span class="nav-icon">◫</span><span>{{t .Lang "nav.audit_logs"}}</span>
     </a>
 
     <form class="logout-form" method="post" action="/logout">
       <button class="nav-link logout-button" type="submit">
-        <span class="nav-icon">↪</span><span>Logout</span>
+        <span class="nav-icon">↪</span><span>{{t .Lang "nav.logout"}}</span>
       </button>
     </form>
   </nav>
+
+  <div class="nav-section">{{t .Lang "common.language"}}</div>
+  <div style="display:flex;gap:8px;padding:8px 16px;">
+    <a href="?lang=en">EN</a>
+    <a href="?lang=ta">தமிழ்</a>
+    <a href="?lang=si">සිංහල</a>
+  </div>
 </aside>
 {{ end }}

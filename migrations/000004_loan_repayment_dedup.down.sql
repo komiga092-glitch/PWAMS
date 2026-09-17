@@ -1,0 +1,6 @@
+-- Rollback for 000004 is intentionally a no-op.
+--
+-- The up migration deletes duplicate loan_repayment rows; deleted rows cannot
+-- be restored from schema alone (restore from the backup taken before running
+-- the up migration if needed). The application also refuses to start while
+-- duplicates exist, so re-running the up migration is always safe.

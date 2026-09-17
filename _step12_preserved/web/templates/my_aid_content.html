@@ -1,0 +1,68 @@
+{{ define "my_aid_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>My Aid</h1>
+      <p>Your assistance requests.</p>
+    </div>
+    {{ if index .user_permissions "aid.request" }}
+    <a href="/my/aid/request" class="btn btn-primary">+ Request Aid</a>
+    {{ end }}
+  </div>
+
+  {{ if .submitted }}
+  <div class="alert alert-success">Your aid request has been submitted and is pending review.</div>
+  {{ end }}
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Aid Request List</h2>
+      <span class="badge">{{ len .requests }} Records</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>TYPE</th>
+            <th>TITLE</th>
+            <th>AMOUNT</th>
+            <th>DATE</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .requests }}
+          <tr>
+            <td>{{ .AidType }}</td>
+            <td>{{ .Title }}</td>
+            <td>{{ printf "%.2f" .RequestedAmount }}</td>
+            <td>{{ .RequestDate.Format "2006-01-02" }}</td>
+            <td>
+              {{ if eq .Status "Approved" }}
+              <span class="status-badge status-active">Approved</span>
+              {{ else if eq .Status "Rejected" }}
+              <span class="status-badge status-inactive">Rejected</span>
+              {{ else if eq .Status "Cancelled" }}
+              <span class="status-badge status-inactive">Cancelled</span>
+              {{ else if eq .Status "Completed" }}
+              <span class="status-badge status-active">Completed</span>
+              {{ else }}
+              <span class="status-badge">Pending</span>
+              {{ end }}
+            </td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td colspan="5" class="empty">No aid requests found.</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{{ end }}

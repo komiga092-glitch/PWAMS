@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"gorm.io/gorm"
 )
@@ -45,11 +47,19 @@ func (r *LoanRepository) FindByID(id string) (*models.Loan, error) {
 
 func (r *LoanRepository) List(
 	query models.LoanListQuery,
+	ownerID uuid.UUID,
 ) ([]models.Loan, int64, error) {
 	var loans []models.Loan
 	var total int64
 
 	db := r.db.Model(&models.Loan{})
+
+	// Object-level scoping: non-privileged callers receive their own user
+	// ID so they only ever see loans they created; privileged roles
+	// receive uuid.Nil (unrestricted).
+	if ownerID != uuid.Nil {
+		db = db.Where("created_by_id = ?", ownerID)
+	}
 
 	if query.Search != "" {
 		searchValue := "%" + strings.ToLower(strings.TrimSpace(query.Search)) + "%"

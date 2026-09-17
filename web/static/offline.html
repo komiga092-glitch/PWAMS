@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PWAMS - Offline</title>
+    <link rel="stylesheet" href="/static/css/app.css">
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -48,11 +49,27 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">&#128268;</div>
-        <h1>You're Offline</h1>
-        <p>Please check your internet connection and try again. Some features may be available offline.</p>
-        <button onclick="location.reload()">Retry</button>
-    </div>
+    <main>
+        <div data-sync-conflicts hidden></div>
+        <div class="container">
+            <div class="icon">&#128268;</div>
+            <h1>PWAMS - Offline</h1>
+            <p data-offline-note>You are offline. Supported pages below show data stored on this device; other features require a connection.</p>
+            <table class="data-table" data-offline-table>
+                <thead><tr><th>Record</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <button onclick="location.reload()">Retry</button>
+        </div>
+    </main>
+    <div class="offline-status" data-offline-status data-state="offline" role="status" aria-live="polite">Offline</div>
+    <script>
+        // Marks this document as the offline shell so the offline renderer
+        // always renders locally cached data here, regardless of
+        // navigator.onLine (which can be unreliable, e.g. captive portals).
+        document.documentElement.dataset.offlineShell = "1";
+        window.PWAMS_I18N = window.PWAMS_I18N || {};
+    </script>
+    <script type="module" src="/static/js/offline/pages.js"></script>
 </body>
 </html>

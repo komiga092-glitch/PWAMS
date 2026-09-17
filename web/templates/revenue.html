@@ -2,8 +2,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Revenue Management</h1>
-      <p>Manage income and expenses.</p>
+      <h1>{{t .Lang "revenue.title"}}</h1>
+      <p>{{t .Lang "revenue.subtitle"}}</p>
     </div>
     <button
       class="btn btn-primary"
@@ -11,7 +11,7 @@
       onclick="openRevenueModal()"
       data-roles="Super Admin,Admin"
     >
-      + Add Record
+      {{t .Lang "revenue.add"}}
     </button>
   </div>
 
@@ -20,17 +20,17 @@
   {{ end }}
 
   <div class="panel">
-    <div class="panel-header"><h2>Income and Expenses</h2></div>
+    <div class="panel-header"><h2>{{t .Lang "revenue.income_expenses"}}</h2></div>
     <div class="table-wrap">
       <table class="data-table">
         <thead>
           <tr>
-            <th>TYPE</th>
-            <th>CATEGORY</th>
-            <th>AMOUNT</th>
-            <th>DATE</th>
-            <th>DESCRIPTION</th>
-            <th>ACTIONS</th>
+            <th>{{t .Lang "revenue.type"}}</th>
+            <th>{{t .Lang "revenue.category"}}</th>
+            <th>{{t .Lang "revenue.amount"}}</th>
+            <th>{{t .Lang "revenue.date"}}</th>
+            <th>{{t .Lang "revenue.description"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
         <tbody>
@@ -47,13 +47,13 @@
                 type="button"
                 onclick="deleteRevenueRecord('{{ .ID }}')"
               >
-                Delete
+                {{t .Lang "common.delete"}}
               </button>
             </td>
           </tr>
           {{ else }}
           <tr>
-            <td colspan="6" class="empty">No revenue records found.</td>
+            <td colspan="6" class="empty">{{t .Lang "revenue.empty"}}</td>
           </tr>
           {{ end }}
         </tbody>
@@ -62,8 +62,8 @@
   </div>
 
   <div class="panel">
-    <div class="panel-header"><h2>Revenue Summaries</h2></div>
-    <div id="revenue-summaries" class="panel-body">Loading summaries...</div>
+    <div class="panel-header"><h2>{{t .Lang "revenue.summaries"}}</h2></div>
+    <div id="revenue-summaries" class="panel-body">{{t .Lang "revenue.loading"}}</div>
   </div>
 </section>
 
@@ -71,7 +71,7 @@
   <div class="modal-backdrop" onclick="closeRevenueModal()"></div>
   <div class="modal-card">
     <div class="modal-header">
-      <h2>Add Revenue Record</h2>
+      <h2>{{t .Lang "revenue.modal_title"}}</h2>
       <button type="button" class="modal-close" onclick="closeRevenueModal()">
         ×
       </button>
@@ -79,24 +79,24 @@
     <form id="revenue-form" class="form" onsubmit="submitRevenue(event)">
       <div class="form-grid">
         <div class="form-group">
-          <label for="revenue-type">Type *</label
+          <label for="revenue-type">{{t .Lang "revenue.form_type"}} *</label
           ><select id="revenue-type" name="record_type" required>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
+            <option value="income">{{t .Lang "revenue.income"}}</option>
+            <option value="expense">{{t .Lang "revenue.expense"}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="revenue-category">Category *</label
+          <label for="revenue-category">{{t .Lang "revenue.form_category"}} *</label
           ><select id="revenue-category" name="category" required>
-            <option>Donations</option>
-            <option>Loan Repayments</option>
-            <option>Grants</option>
-            <option>Administrative Expenses</option>
-            <option>Welfare Expenses</option>
+            <option>{{t .Lang "revenue.donations_cat"}}</option>
+            <option>{{t .Lang "revenue.loan_repayments_cat"}}</option>
+            <option>{{t .Lang "revenue.grants"}}</option>
+            <option>{{t .Lang "revenue.admin_expenses"}}</option>
+            <option>{{t .Lang "revenue.welfare_expenses"}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="revenue-amount">Amount *</label
+          <label for="revenue-amount">{{t .Lang "revenue.form_amount"}} *</label
           ><input
             id="revenue-amount"
             name="amount"
@@ -107,7 +107,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="revenue-currency">Currency</label>
+          <label for="revenue-currency">{{t .Lang "revenue.currency"}}</label>
           <input
             id="revenue-currency"
             name="currency"
@@ -116,11 +116,11 @@
           />
         </div>
         <div class="form-group">
-          <label for="revenue-date">Date *</label
+          <label for="revenue-date">{{t .Lang "revenue.form_date"}} *</label
           ><input id="revenue-date" name="record_date" type="date" required />
         </div>
         <div class="form-group form-full">
-          <label for="revenue-description">Description</label
+          <label for="revenue-description">{{t .Lang "revenue.form_description"}}</label
           ><textarea
             id="revenue-description"
             name="description"
@@ -128,7 +128,7 @@
           ></textarea>
         </div>
         <div class="form-group">
-          <label for="revenue-reference">Reference</label
+          <label for="revenue-reference">{{t .Lang "revenue.reference"}}</label
           ><input id="revenue-reference" name="reference_no" maxlength="100" />
         </div>
       </div>
@@ -138,8 +138,8 @@
           class="btn btn-secondary"
           onclick="closeRevenueModal()"
         >
-          Cancel</button
-        ><button type="submit" class="btn btn-primary">Save Record</button>
+          {{t .Lang "common.cancel"}}</button
+        ><button type="submit" class="btn btn-primary">{{t .Lang "revenue.save"}}</button>
       </div>
     </form>
   </div>

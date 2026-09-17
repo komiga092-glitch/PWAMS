@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
+	"github.com/komiga092-glitch/pwams/internal/middleware"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
@@ -85,8 +86,16 @@ func (h *SyncHandler) Push(c *gin.Context) {
 	}
 
 	for i := range request.Operations {
+		// Server-authoritative identity: the client user_id is always
+		// overwritten with the authenticated principal's ID, and the
+		// tenant comes from the principal, never from the payload.
 		request.Operations[i].UserID = currentUser.ID
 	}
+
+	// Tenant isolation for sync mutations: nil for principals without
+	// a tenant (single-tenant deployment), the tenant UUID for
+	// tenant-bound principals.
+	tenantID := middleware.ContextTenantID(c)
 
 	existing, err := h.service.GetIdempotencyRecord(
 		idempotencyKey,
@@ -155,7 +164,7 @@ func (h *SyncHandler) Push(c *gin.Context) {
 				return err
 			}
 
-			result, err := h.service.ApplyOperation(operation)
+			result, err := h.service.ApplyOperation(operation, tenantID)
 
 			if result != nil {
 				results = append(results, *result)
@@ -231,6 +240,11 @@ func (h *SyncHandler) Push(c *gin.Context) {
 }
 
 func (h *SyncHandler) Pull(c *gin.Context) {
+	// Pull is tenant-scoped: a tenant-bound principal only ever
+	// receives records of its own tenant. Principals without a tenant
+	// (single-tenant deployment) receive the unfiltered feed.
+	tenantID := middleware.ContextTenantID(c)
+
 	cursorValue := strings.TrimSpace(c.Query("cursor"))
 	limitValue := strings.TrimSpace(c.Query("limit"))
 
@@ -267,6 +281,7 @@ func (h *SyncHandler) Pull(c *gin.Context) {
 	records, nextCursor, hasMore, err := h.service.Pull(
 		cursor,
 		limit,
+		tenantID,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

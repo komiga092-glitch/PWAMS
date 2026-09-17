@@ -13,14 +13,22 @@ import (
 )
 
 type PersonHandler struct {
-	personService *services.PersonService
+	personService   *services.PersonService
+	auditLogService *services.AuditLogService
 }
 
 func NewPersonHandler(
 	personService *services.PersonService,
+	auditLogServices ...*services.AuditLogService,
 ) *PersonHandler {
+	var auditLogService *services.AuditLogService
+	if len(auditLogServices) > 0 {
+		auditLogService = auditLogServices[0]
+	}
+
 	return &PersonHandler{
-		personService: personService,
+		personService:   personService,
+		auditLogService: auditLogService,
 	}
 }
 
@@ -88,6 +96,16 @@ func (h *PersonHandler) Create(c *gin.Context) {
 		return
 	}
 
+	if err := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"CREATE",
+		"persons",
+		person.ID.String(),
+		"Person created successfully",
+	); err != nil {
+		// Audit logging failure must not fail the person creation.
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": constants.ErrPersonCreatedSuccessfully,
@@ -133,10 +151,21 @@ func (h *PersonHandler) List(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	persons, total, page, pageSize, err :=
-		h.personService.ListPersons(query)
+		h.personService.ListPersons(query, actor)
 
 	if err != nil {
+		if errors.Is(err, services.ErrRecordAccessDenied) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": services.ErrRecordAccessDenied.Error(),
+			})
+			return
+		}
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"success": false,
 			"message": constants.ErrUnableToRetrievePersons,
@@ -187,7 +216,10 @@ func (h *PersonHandler) List(c *gin.Context) {
 func (h *PersonHandler) GetByID(c *gin.Context) {
 	personID := c.Param("id")
 
-	person, err := h.personService.GetPersonByID(personID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	person, err := h.personService.GetPersonByID(personID, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidPersonID):
@@ -200,6 +232,12 @@ func (h *PersonHandler) GetByID(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
 				"message": constants.ErrPersonNotFound,
+			})
+
+		case errors.Is(err, services.ErrRecordAccessDenied):
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": services.ErrRecordAccessDenied.Error(),
 			})
 
 		default:
@@ -263,9 +301,13 @@ func (h *PersonHandler) Update(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	person, err := h.personService.UpdatePerson(
 		personID,
 		request,
+		actor,
 	)
 
 	if err != nil {
@@ -328,9 +370,13 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	err := h.personService.UpdatePersonStatus(
 		personID,
 		request.Status,
+		actor,
 	)
 
 	if err != nil {
@@ -384,7 +430,10 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 func (h *PersonHandler) Delete(c *gin.Context) {
 	personID := c.Param("id")
 
-	err := h.personService.DeletePerson(personID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	err := h.personService.DeletePerson(personID, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidPersonID):
@@ -430,7 +479,10 @@ func (h *PersonHandler) Page(c *gin.Context) {
 		return
 	}
 
-	persons, _, _, _, err := h.personService.ListPersons(query)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	persons, _, _, _, err := h.personService.ListPersons(query, actor)
 
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
@@ -455,7 +507,10 @@ func (h *PersonHandler) Page(c *gin.Context) {
 func (h *PersonHandler) ViewPage(c *gin.Context) {
 	personID := c.Param("id")
 
-	person, err := h.personService.GetPersonByID(personID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	person, err := h.personService.GetPersonByID(personID, actor)
 
 	if err != nil {
 		switch {
@@ -493,7 +548,10 @@ func (h *PersonHandler) ViewPage(c *gin.Context) {
 func (h *PersonHandler) EditPage(c *gin.Context) {
 	personID := c.Param("id")
 
-	person, err := h.personService.GetPersonByID(personID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	person, err := h.personService.GetPersonByID(personID, actor)
 
 	if err != nil {
 		switch {

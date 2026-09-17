@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"gorm.io/gorm"
 )
@@ -58,6 +60,18 @@ func (r *StudentRepository) Create(student *models.Student) error {
 	return nil
 }
 
+// CountAll returns the total number of student records ever created
+// (soft-deleted included), used as the seed for the next
+// system-generated Student ID.
+func (r *StudentRepository) CountAll() (int64, error) {
+	var count int64
+	err := r.db.Unscoped().Model(&models.Student{}).Count(&count).Error
+	if err != nil {
+		return 0, fmt.Errorf("failed to count students: %w", err)
+	}
+	return count, nil
+}
+
 func (r *StudentRepository) List(
 	search string,
 	school string,
@@ -66,11 +80,19 @@ func (r *StudentRepository) List(
 	personID string,
 	page int,
 	pageSize int,
+	ownerID uuid.UUID,
 ) ([]models.Student, int64, error) {
 	var students []models.Student
 	var total int64
 
 	query := r.db.Model(&models.Student{})
+
+	// Object-level scoping: non-privileged callers receive their own user
+	// ID so they only ever see students they created; privileged roles
+	// receive uuid.Nil (unrestricted).
+	if ownerID != uuid.Nil {
+		query = query.Where("created_by_id = ?", ownerID)
+	}
 
 	if search != "" {
 		searchValue := "%" +

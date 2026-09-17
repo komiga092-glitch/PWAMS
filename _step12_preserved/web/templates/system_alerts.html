@@ -1,0 +1,202 @@
+﻿{{ define "system_alerts_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{ .T "alerts.title" }}</h1>
+      <p>{{ .T "alerts.subtitle" }}</p>
+    </div>
+
+    <button
+      class="btn btn-light"
+      type="button"
+      id="system-alerts-refresh"
+      data-permissions="system.alerts.view"
+    >
+      â†» {{ .T "action.refresh" }}
+    </button>
+  </div>
+
+  <div id="system-alerts-alert" class="alert" hidden role="status" aria-live="polite"></div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>{{ .T "alerts.inbox" }}</h2>
+      <span class="badge badge-muted" id="system-alerts-count">{{ .T "common.loading" }}</span>
+    </div>
+
+    <div class="panel-body">
+      <form class="toolbar" id="system-alerts-filter">
+        <select class="form-control" name="status" style="max-width: 170px" aria-label="{{ .T "alerts.filter_status" }}">
+          <option value="">{{ .T "alerts.all_statuses" }}</option>
+          <option value="open">{{ .T "alerts.open" }}</option>
+          <option value="resolved">{{ .T "alerts.resolved" }}</option>
+        </select>
+
+        <select class="form-control" name="level" style="max-width: 170px" aria-label="{{ .T "alerts.filter_level" }}">
+          <option value="">{{ .T "alerts.all_levels" }}</option>
+          <option value="critical">{{ .T "alerts.level_critical" }}</option>
+          <option value="error">{{ .T "alerts.level_error" }}</option>
+          <option value="warning">{{ .T "alerts.level_warning" }}</option>
+          <option value="info">{{ .T "alerts.level_info" }}</option>
+        </select>
+
+        <button class="btn btn-light" type="submit">{{ .T "action.filter" }}</button>
+      </form>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ .T "alerts.level" }}</th>
+            <th>{{ .T "alerts.message" }}</th>
+            <th>{{ .T "alerts.status" }}</th>
+            <th>{{ .T "alerts.created" }}</th>
+            <th>{{ .T "common.actions" }}</th>
+          </tr>
+        </thead>
+        <tbody id="system-alerts-table">
+          <tr>
+            <td colspan="5">
+              <div class="empty">{{ .T "common.loading" }}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+  (function () {
+    const t = window.t || ((k) => k);
+    const _el = (id) => document.getElementById(id);
+
+    const table = _el("system-alerts-table");
+    const count = _el("system-alerts-count");
+    const alertBox = _el("system-alerts-alert");
+    const filterForm = _el("system-alerts-filter");
+    const refreshBtn = _el("system-alerts-refresh");
+
+    const escapeHtml = (v) =>
+      String(v ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[ch]);
+
+    function showAlert(message, ok) {
+      if (!alertBox) return;
+      alertBox.textContent = message;
+      alertBox.classList.toggle("alert-success", ok);
+      alertBox.classList.toggle("alert-danger", !ok);
+      alertBox.hidden = false;
+      setTimeout(() => { alertBox.hidden = true; }, 5000);
+    }
+function levelBadge(level) {
+      const map = {
+        critical: `<span class="badge badge-critical">${escapeHtml(t("alerts.level_critical"))}</span>`,
+        error: `<span class="badge badge-danger">${escapeHtml(t("alerts.level_error"))}</span>`,
+        warning: `<span class="badge badge-warning">${escapeHtml(t("alerts.level_warning"))}</span>`,
+        info: `<span class="badge badge-success">${escapeHtml(t("alerts.level_info"))}</span>`,
+      };
+      return map[level] || `<span class="badge badge-muted">${escapeHtml(level)}</span>`;
+    }
+
+    function statusBadge(status) {
+      return status === "open"
+        ? `<span class="badge badge-warning">${escapeHtml(t("alerts.open"))}</span>`
+        : `<span class="badge badge-muted">${escapeHtml(t("alerts.resolved"))}</span>`;
+    }
+
+    function resolveButton(alert) {
+      if (alert.status !== "open") {
+        return `<span class="badge badge-muted">${escapeHtml(t("alerts.resolved"))}</span>`;
+      }
+      return (
+        `<button class="btn btn-small" type="button" data-resolve-alert="${escapeHtml(alert.id)}">` +
+        `${escapeHtml(t("alerts.resolve"))}</button>`
+      );
+    }
+
+    async function loadAlerts() {
+      const params = new URLSearchParams();
+      const status = new FormData(filterForm).get("status") || "";
+      const level = new FormData(filterForm).get("level") || "";
+      if (status) params.set("status", status);
+      if (level) params.set("level", level);
+      params.set("limit", "100");
+
+      if (count) count.textContent = t("common.loading");
+      table.innerHTML = `<tr><td colspan="5"><div class="empty">${escapeHtml(t("common.loading"))}</div></td></tr>`;
+
+      try {
+        const response = await fetch(`/system-alerts/api?${params.toString()}`, {
+          credentials: "same-origin",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        });
+        if (!response.ok) throw new Error(`${response.status}`);
+        const result = await response.json();
+        const alerts = result.alerts || [];
+
+        if (count) count.textContent = `${alerts.length} / ${result.total || 0}`;
+
+        if (!alerts.length) {
+          table.innerHTML = `<tr><td colspan="5"><div class="empty">${escapeHtml(t("alerts.empty"))}</div></td></tr>`;
+          return;
+        }
+
+        table.innerHTML = alerts.map((alert) => {
+          const details = alert.technical_details
+            ? `<details class="alert-details"><summary>${escapeHtml(t("alerts.technical"))}</summary><pre>${escapeHtml(alert.technical_details)}</pre></details>`
+            : "";
+          return (
+            `<tr>` +
+            `<td>${levelBadge(alert.severity)}</td>` +
+            `<td><div>${escapeHtml(t(alert.message_key || "alert.generic_failure"))}</div>${details}<div class="text-muted">${escapeHtml(alert.presentation || "")}</div></td>` +
+            `<td>${statusBadge(alert.status)}</td>` +
+            `<td>${escapeHtml(new Date(alert.created_at).toLocaleString())}</td>` +
+            `<td>${resolveButton(alert)}</td>` +
+            `</tr>`
+          );
+        }).join("");
+      } catch (err) {
+        table.innerHTML = `<tr><td colspan="5"><div class="empty">${escapeHtml(t("alerts.load_error"))}</div></td></tr>`;
+        if (count) count.textContent = "0";
+      }
+    }
+
+    async function resolveAlert(id) {
+      try {
+        const response = await fetch(`/system-alerts/api/${encodeURIComponent(id)}/resolve`, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.message || t("alerts.resolve_error"));
+        showAlert(result.message || t("alerts.resolved"), true);
+        loadAlerts();
+      } catch (err) {
+        showAlert(err.message, false);
+      }
+    }
+
+    filterForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      loadAlerts();
+    });
+    refreshBtn?.addEventListener("click", () => loadAlerts());
+    table?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-resolve-alert]");
+      if (!btn) return;
+      resolveAlert(btn.getAttribute("data-resolve-alert"));
+    });
+
+    loadAlerts();
+  })();
+</script>
+{{ end }}

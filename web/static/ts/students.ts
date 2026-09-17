@@ -3,7 +3,7 @@ interface CreateStudentRequest {
   full_name: string;
   school_name: string;
   grade: string;
-  student_code: string;
+
   date_of_birth: string;
   gender: string;
   guardian_name: string;
@@ -124,7 +124,7 @@ function getStudentFormData(form: HTMLFormElement): CreateStudentRequest {
 
     grade: String(formData.get("grade") ?? "").trim(),
 
-    student_code: String(formData.get("student_code") ?? "").trim(),
+
 
     date_of_birth: String(formData.get("date_of_birth") ?? "").trim(),
 

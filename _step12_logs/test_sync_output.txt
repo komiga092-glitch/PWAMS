@@ -1,0 +1,21 @@
+﻿
+Name          Value                                      
+----          -----                                      
+pwams_csrf    U6aWtuhH-qpAnuYjWif1sSjRNASLcxPHgTEf5mB12Rw
+pwams_session am-ys3PC9eVAmMhsf8r59XbUlbSRXAwpgxrHYKdrvZk
+
+
+{
+    "success":  false,
+    "results":  [
+                    {
+                        "operation_id":  "201fa5a7-8130-425c-969d-f4caa4f0a835",
+                        "entity_type":  "person",
+                        "record_id":  "e00d9962-83a5-486e-a9fe-c60d26df01bf",
+                        "success":  false,
+                        "code":  "VALIDATION_FAILED",
+                        "message":  "failed to create person: ERROR: duplicate key value violates unique constraint \"idx_persons_nic_passport\" (SQLSTATE 23505)",
+                        "client_version":  1
+                    }
+                ]
+}

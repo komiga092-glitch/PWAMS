@@ -1,0 +1,66 @@
+{{ define "request_aid_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Request Aid</h1>
+      <p>Submit a new assistance request.</p>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-body">
+      <form method="POST" action="/my/aid/request" class="form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="aid_type">Aid Type *</label>
+            <select id="aid_type" name="aid_type" required>
+              <option value="">Select request type</option>
+              <option value="Medical">Medical</option>
+              <option value="Food">Food</option>
+              <option value="Education">Education</option>
+              <option value="Housing">Housing</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Emergency">Emergency</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="requested_amount">Amount</label>
+            <input id="requested_amount" type="number" name="requested_amount" step="0.01" min="0" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label for="needed_by">Needed By</label>
+            <input id="needed_by" type="date" name="needed_by" />
+          </div>
+          <div class="form-group">
+            <label for="currency">Currency</label>
+            <input id="currency" type="text" name="currency" maxlength="10" placeholder="LKR" />
+          </div>
+          <div class="form-group form-full">
+            <label for="title">Title *</label>
+            <input id="title" type="text" name="title" minlength="3" maxlength="200" required placeholder="Request title" />
+          </div>
+          <div class="form-group form-full">
+            <label for="description">Description *</label>
+            <textarea id="description" name="description" rows="4" required placeholder="Describe the assistance required"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+      </form>
+    </div>
+  </div>
+</section>
+{{ end }}

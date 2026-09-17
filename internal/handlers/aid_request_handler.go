@@ -374,7 +374,6 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 			"aid_requests",
 			aidRequest.ID.String(),
 			fmt.Sprintf("status=%s approved_amount=%s", aidRequest.Status, aidRequest.ApprovedAmount.String()),
-			c.ClientIP(),
 		)
 	}
 

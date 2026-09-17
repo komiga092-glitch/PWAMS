@@ -1,9 +1,11 @@
-const CACHE_NAME = "pwams-static-v1";
+const CACHE_NAME = "pwams-static-v2";
 const OFFLINE_SHELL = "/offline.html";
 const STATIC_ASSETS = [
   "/static/css/app.css",
   "/static/js/app.js",
   "/static/js/offline/register.js",
+  "/static/js/offline/i18n.js",
+  "/static/js/offline/csrf.js",
   "/static/js/offline/connectivity.js",
   "/static/js/offline/db.js",
   "/static/js/offline/mutations.js",

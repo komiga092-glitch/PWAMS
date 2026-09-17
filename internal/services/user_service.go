@@ -24,23 +24,58 @@ var ErrCannotDeleteSelf = errors.New(
 var ErrCannotModifySuperAdmin = errors.New(
 	"only a Super Admin can modify a Super Admin account",
 )
+var ErrActiveManagerExists = errors.New(
+	"an active Manager already exists; deactivate the current Manager before assigning a new one",
+)
 
 type UserService struct {
 	userRepo    *repository.UserRepository
 	roleRepo    *repository.RoleRepository
 	sessionRepo *repository.SessionRepository
+	// adminDeletionRepo backs the supervised Admin deletion workflow. It
+	// is optional (variadic constructor argument) so existing callers and
+	// tests that never exercise the workflow keep compiling unchanged.
+	adminDeletionRepo *repository.AdminDeletionRequestRepository
 }
 
 func NewUserService(
 	userRepo *repository.UserRepository,
 	roleRepo *repository.RoleRepository,
 	sessionRepo *repository.SessionRepository,
+	adminDeletionRepo ...*repository.AdminDeletionRequestRepository,
 ) *UserService {
-	return &UserService{
+	service := &UserService{
 		userRepo:    userRepo,
 		roleRepo:    roleRepo,
 		sessionRepo: sessionRepo,
 	}
+
+	if len(adminDeletionRepo) > 0 {
+		service.adminDeletionRepo = adminDeletionRepo[0]
+	}
+
+	return service
+}
+
+// ensureManagerSlotAvailable enforces that no more than one Active user
+// may hold the NGO Manager role at a time. Assigning or activating a
+// Manager while another Active Manager exists is refused.
+func (s *UserService) ensureManagerSlotAvailable(
+	roleName string,
+	status string,
+	excludeUserID string,
+) error {
+	if roleName != models.RoleManager || status != models.UserStatusActive {
+		return nil
+	}
+	count, err := s.userRepo.CountActiveByRoleName(models.RoleManager, excludeUserID)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		return ErrActiveManagerExists
+	}
+	return nil
 }
 
 func (s *UserService) CreateUser(
@@ -65,6 +100,10 @@ func (s *UserService) CreateUser(
 			return nil, ErrInvalidRole
 		}
 
+		return nil, err
+	}
+
+	if err := s.ensureManagerSlotAvailable(role.Name, models.UserStatusActive, ""); err != nil {
 		return nil, err
 	}
 
@@ -200,8 +239,7 @@ func isValidUserStatus(status string) bool {
 	switch status {
 	case models.UserStatusActive,
 		models.UserStatusDisabled,
-		models.UserStatusLocked,
-		models.UserStatusPending:
+		models.UserStatusLocked:
 		return true
 
 	default:
@@ -260,6 +298,10 @@ func (s *UserService) UpdateUser(
 		return nil, err
 	}
 
+	if err := s.ensureManagerSlotAvailable(role.Name, status, id); err != nil {
+		return nil, err
+	}
+
 	user.Username = username
 	user.Email = email
 	user.RoleID = role.ID
@@ -285,6 +327,14 @@ func (s *UserService) UpdateUserStatus(
 
 	if !isValidUserStatus(status) {
 		return ErrInvalidUserStatus
+	}
+
+	user, err := s.userRepo.FindByID(id)
+	if err != nil {
+		return err
+	}
+	if err := s.ensureManagerSlotAvailable(user.Role.Name, status, id); err != nil {
+		return err
 	}
 
 	if err := s.userRepo.UpdateStatus(id, status); err != nil {

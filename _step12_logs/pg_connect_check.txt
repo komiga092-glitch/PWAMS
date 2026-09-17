@@ -1,0 +1,7 @@
+﻿psql.exe : psql: error: connection to server at "localhost" (::1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+At line:1 char:26
++ ... RD='admin'; & 'C:\Program Files\PostgreSQL\18\bin\psql.exe' -U postgr ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (psql: error: co...user "postgres":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

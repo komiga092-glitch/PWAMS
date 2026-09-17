@@ -3,8 +3,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Loan Repayments</h1>
-      <p>Track and manage loan repayment records.</p>
+      <h1>{{t .Lang "repayments.title"}}</h1>
+      <p>{{t .Lang "repayments.subtitle"}}</p>
     </div>
 
     <button
@@ -13,15 +13,15 @@
       onclick="openRepaymentModal()"
       data-roles="Super Admin,Admin,Staff"
     >
-      + New Repayment
+      {{t .Lang "repayments.new"}}
     </button>
   </div>
 
   <div class="panel">
     <div class="panel-header">
       <div>
-        <h2>Repayment Records</h2>
-        <p>Payments made against active loans.</p>
+        <h2>{{t .Lang "repayments.records"}}</h2>
+        <p>{{t .Lang "repayments.records_sub"}}</p>
       </div>
     </div>
 
@@ -29,11 +29,11 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>LOAN ID</th>
-            <th>AMOUNT</th>
-            <th>PAYMENT DATE</th>
-            <th>STATUS</th>
-            <th>ACTIONS</th>
+            <th>{{t .Lang "repayments.loan_id"}}</th>
+            <th>{{t .Lang "repayments.amount"}}</th>
+            <th>{{t .Lang "repayments.payment_date"}}</th>
+            <th>{{t .Lang "common.status"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -50,11 +50,11 @@
             <td>
               {{ if .PaidAt }}
 
-              <span class="status-badge status-active"> Paid </span>
+              <span class="status-badge status-active"> {{t .Lang "repayments.paid"}} </span>
 
               {{ else }}
 
-              <span class="status-badge"> Pending </span>
+              <span class="status-badge"> {{t .Lang "repayments.pending"}} </span>
 
               {{ end }}
             </td>
@@ -70,7 +70,7 @@
               >
                 <input type="hidden" name="paid_amount" value="{{ .Amount }}" />
                 <button class="btn btn-small btn-primary" type="submit">
-                  Mark Paid
+                  {{t .Lang "repayments.mark_paid"}}
                 </button>
               </form>
 
@@ -80,12 +80,12 @@
                 onsubmit="submitRepaymentAction(event, this, 'cancel')"
                 style="display: inline"
               >
-                <button class="btn btn-small" type="submit">Cancel</button>
+                <button class="btn btn-small" type="submit">{{t .Lang "common.cancel"}}</button>
               </form>
 
               {{ else }}
 
-              <span class="muted"> Completed </span>
+              <span class="muted"> {{t .Lang "repayments.completed"}} </span>
 
               {{ end }}
             </td>
@@ -94,7 +94,7 @@
           {{ else }}
 
           <tr>
-            <td colspan="5" class="empty">No repayment records found.</td>
+            <td colspan="5" class="empty">{{t .Lang "repayments.empty"}}</td>
           </tr>
 
           {{ end }}
@@ -112,8 +112,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>New Repayment</h2>
-        <p>Create a repayment record.</p>
+        <h2>{{t .Lang "repayments.modal_title"}}</h2>
+        <p>{{t .Lang "repayments.modal_sub"}}</p>
       </div>
 
       <button type="button" class="modal-close" onclick="closeRepaymentModal()">
@@ -130,7 +130,7 @@
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="installmentNumber"> Installment Number * </label>
+          <label for="installmentNumber"> {{t .Lang "repayments.installment"}} * </label>
 
           <input
             id="installmentNumber"
@@ -142,15 +142,15 @@
           />
         </div>
         <div class="form-group">
-          <label for="repaymentLoanID"> Loan ID * </label>
+          <label for="repaymentLoanID"> {{t .Lang "repayments.loan_id"}} * </label>
 
           <select id="repaymentLoanID" type="text" name="loan_id" required>
-            <option value="">Select Loan</option>
+            <option value="">{{t .Lang "repayments.select_loan"}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="repaymentAmount"> Amount * </label>
+          <label for="repaymentAmount"> {{t .Lang "repayments.amount"}} * </label>
 
           <input
             id="repaymentAmount"
@@ -164,7 +164,7 @@
         </div>
 
         <div class="form-group">
-          <label for="paymentDate"> Payment Date * </label>
+          <label for="paymentDate"> {{t .Lang "repayments.date"}} * </label>
 
           <input id="paymentDate" type="date" name="due_date" required />
         </div>
@@ -176,10 +176,10 @@
           class="btn btn-secondary"
           onclick="closeRepaymentModal()"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">Save Repayment</button>
+        <button type="submit" class="btn btn-primary">{{t .Lang "repayments.save"}}</button>
       </div>
     </form>
   </div>

@@ -25,6 +25,11 @@ func RegisterReportRoutes(
 	)
 
 	protected.GET(
+		"/reports/dashboard/pdf",
+		handler.DownloadSummaryPDF,
+	)
+
+	protected.GET(
 		"/reports/dashboard",
 		handler.GetDashboardReport,
 	)

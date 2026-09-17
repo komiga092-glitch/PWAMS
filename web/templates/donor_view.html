@@ -4,21 +4,21 @@
 
     <div class="page-heading">
         <div>
-            <h1>Donor Details</h1>
-            <p>View donor information and records.</p>
+            <h1>{{t .Lang "donors.view_title"}}</h1>
+            <p>{{t .Lang "donors.view_subtitle"}}</p>
         </div>
 
         <div class="table-actions">
             <a
                 href="/donors/{{ .donor.ID }}/edit"
                 class="btn btn-primary">
-                Edit
+                {{t .Lang "common.edit"}}
             </a>
 
             <a
                 href="/donors/page"
                 class="btn btn-secondary">
-                Back
+                {{t .Lang "donors.back"}}
             </a>
         </div>
     </div>
@@ -26,24 +26,24 @@
     <div class="panel">
 
         <div class="panel-header">
-            <h2>Donor Information</h2>
+            <h2>{{t .Lang "donors.info_section"}}</h2>
 
             {{ if eq .donor.Status "Active" }}
 
                 <span class="status-badge status-active">
-                    Active
+                    {{t .Lang "common.active"}}
                 </span>
 
             {{ else if eq .donor.Status "Pending" }}
 
                 <span class="status-badge">
-                    Pending
+                    {{t .Lang "donors.pending"}}
                 </span>
 
             {{ else }}
 
                 <span class="status-badge status-inactive">
-                    Inactive
+                    {{t .Lang "donors.inactive"}}
                 </span>
 
             {{ end }}
@@ -52,7 +52,7 @@
         <div class="form-grid">
 
             <div class="form-group">
-                <label>Name</label>
+                <label>{{t .Lang "donors.name"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.Name }}"
@@ -60,7 +60,7 @@
             </div>
 
             <div class="form-group">
-                <label>Donor Type</label>
+                <label>{{t .Lang "donors.donor_type"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.DonorType }}"
@@ -68,7 +68,7 @@
             </div>
 
             <div class="form-group">
-                <label>NIC / Passport</label>
+                <label>{{t .Lang "donors.nic_passport"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.NICPassport }}"
@@ -76,7 +76,7 @@
             </div>
 
             <div class="form-group">
-                <label>Organization Name</label>
+                <label>{{t .Lang "donors.organization_name"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.OrganizationName }}"
@@ -84,7 +84,7 @@
             </div>
 
             <div class="form-group">
-                <label>Registration Number</label>
+                <label>{{t .Lang "donors.registration_number"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.RegistrationNumber }}"
@@ -92,7 +92,7 @@
             </div>
 
             <div class="form-group">
-                <label>Phone</label>
+                <label>{{t .Lang "donors.phone"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.Phone }}"
@@ -100,7 +100,7 @@
             </div>
 
             <div class="form-group">
-                <label>Email</label>
+                <label>{{t .Lang "donors.email"}}</label>
                 <input
                     type="email"
                     value="{{ .donor.Email }}"
@@ -108,7 +108,7 @@
             </div>
 
             <div class="form-group">
-                <label>Contact Person</label>
+                <label>{{t .Lang "donors.contact_person"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.ContactPersonName }}"
@@ -116,7 +116,7 @@
             </div>
 
             <div class="form-group">
-                <label>Contact Person Phone</label>
+                <label>{{t .Lang "donors.contact_person_phone"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.ContactPersonPhone }}"
@@ -124,7 +124,7 @@
             </div>
 
             <div class="form-group">
-                <label>Preferred Donation Type</label>
+                <label>{{t .Lang "donors.preferred_donation_type"}}</label>
                 <input
                     type="text"
                     value="{{ .donor.PreferredDonationType }}"
@@ -132,7 +132,7 @@
             </div>
 
             <div class="form-group form-full">
-                <label>Address</label>
+                <label>{{t .Lang "donors.address"}}</label>
 
                 <textarea
                     rows="3"
@@ -140,7 +140,7 @@
             </div>
 
             <div class="form-group form-full">
-                <label>Notes</label>
+                <label>{{t .Lang "donors.notes"}}</label>
 
                 <textarea
                     rows="3"

@@ -1,0 +1,25 @@
+{
+  "web/templates/donors.html": [
+    ["<label for=\"donorPhone\">\n            Phone\n          </label>", "<label for=\"donorPhone\">\n            {{t .Lang \"donors.phone\"}}\n          </label>"],
+    ["placeholder=\"Phone number\"", "placeholder=\"{{t .Lang \"donors.phone\"}}\""],
+    ["<label for=\"donorEmail\">\n            Email\n          </label>", "<label for=\"donorEmail\">\n            {{t .Lang \"donors.email\"}}\n          </label>"],
+    ["placeholder=\"Email address\"", "placeholder=\"{{t .Lang \"donors.email\"}}\""],
+    ["<label for=\"donorContactPersonName\">\n            Contact Person Name\n          </label>", "<label for=\"donorContactPersonName\">\n            {{t .Lang \"donors.contact_person_name\"}}\n          </label>"],
+    ["placeholder=\"Contact person name\"", "placeholder=\"{{t .Lang \"donors.contact_person_name\"}}\""],
+    ["<label for=\"donorContactPersonPhone\">\n            Contact Person Phone\n          </label>", "<label for=\"donorContactPersonPhone\">\n            {{t .Lang \"donors.contact_person_phone\"}}\n          </label>"],
+    ["placeholder=\"Contact person phone\"", "placeholder=\"{{t .Lang \"donors.contact_person_phone\"}}\""],
+    ["<label for=\"preferredDonationType\">\n            Preferred Donation Type\n          </label>", "<label for=\"preferredDonationType\">\n            {{t .Lang \"donors.preferred_donation_type\"}}\n          </label>"],
+    ["<option value=\"\">\n              Select donation type\n            </option>", "<option value=\"\">\n              {{t .Lang \"donors.select_donation_type\"}}\n            </option>"],
+    ["<option value=\"cash\">\n              Cash\n            </option>", "<option value=\"cash\">\n              {{t .Lang \"donors.cash\"}}\n            </option>"],
+    ["<option value=\"bank_transfer\">\n              Bank Transfer\n            </option>", "<option value=\"bank_transfer\">\n              {{t .Lang \"donors.bank_transfer\"}}\n            </option>"],
+    ["<option value=\"goods\">\n              Goods\n            </option>", "<option value=\"goods\">\n              {{t .Lang \"donors.goods\"}}\n            </option>"],
+    ["<option value=\"services\">\n              Services\n            </option>", "<option value=\"services\">\n              {{t .Lang \"donors.services\"}}\n            </option>"],
+    ["<option value=\"other\">\n              Other\n            </option>", "<option value=\"other\">\n              {{t .Lang \"donors.other\"}}\n            </option>"],
+    ["<label for=\"donorAddress\">\n            Address\n          </label>", "<label for=\"donorAddress\">\n            {{t .Lang \"donors.address\"}}\n          </label>"],
+    ["placeholder=\"Donor address\"", "placeholder=\"{{t .Lang \"donors.address\"}}\""],
+    ["<label for=\"donorNotes\">\n            Notes\n          </label>", "<label for=\"donorNotes\">\n            {{t .Lang \"donors.notes\"}}\n          </label>"],
+    ["placeholder=\"Additional notes\"", "placeholder=\"{{t .Lang \"donors.notes\"}}\""],
+    ["data-donor-modal-close\n        >\n          Cancel\n        </button>", "data-donor-modal-close\n        >\n          {{t .Lang \"common.cancel\"}}\n        </button>"],
+    ["class=\"btn btn-primary\"\n        >\n          Save Donor\n        </button>", "class=\"btn btn-primary\"\n        >\n          {{t .Lang \"donors.save\"}}\n        </button>"]
+  ]
+}

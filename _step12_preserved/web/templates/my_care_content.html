@@ -1,0 +1,59 @@
+{{ define "my_care_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>My Care</h1>
+      <p>Care and support you have received.</p>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Care Records</h2>
+      <span class="badge">{{ len .records }} Records</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>TYPE</th>
+            <th>AMOUNT</th>
+            <th>DESCRIPTION</th>
+            <th>PROVIDED BY</th>
+            <th>DATE</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .records }}
+          <tr>
+            <td>{{ .CareType }}</td>
+            <td>{{ printf "%.2f" .Amount }}</td>
+            <td>{{ .Description }}</td>
+            <td>{{ .ProvidedBy }}</td>
+            <td>{{ .ProvidedAt.Format "2006-01-02" }}</td>
+            <td>
+              {{ if eq .Status "Completed" }}
+              <span class="status-badge status-active">Completed</span>
+              {{ else if eq .Status "Cancelled" }}
+              <span class="status-badge status-inactive">Cancelled</span>
+              {{ else }}
+              <span class="status-badge">Pending</span>
+              {{ end }}
+            </td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td colspan="6" class="empty">No care records found.</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{{ end }}

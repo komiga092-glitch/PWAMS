@@ -3,8 +3,8 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Loans</h1>
-      <p>Manage beneficiary loan applications and approvals.</p>
+      <h1>{{t .Lang "loans.title"}}</h1>
+      <p>{{t .Lang "loans.subtitle"}}</p>
     </div>
 
     <button
@@ -13,7 +13,7 @@
       onclick="openLoanModal()"
       data-roles="Super Admin,Admin,Staff"
     >
-      + New Loan
+      {{t .Lang "loans.add"}}
     </button>
   </div>
 
@@ -25,21 +25,21 @@
         <input
           type="text"
           name="search"
-          placeholder="Search person or loan..."
+          placeholder="{{t .Lang "loans.search_placeholder"}}"
           value="{{ .search }}"
         />
 
         <select name="status">
-          <option value="">All Status</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-          <option value="active">Active</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
+          <option value="">{{t .Lang "loans.all_status"}}</option>
+          <option value="pending">{{t .Lang "loans.pending"}}</option>
+          <option value="approved">{{t .Lang "loans.approved"}}</option>
+          <option value="rejected">{{t .Lang "loans.rejected"}}</option>
+          <option value="active">{{t .Lang "loans.active"}}</option>
+          <option value="completed">{{t .Lang "loans.completed"}}</option>
+          <option value="cancelled">{{t .Lang "loans.cancelled"}}</option>
         </select>
 
-        <button class="btn btn-secondary" type="submit">Search</button>
+        <button class="btn btn-secondary" type="submit">{{t .Lang "common.search"}}</button>
       </form>
     </div>
   </div>
@@ -49,12 +49,12 @@
   <div class="panel">
     <div class="panel-header">
       <div>
-        <h2>Loan List</h2>
-        <p>Loan applications and active loans.</p>
+        <h2>{{t .Lang "loans.list_title"}}</h2>
+        <p>{{t .Lang "loans.list_subtitle"}}</p>
       </div>
 
       <span class="badge">
-        {{ if .data }} {{ len .data }} Records {{ else }} 0 Records {{ end }}
+        {{ if .data }} {{ len .data }} {{t .Lang "loans.records"}} {{ else }} 0 {{t .Lang "loans.records"}} {{ end }}
       </span>
     </div>
 
@@ -62,13 +62,13 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>PERSON</th>
-            <th>AMOUNT</th>
-            <th>INTEREST</th>
-            <th>DURATION</th>
-            <th>INSTALLMENT</th>
-            <th>STATUS</th>
-            <th>ACTIONS</th>
+            <th>{{t .Lang "loans.person"}}</th>
+            <th>{{t .Lang "loans.amount"}}</th>
+            <th>{{t .Lang "loans.interest"}}</th>
+            <th>{{t .Lang "loans.duration"}}</th>
+            <th>{{t .Lang "loans.installment"}}</th>
+            <th>{{t .Lang "common.status"}}</th>
+            <th>{{t .Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -82,47 +82,47 @@
 
             <td>{{ .InterestRate }}%</td>
 
-            <td>{{ .DurationMonths }} months</td>
+            <td>{{ .DurationMonths }} {{t .Lang "loans.months"}}</td>
 
             <td>{{ .InstallmentAmount }}</td>
 
             <td>
               {{ if eq .Status "approved" }}
 
-              <span class="status-badge status-active"> Approved </span>
+              <span class="status-badge status-active"> {{t .Lang "loans.approved"}} </span>
 
               {{ else if eq .Status "active" }}
 
-              <span class="status-badge status-active"> Active </span>
+              <span class="status-badge status-active"> {{t .Lang "loans.active"}} </span>
 
               {{ else if eq .Status "completed" }}
 
-              <span class="status-badge status-active"> Completed </span>
+              <span class="status-badge status-active"> {{t .Lang "loans.completed"}} </span>
 
               {{ else if eq .Status "rejected" }}
 
-              <span class="status-badge status-inactive"> Rejected </span>
+              <span class="status-badge status-inactive"> {{t .Lang "loans.rejected"}} </span>
 
               {{ else if eq .Status "cancelled" }}
 
-              <span class="status-badge status-inactive"> Cancelled </span>
+              <span class="status-badge status-inactive"> {{t .Lang "loans.cancelled"}} </span>
 
               {{ else }}
 
-              <span class="status-badge"> Pending </span>
+              <span class="status-badge"> {{t .Lang "loans.pending"}} </span>
 
               {{ end }}
             </td>
 
             <td class="actions">
-              <a class="btn btn-small" href="/loans/{{ .ID }}"> View </a>
+              <a class="btn btn-small" href="/loans/{{ .ID }}"> {{t .Lang "loans.view"}} </a>
             </td>
           </tr>
 
           {{ else }}
 
           <tr>
-            <td colspan="7" class="empty">No loan records found.</td>
+            <td colspan="7" class="empty">{{t .Lang "loans.empty"}}</td>
           </tr>
 
           {{ end }}
@@ -140,8 +140,8 @@
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>New Loan</h2>
-        <p>Create a new loan application.</p>
+        <h2>{{t .Lang "loans.new_modal_title"}}</h2>
+        <p>{{t .Lang "loans.new_modal_subtitle"}}</p>
       </div>
 
       <button type="button" class="modal-close" onclick="closeLoanModal()">
@@ -158,15 +158,15 @@
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="loanPersonID"> Person ID * </label>
+          <label for="loanPersonID"> {{t .Lang "loans.person_id"}} </label>
 
           <select id="loanPersonID" type="text" name="person_id" required>
-            <option value="">Select Person</option>
+            <option value="">{{t .Lang "loans.select_person"}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="loanAmount"> Loan Amount * </label>
+          <label for="loanAmount"> {{t .Lang "loans.loan_amount"}} </label>
 
           <input
             id="loanAmount"
@@ -180,7 +180,7 @@
         </div>
 
         <div class="form-group">
-          <label for="interestRate"> Interest Rate (%) </label>
+          <label for="interestRate"> {{t .Lang "loans.interest_rate"}} </label>
 
           <input
             id="interestRate"
@@ -194,7 +194,7 @@
         </div>
 
         <div class="form-group">
-          <label for="durationMonths"> Duration (Months) * </label>
+          <label for="durationMonths"> {{t .Lang "loans.duration_months"}} </label>
 
           <input
             id="durationMonths"
@@ -207,13 +207,13 @@
         </div>
 
         <div class="form-group form-full">
-          <label for="loanPurpose"> Purpose </label>
+          <label for="loanPurpose"> {{t .Lang "loans.purpose"}} </label>
 
           <textarea
             id="loanPurpose"
             name="purpose"
             rows="4"
-            placeholder="Describe the purpose of the loan"
+            placeholder="{{t .Lang "loans.purpose_placeholder"}}"
           ></textarea>
         </div>
       </div>
@@ -224,10 +224,10 @@
           class="btn btn-secondary"
           onclick="closeLoanModal()"
         >
-          Cancel
+          {{t .Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">Submit Loan</button>
+        <button type="submit" class="btn btn-primary">{{t .Lang "loans.save"}}</button>
       </div>
     </form>
   </div>

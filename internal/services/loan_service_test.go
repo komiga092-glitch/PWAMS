@@ -3,8 +3,8 @@ package services_test
 import (
 	"testing"
 
-	"github.com/shopspring/decimal"
 	"github.com/komiga092-glitch/pwams/internal/services"
+	"github.com/shopspring/decimal"
 )
 
 func TestCalculateLoanInstallment(t *testing.T) {

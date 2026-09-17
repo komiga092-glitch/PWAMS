@@ -13,14 +13,22 @@ import (
 )
 
 type StudentHandler struct {
-	studentService *services.StudentService
+	studentService  *services.StudentService
+	auditLogService *services.AuditLogService
 }
 
 func NewStudentHandler(
 	studentService *services.StudentService,
+	auditLogServices ...*services.AuditLogService,
 ) *StudentHandler {
+	var auditLogService *services.AuditLogService
+	if len(auditLogServices) > 0 {
+		auditLogService = auditLogServices[0]
+	}
+
 	return &StudentHandler{
-		studentService: studentService,
+		studentService:  studentService,
+		auditLogService: auditLogService,
 	}
 }
 
@@ -87,6 +95,18 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		return
 	}
 
+	if currentUser, ok := getCurrentUser(c); ok {
+		if err := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"CREATE",
+			"students",
+			student.ID.String(),
+			"Student created successfully",
+		); err != nil {
+			// Audit logging failure must not fail the student creation.
+		}
+	}
+
 	c.JSON(http.StatusCreated, gin.H{
 		"success": true,
 		"message": constants.ErrStudentCreatedSuccessfully,
@@ -120,10 +140,21 @@ func (h *StudentHandler) List(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	students, total, page, pageSize, err :=
-		h.studentService.ListStudents(query)
+		h.studentService.ListStudents(query, actor)
 
 	if err != nil {
+		if errors.Is(err, services.ErrRecordAccessDenied) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": services.ErrRecordAccessDenied.Error(),
+			})
+			return
+		}
+
 		if errors.Is(err, services.ErrInvalidPersonID) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"success": false,
@@ -174,7 +205,10 @@ func (h *StudentHandler) List(c *gin.Context) {
 func (h *StudentHandler) GetByID(c *gin.Context) {
 	studentID := c.Param("id")
 
-	student, err := h.studentService.GetStudentByID(studentID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	student, err := h.studentService.GetStudentByID(studentID, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidStudentID):
@@ -187,6 +221,12 @@ func (h *StudentHandler) GetByID(c *gin.Context) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"success": false,
 				"message": constants.ErrStudentNotFound,
+			})
+
+		case errors.Is(err, services.ErrRecordAccessDenied):
+			c.JSON(http.StatusForbidden, gin.H{
+				"success": false,
+				"message": services.ErrRecordAccessDenied.Error(),
 			})
 
 		default:
@@ -229,7 +269,10 @@ func (h *StudentHandler) GetByID(c *gin.Context) {
 func (h *StudentHandler) ViewPage(c *gin.Context) {
 	studentID := c.Param("id")
 
-	student, err := h.studentService.GetStudentByID(studentID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	student, err := h.studentService.GetStudentByID(studentID, actor)
 
 	if err != nil {
 		switch {
@@ -268,7 +311,10 @@ func (h *StudentHandler) ViewPage(c *gin.Context) {
 func (h *StudentHandler) EditPage(c *gin.Context) {
 	studentID := c.Param("id")
 
-	student, err := h.studentService.GetStudentByID(studentID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	student, err := h.studentService.GetStudentByID(studentID, actor)
 
 	if err != nil {
 		switch {
@@ -317,9 +363,13 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	student, err := h.studentService.UpdateStudent(
 		studentID,
 		request,
+		actor,
 	)
 
 	if err != nil {
@@ -371,9 +421,13 @@ func (h *StudentHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
 	err := h.studentService.UpdateStudentStatus(
 		studentID,
 		request.Status,
+		actor,
 	)
 
 	if err != nil {
@@ -415,7 +469,10 @@ func (h *StudentHandler) UpdateStatus(c *gin.Context) {
 func (h *StudentHandler) Delete(c *gin.Context) {
 	studentID := c.Param("id")
 
-	err := h.studentService.DeleteStudent(studentID)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	err := h.studentService.DeleteStudent(studentID, actor)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidStudentID):
@@ -461,7 +518,10 @@ func (h *StudentHandler) Page(c *gin.Context) {
 		return
 	}
 
-	students, _, _, _, err := h.studentService.ListStudents(query)
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	students, _, _, _, err := h.studentService.ListStudents(query, actor)
 
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{

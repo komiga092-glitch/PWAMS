@@ -1,0 +1,49 @@
+{
+  "web/templates/report_detail.html": [
+    ["<h2>Users by Role</h2>", "<h2>{{t .Lang \"reports.users_by_role\"}}</h2>"],
+    ["<h2>Users by Status</h2>", "<h2>{{t .Lang \"reports.users_by_status\"}}</h2>"],
+    ["<h2>Persons by Status</h2>", "<h2>{{t .Lang \"reports.persons_by_status\"}}</h2>"],
+    ["<h2>Persons by Gender</h2>", "<h2>{{t .Lang \"reports.persons_by_gender\"}}</h2>"],
+    ["<h2>Students by Grade</h2>", "<h2>{{t .Lang \"reports.students_by_grade\"}}</h2>"],
+    ["<h2>Students by Academic Year</h2>", "<h2>{{t .Lang \"reports.students_by_academic_year\"}}</h2>"],
+    ["<h2>Donors by Type</h2>", "<h2>{{t .Lang \"reports.donors_by_type\"}}</h2>"],
+    ["<h2>Donors by Status</h2>", "<h2>{{t .Lang \"reports.donors_by_status\"}}</h2>"],
+    ["<h2>Donations by Type</h2>", "<h2>{{t .Lang \"reports.donations_by_type\"}}</h2>"],
+    ["<h2>Donations by Status</h2>", "<h2>{{t .Lang \"reports.donations_by_status\"}}</h2>"],
+    ["<h2>Detailed Donation Records</h2>", "<h2>{{t .Lang \"reports.detailed_donation_records\"}}</h2>"],
+    ["<h2>Aid Requests by Type</h2>", "<h2>{{t .Lang \"reports.aid_requests_by_type\"}}</h2>"],
+    ["<h2>Aid Requests by Priority</h2>", "<h2>{{t .Lang \"reports.aid_requests_by_priority\"}}</h2>"],
+    ["<h2>Care Provided by Type</h2>", "<h2>{{t .Lang \"reports.care_by_type\"}}</h2>"],
+    ["<h2>Care Provided by Status</h2>", "<h2>{{t .Lang \"reports.care_by_status\"}}</h2>"],
+    ["<h2>Loans by Status</h2>", "<h2>{{t .Lang \"reports.loans_by_status\"}}</h2>"],
+    ["<h2>Net by Category</h2>", "<h2>{{t .Lang \"reports.net_by_category\"}}</h2>"],
+    ["<h2>Accounts by Status</h2>", "<h2>{{t .Lang \"reports.accounts_by_status\"}}</h2>"],
+    ["<h2>Activity by Action</h2>", "<h2>{{t .Lang \"reports.activity_by_action\"}}</h2>"],
+    ["<h2>Activity by Entity</h2>", "<h2>{{t .Lang \"reports.activity_by_entity\"}}</h2>"],
+    ["<h2>Donations</h2>", "<h2>{{t .Lang \"nav.donations\"}}</h2>"],
+    ["<th>Date</th>", "<th>{{t .Lang \"reports.donation_date\"}}</th>"],
+    ["<th>Donor</th>", "<th>{{t .Lang \"reports.donor\"}}</th>"],
+    ["<th>Type</th>", "<th>{{t .Lang \"reports.type\"}}</th>"],
+    ["<th>Item</th>", "<th>{{t .Lang \"reports.item\"}}</th>"],
+    ["<th>Amount</th>", "<th>{{t .Lang \"reports.amount\"}}</th>"],
+    ["<th>Reference</th>", "<th>{{t .Lang \"reports.reference\"}}</th>"],
+    ["<th>Status</th>", "<th>{{t .Lang \"reports.status\"}}</th>"]
+  ],
+  "web/templates/revenue.html": [
+    ["<label for=\"revenue-type\">Type *</label>", "<label for=\"revenue-type\">{{t .Lang \"revenue.form_type\"}} *</label>"],
+    ["<label for=\"revenue-category\">Category *</label>", "<label for=\"revenue-category\">{{t .Lang \"revenue.form_category\"}} *</label>"],
+    ["<label for=\"revenue-amount\">Amount *</label>", "<label for=\"revenue-amount\">{{t .Lang \"revenue.form_amount\"}} *</label>"],
+    ["<label for=\"revenue-date\">Date *</label>", "<label for=\"revenue-date\">{{t .Lang \"revenue.form_date\"}} *</label>"]
+  ],
+  "web/templates/users.html": [
+    ["<option value=\"Admin\">Admin</option>", "<option value=\"Admin\">{{t .Lang \"role.admin\"}}</option>"],
+    ["<option value=\"Staff\">Staff</option>", "<option value=\"Staff\">{{t .Lang \"role.staff\"}}</option>"],
+    ["<option value=\"Volunteer\">Volunteer</option>", "<option value=\"Volunteer\">{{t .Lang \"role.volunteer\"}}</option>"],
+    ["<option value=\"Donor\">Donor</option>", "<option value=\"Donor\">{{t .Lang \"role.donor\"}}</option>"],
+    ["<option value=\"Beneficiary\">Beneficiary</option>", "<option value=\"Beneficiary\">{{t .Lang \"role.beneficiary\"}}</option>"],
+    ["<option value=\"Active\">Active</option>", "<option value=\"Active\">{{t .Lang \"common.active\"}}</option>"],
+    ["<option value=\"Disabled\">Disabled</option>", "<option value=\"Disabled\">{{t .Lang \"common.disabled\"}}</option>"],
+    ["<option value=\"Locked\">Locked</option>", "<option value=\"Locked\">{{t .Lang \"common.locked\"}}</option>"],
+    ["<div class=\"empty\">No users found.</div>", "<div class=\"empty\">{{t .Lang \"users.empty\"}}</div>"]
+  ]
+}

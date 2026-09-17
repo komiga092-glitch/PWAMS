@@ -94,6 +94,7 @@ func isDuplicateKeyError(err error) bool {
 
 func (s *LoanRepaymentService) Create(
 	request models.CreateLoanRepaymentRequest,
+	actor Actor,
 ) (*models.LoanRepayment, error) {
 	loanID := strings.TrimSpace(request.LoanID)
 
@@ -113,6 +114,10 @@ func (s *LoanRepaymentService) Create(
 	loan, err := s.loanRepo.FindByID(loanID)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, loan.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	if loan.ID != parsedLoanID {
@@ -163,6 +168,7 @@ func (s *LoanRepaymentService) Create(
 
 func (s *LoanRepaymentService) GetByID(
 	id string,
+	actor Actor,
 ) (*models.LoanRepayment, error) {
 	id = strings.TrimSpace(id)
 
@@ -170,12 +176,30 @@ func (s *LoanRepaymentService) GetByID(
 		return nil, ErrInvalidLoanRepaymentID
 	}
 
-	return s.repaymentRepo.FindByID(id)
+	repayment, err := s.repaymentRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	// Ownership is inherited through the parent loan.
+	if !CanAccessRecord(actor, repayment.Loan.CreatedByID) {
+		return nil, ErrRecordAccessDenied
+	}
+
+	return repayment, nil
 }
 
 func (s *LoanRepaymentService) List(
 	query models.LoanRepaymentListQuery,
+	actor Actor,
 ) ([]models.LoanRepayment, int64, int, int, error) {
+	// Fail closed for unauthenticated/invalid actors; scope non-
+	// privileged roles through the parent loan's owner.
+	ownerID, ok := ownershipFilter(actor)
+	if !ok {
+		return nil, 0, 0, 0, ErrRecordAccessDenied
+	}
+
 	query.LoanID = strings.TrimSpace(query.LoanID)
 	query.Status = strings.TrimSpace(query.Status)
 
@@ -212,7 +236,7 @@ func (s *LoanRepaymentService) List(
 	query.Page = page
 	query.PageSize = pageSize
 
-	repayments, total, err := s.repaymentRepo.List(query)
+	repayments, total, err := s.repaymentRepo.List(query, ownerID)
 	if err != nil {
 		return nil, 0, page, pageSize, err
 	}
@@ -223,6 +247,7 @@ func (s *LoanRepaymentService) List(
 func (s *LoanRepaymentService) Pay(
 	id string,
 	request models.PayLoanRepaymentRequest,
+	actor Actor,
 ) (*models.LoanRepayment, error) {
 	id = strings.TrimSpace(id)
 
@@ -232,6 +257,18 @@ func (s *LoanRepaymentService) Pay(
 
 	if request.PaidAmount.LessThanOrEqual(decimal.Zero) {
 		return nil, ErrInvalidRepaymentAmount
+	}
+
+	// Authorization is enforced before the write transaction opens so an
+	// unauthorized principal can never mutate a repayment that belongs
+	// to a loan they do not own.
+	preFetch, err := s.repaymentRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if !CanAccessRecord(actor, preFetch.Loan.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	var repayment *models.LoanRepayment
@@ -358,6 +395,7 @@ func (s *LoanRepaymentService) MarkOverdue() error {
 			Page:     1,
 			PageSize: 1000,
 		},
+		uuid.Nil,
 	)
 	if err != nil {
 		return err
@@ -380,6 +418,7 @@ func (s *LoanRepaymentService) MarkOverdue() error {
 
 func (s *LoanRepaymentService) Cancel(
 	id string,
+	actor Actor,
 ) error {
 	id = strings.TrimSpace(id)
 
@@ -390,6 +429,11 @@ func (s *LoanRepaymentService) Cancel(
 	repayment, err := s.repaymentRepo.FindByID(id)
 	if err != nil {
 		return err
+	}
+
+	// Ownership is inherited through the parent loan.
+	if !CanAccessRecord(actor, repayment.Loan.CreatedByID) {
+		return ErrRecordAccessDenied
 	}
 
 	if repayment.Status == models.RepaymentStatusPaid {

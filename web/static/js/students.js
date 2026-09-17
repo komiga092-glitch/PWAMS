@@ -53,7 +53,7 @@ function getStudentFormData(form) {
         full_name: String(formData.get("full_name") ?? "").trim(),
         school_name: String(formData.get("school_name") ?? "").trim(),
         grade: String(formData.get("grade") ?? "").trim(),
-        student_code: String(formData.get("student_code") ?? "").trim(),
+
         date_of_birth: String(formData.get("date_of_birth") ?? "").trim(),
         gender: String(formData.get("gender") ?? "").trim(),
         guardian_name: String(formData.get("guardian_name") ?? "").trim(),

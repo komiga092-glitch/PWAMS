@@ -35,7 +35,6 @@ func (h *RevenueHandler) writeAudit(
 		"revenue_records",
 		entityID,
 		details,
-		c.ClientIP(),
 	)
 }
 

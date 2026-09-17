@@ -116,6 +116,7 @@ func CalculateLoanInstallmentPublic(
 
 func (s *LoanService) GetLoanByID(
 	id string,
+	actor Actor,
 ) (*models.Loan, error) {
 
 	id = strings.TrimSpace(id)
@@ -124,12 +125,30 @@ func (s *LoanService) GetLoanByID(
 		return nil, ErrInvalidLoanID
 	}
 
-	return s.loanRepo.FindByID(id)
+	loan, err := s.loanRepo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	if !CanAccessRecord(actor, loan.CreatedByID) {
+		return nil, ErrRecordAccessDenied
+	}
+
+	return loan, nil
 }
 
 func (s *LoanService) ListLoans(
 	query models.LoanListQuery,
+	actor Actor,
 ) ([]models.Loan, int64, int, int, error) {
+
+	// Fail closed for unauthenticated/invalid actors before touching any
+	// repository (the service may be constructed with nil repositories in
+	// tests that assert this exact contract).
+	ownerID, ok := ownershipFilter(actor)
+	if !ok {
+		return nil, 0, 0, 0, ErrRecordAccessDenied
+	}
 
 	page := query.Page
 	if page < 1 {
@@ -144,10 +163,16 @@ func (s *LoanService) ListLoans(
 		pageSize = 100
 	}
 
+	if strings.TrimSpace(query.PersonID) != "" {
+		if _, err := uuid.Parse(query.PersonID); err != nil {
+			return nil, 0, page, pageSize, ErrInvalidPersonID
+		}
+	}
+
 	query.Page = page
 	query.PageSize = pageSize
 
-	loans, total, err := s.loanRepo.List(query)
+	loans, total, err := s.loanRepo.List(query, ownerID)
 	if err != nil {
 		return nil, 0, page, pageSize, err
 	}
@@ -159,6 +184,7 @@ func (s *LoanService) ReviewLoan(
 	id string,
 	request models.ReviewLoanRequest,
 	reviewerID uuid.UUID,
+	actor Actor,
 ) (*models.Loan, error) {
 
 	id = strings.TrimSpace(id)
@@ -170,6 +196,10 @@ func (s *LoanService) ReviewLoan(
 	loan, err := s.loanRepo.FindByID(id)
 	if err != nil {
 		return nil, err
+	}
+
+	if !CanAccessRecord(actor, loan.CreatedByID) {
+		return nil, ErrRecordAccessDenied
 	}
 
 	newStatus := strings.TrimSpace(request.Status)

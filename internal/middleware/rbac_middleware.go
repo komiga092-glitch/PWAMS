@@ -66,10 +66,15 @@ func RequireAnyRole(allowedRoles ...string) gin.HandlerFunc {
 
 func abortForbidden(c *gin.Context) {
 	if isBrowserRequest(c) {
+		lang, ok := c.Get("lang")
+		if !ok {
+			lang = "en"
+		}
 		c.HTML(http.StatusForbidden, "error.html", gin.H{
 			"title":   "Access denied",
 			"heading": "Access denied",
 			"message": "You do not have permission to access this page.",
+			"Lang":    lang,
 		})
 		c.Abort()
 		return

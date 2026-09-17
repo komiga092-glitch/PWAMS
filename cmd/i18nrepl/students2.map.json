@@ -1,0 +1,51 @@
+{
+  "web/templates/student_view.html": [
+    ["<h1>Student Details</h1>", "<h1>{{t .Lang \"students.view_title\"}}</h1>"],
+    ["<p>View student information and records.</p>", "<p>{{t .Lang \"students.view_subtitle\"}}</p>"],
+    ["class=\"btn btn-primary\">\n        Edit Student\n      </a>", "class=\"btn btn-primary\">\n        {{t .Lang \"students.edit\"}}\n      </a>"],
+    ["class=\"btn btn-secondary\"> Back </a>", "class=\"btn btn-secondary\"> {{t .Lang \"students.back\"}} </a>"],
+    ["<h2>Student Information</h2>", "<h2>{{t .Lang \"students.info_section\"}}</h2>"],
+    ["badge badge-success\"> Active </span>", "badge badge-success\"> {{t .Lang \"common.active\"}} </span>"],
+    ["badge badge-warning\"> Pending </span>", "badge badge-warning\"> {{t .Lang \"students.pending\"}} </span>"],
+    ["badge badge-danger\"> Inactive </span>", "badge badge-danger\"> {{t .Lang \"students.inactive\"}} </span>"],
+    ["<label class=\"form-label\"> Full Name </label>", "<label class=\"form-label\"> {{t .Lang \"students.full_name\"}} </label>"],
+    ["<label class=\"form-label\"> Student Code </label>", "<label class=\"form-label\"> {{t .Lang \"students.student_code\"}} </label>"],
+    ["<label class=\"form-label\"> School / Institution </label>", "<label class=\"form-label\"> {{t .Lang \"students.school\"}} </label>"],
+    ["<label class=\"form-label\"> Grade </label>", "<label class=\"form-label\"> {{t .Lang \"students.grade\"}} </label>"],
+    ["<label class=\"form-label\"> Date of Birth </label>", "<label class=\"form-label\"> {{t .Lang \"students.date_of_birth\"}} </label>"],
+    ["<label class=\"form-label\"> Gender </label>", "<label class=\"form-label\"> {{t .Lang \"students.gender\"}} </label>"],
+    ["<label class=\"form-label\"> Guardian Name </label>", "<label class=\"form-label\"> {{t .Lang \"students.guardian_name\"}} </label>"],
+    ["<label class=\"form-label\"> Guardian Phone </label>", "<label class=\"form-label\"> {{t .Lang \"students.guardian_phone\"}} </label>"],
+    ["<label class=\"form-label\"> Academic Year </label>", "<label class=\"form-label\"> {{t .Lang \"students.academic_year\"}} </label>"],
+    ["<label class=\"form-label\"> Remarks </label>", "<label class=\"form-label\"> {{t .Lang \"students.remarks\"}} </label>"]
+  ],
+  "web/templates/student_edit.html": [
+    ["<h1>Edit Student</h1>", "<h1>{{t .Lang \"students.edit_title\"}}</h1>"],
+    ["<p>Update student information.</p>", "<p>{{t .Lang \"students.edit_subtitle\"}}</p>"],
+    ["class=\"btn btn-light\">\n            Cancel\n        </a>", "class=\"btn btn-light\">\n            {{t .Lang \"common.cancel\"}}\n        </a>"],
+    ["<h2>Student Information</h2>", "<h2>{{t .Lang \"students.info_section\"}}</h2>"],
+    ["Full Name\n                        </label>", "{{t .Lang \"students.full_name\"}}\n                        </label>"],
+    ["Student Code\n                        </label>", "{{t .Lang \"students.student_code\"}}\n                        </label>"],
+    ["School / Institution\n                        </label>", "{{t .Lang \"students.school\"}}\n                        </label>"],
+    ["Grade\n                        </label>", "{{t .Lang \"students.grade\"}}\n                        </label>"],
+    ["Date of Birth\n                        </label>", "{{t .Lang \"students.date_of_birth\"}}\n                        </label>"],
+    ["Gender\n                        </label>", "{{t .Lang \"students.gender\"}}\n                        </label>"],
+    ["Guardian Name\n                        </label>", "{{t .Lang \"students.guardian_name\"}}\n                        </label>"],
+    ["Guardian Phone\n                        </label>", "{{t .Lang \"students.guardian_phone\"}}\n                        </label>"],
+    ["Academic Year\n                        </label>", "{{t .Lang \"students.academic_year\"}}\n                        </label>"],
+    ["Status\n                        </label>", "{{t .Lang \"common.status\"}}\n                        </label>"],
+    ["{{ if eq .student.Status \"Active\" }}selected{{ end }}>\n                                Active\n                            </option>", "{{ if eq .student.Status \"Active\" }}selected{{ end }}>\n                                {{t .Lang \"common.active\"}}\n                            </option>"],
+    ["{{ if eq .student.Status \"Inactive\" }}selected{{ end }}>\n                                Inactive\n                            </option>", "{{ if eq .student.Status \"Inactive\" }}selected{{ end }}>\n                                {{t .Lang \"students.inactive\"}}\n                            </option>"],
+    ["{{ if eq .student.Status \"Pending\" }}selected{{ end }}>\n                                Pending\n                            </option>", "{{ if eq .student.Status \"Pending\" }}selected{{ end }}>\n                                {{t .Lang \"students.pending\"}}\n                            </option>"],
+    ["Remarks\n                        </label>", "{{t .Lang \"students.remarks\"}}\n                        </label>"],
+    ["class=\"btn btn-secondary\">\n                        Cancel\n                    </a>", "class=\"btn btn-secondary\">\n                        {{t .Lang \"common.cancel\"}}\n                    </a>"],
+    ["Update Student\n                    </button>", "{{t .Lang \"students.update\"}}\n                    </button>"]
+  ],
+  "web/templates/students_table.html": [
+    ["<div class=\"empty\">No students found.</div>", "<div class=\"empty\">{{t .Lang \"students.empty\"}}</div>"],
+    ["<th>Name</th>", "<th>{{t .Lang \"students.name\"}}</th>"],
+    ["<th>Status</th>", "<th>{{t .Lang \"common.status\"}}</th>"],
+    ["<th>Actions</th>", "<th>{{t .Lang \"common.actions\"}}</th>"],
+    ["{{ .ID }}/view\">View</a>", "{{ .ID }}/view\">{{t .Lang \"common.view\"}}</a>"]
+  ]
+}

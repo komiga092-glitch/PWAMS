@@ -1,0 +1,111 @@
+{{ define "student_dashboard_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Student Dashboard</h1>
+      <p>Overview of your aid, loans and repayments.</p>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ else }}
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">My Aid Requests</span><span class="stat-icon">▣</span>
+      </div>
+      <div class="stat-value">{{ .data.TotalAidRequests }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Pending Aid</span><span class="stat-icon">◷</span>
+      </div>
+      <div class="stat-value">{{ .data.PendingAidRequests }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Approved Aid</span><span class="stat-icon">✓</span>
+      </div>
+      <div class="stat-value">{{ .data.ApprovedAid }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">My Loans</span><span class="stat-icon">₹</span>
+      </div>
+      <div class="stat-value">{{ .data.TotalLoans }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Loan Applications</span><span class="stat-icon">◷</span>
+      </div>
+      <div class="stat-value">{{ .data.PendingLoanApps }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Active Loans</span><span class="stat-icon">⊘</span>
+      </div>
+      <div class="stat-value">{{ .data.ActiveLoans }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Outstanding Balance</span><span class="stat-icon">¤</span>
+      </div>
+      <div class="stat-value">{{ printf "%.2f" .data.OutstandingBalance }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Repayment</span><span class="stat-icon">↻</span>
+      </div>
+      <div class="stat-value">{{ printf "%.1f" .data.RepaymentPercent }}%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Notifications</span><span class="stat-icon">♢</span>
+      </div>
+      <div class="stat-value">{{ .data.UnreadNotifications }}</div>
+    </div>
+  </section>
+
+  <div class="dashboard-grid">
+    <div class="panel">
+      <div class="panel-header"><h2>{{ .T "dashboard.quick_access" }}</h2></div>
+      <div class="panel-body">
+        <div class="quick-grid">
+          <a class="quick-card" href="/my/aid"
+            ><div class="quick-icon">▣</div>
+            <div class="quick-title">My Aid</div>
+            <div class="quick-text">View your aid requests</div></a
+          >
+          <a class="quick-card" href="/my/aid/request"
+            ><div class="quick-icon">＋</div>
+            <div class="quick-title">Request Aid</div>
+            <div class="quick-text">Submit a new aid request</div></a
+          >
+          <a class="quick-card" href="/my/loans"
+            ><div class="quick-icon">₹</div>
+            <div class="quick-title">My Loans</div>
+            <div class="quick-text">View your loans</div></a
+          >
+          <a class="quick-card" href="/my/loans/apply"
+            ><div class="quick-icon">＋</div>
+            <div class="quick-title">Apply for Loan</div>
+            <div class="quick-text">Submit a loan application</div></a
+          >
+          <a class="quick-card" href="/my/repayments"
+            ><div class="quick-icon">↻</div>
+            <div class="quick-title">My Repayments</div>
+            <div class="quick-text">View your repayment schedule</div></a
+          >
+          <a class="quick-card" href="/my/notifications"
+            ><div class="quick-icon">♢</div>
+            <div class="quick-title">Notifications</div>
+            <div class="quick-text">View your notifications</div></a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+</section>
+{{ end }}

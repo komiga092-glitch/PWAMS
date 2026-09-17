@@ -1,0 +1,24 @@
+{
+  "web/templates/care_provided.html": [
+    ["<script>\nlet currentPage = 1;", "<script>\nconst I18N = {\n  view: '{{t .Lang \"common.view\"}}',\n  edit: '{{t .Lang \"common.edit\"}}',\n  del: '{{t .Lang \"common.delete\"}}',\n  no_offline: '{{t .Lang \"care.no_offline\"}}',\n  load_failed: '{{t .Lang \"care.load_failed\"}}',\n  unable_details: '{{t .Lang \"care.details_failed\"}}',\n  unable_edit: '{{t .Lang \"care.edit_load_failed\"}}',\n  edit_title: '{{t .Lang \"care.edit\"}}',\n  edit_subtitle: '{{t .Lang \"care.edit_subtitle\"}}',\n  add_title: '{{t .Lang \"care.add_modal_title\"}}',\n  add_subtitle: '{{t .Lang \"care.add_modal_subtitle\"}}',\n  save_btn: '{{t .Lang \"care.save\"}}',\n  update_btn: '{{t .Lang \"care.update\"}}',\n  save_failed: '{{t .Lang \"care.save_failed\"}}',\n  save_success: '{{t .Lang \"care.save_success\"}}',\n  confirm_delete: '{{t .Lang \"care.delete_confirm\"}}',\n  delete_failed: '{{t .Lang \"care.delete_failed\"}}',\n  delete_success: '{{t .Lang \"care.delete_success\"}}'\n};\nlet currentPage = 1;"],
+    [">View</button>", ">${I18N.view}</button>"],
+    [">Edit</button>", ">${I18N.edit}</button>"],
+    [">Delete</button>", ">${I18N.del}</button>"],
+    ["emptyState.textContent = \"No offline data available.\";", "emptyState.textContent = I18N.no_offline;"],
+    ["emptyState.textContent = \"Unable to load care records.\";", "emptyState.textContent = I18N.load_failed;"],
+    ["alert(\"Unable to load care record details.\");", "alert(I18N.unable_details);"],
+    ["document.getElementById(\"modalTitle\").textContent = \"Edit Care Record\";", "document.getElementById(\"modalTitle\").textContent = I18N.edit_title;"],
+    ["\"Update care assistance details.\";", "I18N.edit_subtitle;"],
+    ["alert(\"Unable to load care record for editing.\");", "alert(I18N.unable_edit);"],
+    ["result.message || \"Failed to save care record\"", "result.message || I18N.save_failed"],
+    ["result.message || \"Care record saved successfully\"", "result.message || I18N.save_success"],
+    ["confirm(\"Are you sure you want to delete this care record?\")", "confirm(I18N.confirm_delete)"],
+    ["result.message || \"Failed to delete care record\"", "result.message || I18N.delete_failed"],
+    ["result.message || \"Care record deleted successfully\"", "result.message || I18N.delete_success"],
+    ["alert(\"Failed to delete care record: \" + error.message);", "alert(I18N.delete_failed + \": \" + error.message);"],
+    ["document.getElementById(\"modalTitle\").textContent = \"Add Care Record\";", "document.getElementById(\"modalTitle\").textContent = I18N.add_title;"],
+    ["\"Record welfare assistance provided.\";", "I18N.add_subtitle;"],
+    ["document.getElementById(\"submitBtn\").textContent = \"Save Care Record\";", "document.getElementById(\"submitBtn\").textContent = I18N.save_btn;"],
+    ["document.getElementById(\"submitBtn\").textContent = \"Update Care Record\";", "document.getElementById(\"submitBtn\").textContent = I18N.update_btn;"]
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "web/templates/reports.html": [
+    ["<h1>Reports</h1>", "<h1>{{t .Lang \"reports.title\"}}</h1>"],
+    ["Summary dashboards for donations, aid requests, and system activity.", "{{t .Lang \"reports.subtitle\"}}"],
+    ["<div class=\"quick-title\">Dashboard Stats</div>", "<div class=\"quick-title\">{{t .Lang \"reports.dashboard_stats\"}}</div>"],
+    ["<div class=\"quick-text\">View system summary report</div>", "<div class=\"quick-text\">{{t .Lang \"reports.view_system_summary\"}}</div>"],
+    ["<div class=\"quick-title\">Donations Report</div>", "<div class=\"quick-title\">{{t .Lang \"reports.donations_report\"}}</div>"],
+    ["<div class=\"quick-text\">Review donor contribution summaries</div>", "<div class=\"quick-text\">{{t .Lang \"reports.review_donor_contributions\"}}</div>"],
+    ["<div class=\"quick-title\">Aid Request Report</div>", "<div class=\"quick-title\">{{t .Lang \"reports.aid_request_report\"}}</div>"],
+    ["<div class=\"quick-text\">Track assistance demand by type</div>", "<div class=\"quick-text\">{{t .Lang \"reports.track_assistance_demand\"}}</div>"],
+    ["<h2>Dashboard Report</h2>", "<h2>{{t .Lang \"reports.dashboard_report\"}}</h2>"],
+    ["<p>Users: {{ .dashboard.TotalUsers }}</p>", "<p>{{t .Lang \"reports.total_users\"}}: {{ .dashboard.TotalUsers }}</p>"],
+    ["<p>Persons: {{ .dashboard.TotalPersons }}</p>", "<p>{{t .Lang \"reports.total_persons\"}}: {{ .dashboard.TotalPersons }}</p>"],
+    ["<p>Students: {{ .dashboard.TotalStudents }}</p>", "<p>{{t .Lang \"reports.total_students\"}}: {{ .dashboard.TotalStudents }}</p>"],
+    ["<p>Donors: {{ .dashboard.TotalDonors }}</p>", "<p>{{t .Lang \"reports.total_donors\"}}: {{ .dashboard.TotalDonors }}</p>"],
+    ["<p>Donations: {{ .dashboard.TotalDonations }}</p>", "<p>{{t .Lang \"reports.total_donations\"}}: {{ .dashboard.TotalDonations }}</p>"],
+    ["<p>Aid Requests: {{ .dashboard.TotalAidRequests }}</p>", "<p>{{t .Lang \"reports.total_aid_requests\"}}: {{ .dashboard.TotalAidRequests }}</p>"],
+    ["<p>Care Provided: {{ .dashboard.TotalCareProvided }}</p>", "<p>{{t .Lang \"reports.total_care_provided\"}}: {{ .dashboard.TotalCareProvided }}</p>"],
+    ["<h2>Donation Report</h2>", "<h2>{{t .Lang \"reports.donations_report\"}}</h2>"],
+    ["<p>Total Donations: {{ .donations.TotalDonations }}</p>", "<p>{{t .Lang \"reports.total_donations\"}}: {{ .donations.TotalDonations }}</p>"],
+    ["<p>Total Donation Amount: {{ printf \"%.2f\" .donations.TotalAmount }}</p>", "<p>{{t .Lang \"reports.total_donation_amount\"}}: {{ printf \"%.2f\" .donations.TotalAmount }}</p>"],
+    ["<h2>Aid Request Report</h2>", "<h2>{{t .Lang \"reports.aid_request_report\"}}</h2>"],
+    ["<p>Total Requests: {{ .aid_requests.TotalRequests }}</p>", "<p>{{t .Lang \"reports.total_requests\"}}: {{ .aid_requests.TotalRequests }}</p>"],
+    ["<p>Pending Requests: {{ .aid_requests.PendingRequests }}</p>", "<p>{{t .Lang \"reports.pending_requests\"}}: {{ .aid_requests.PendingRequests }}</p>"],
+    ["<p>Approved Requests: {{ .aid_requests.ApprovedRequests }}</p>", "<p>{{t .Lang \"reports.approved_requests\"}}: {{ .aid_requests.ApprovedRequests }}</p>"],
+    ["<p>Rejected Requests: {{ .aid_requests.RejectedRequests }}</p>", "<p>{{t .Lang \"reports.rejected_requests\"}}: {{ .aid_requests.RejectedRequests }}</p>"],
+    ["<p>Cancelled Requests: {{ .aid_requests.CancelledRequests }}</p>", "<p>{{t .Lang \"reports.cancelled_requests\"}}: {{ .aid_requests.CancelledRequests }}</p>"],
+    ["<div class=\"empty\">No report data available.</div>", "<div class=\"empty\">{{t .Lang \"reports.no_data\"}}</div>"]
+  ]
+}

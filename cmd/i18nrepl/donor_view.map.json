@@ -1,0 +1,24 @@
+{
+  "web/templates/donor_view.html": [
+    ["<h1>Donor Details</h1>", "<h1>{{t .Lang \"donors.view_title\"}}</h1>"],
+    ["<p>View donor information and records.</p>", "<p>{{t .Lang \"donors.view_subtitle\"}}</p>"],
+    ["class=\"btn btn-primary\">\n                Edit\n            </a>", "class=\"btn btn-primary\">\n                {{t .Lang \"common.edit\"}}\n            </a>"],
+    ["class=\"btn btn-secondary\">\n                Back\n            </a>", "class=\"btn btn-secondary\">\n                {{t .Lang \"donors.back\"}}\n            </a>"],
+    ["<h2>Donor Information</h2>", "<h2>{{t .Lang \"donors.info_section\"}}</h2>"],
+    ["status-active\">\n                    Active\n                </span>", "status-active\">\n                    {{t .Lang \"common.active\"}}\n                </span>"],
+    ["<span class=\"status-badge\">\n                    Pending\n                </span>", "<span class=\"status-badge\">\n                    {{t .Lang \"donors.pending\"}}\n                </span>"],
+    ["status-inactive\">\n                    Inactive\n                </span>", "status-inactive\">\n                    {{t .Lang \"donors.inactive\"}}\n                </span>"],
+    ["<label>Name</label>", "<label>{{t .Lang \"donors.name\"}}</label>"],
+    ["<label>Donor Type</label>", "<label>{{t .Lang \"donors.donor_type\"}}</label>"],
+    ["<label>NIC / Passport</label>", "<label>{{t .Lang \"donors.nic_passport\"}}</label>"],
+    ["<label>Organization Name</label>", "<label>{{t .Lang \"donors.organization_name\"}}</label>"],
+    ["<label>Registration Number</label>", "<label>{{t .Lang \"donors.registration_number\"}}</label>"],
+    ["<label>Phone</label>", "<label>{{t .Lang \"donors.phone\"}}</label>"],
+    ["<label>Email</label>", "<label>{{t .Lang \"donors.email\"}}</label>"],
+    ["<label>Contact Person</label>", "<label>{{t .Lang \"donors.contact_person\"}}</label>"],
+    ["<label>Contact Person Phone</label>", "<label>{{t .Lang \"donors.contact_person_phone\"}}</label>"],
+    ["<label>Preferred Donation Type</label>", "<label>{{t .Lang \"donors.preferred_donation_type\"}}</label>"],
+    ["<label>Address</label>", "<label>{{t .Lang \"donors.address\"}}</label>"],
+    ["<label>Notes</label>", "<label>{{t .Lang \"donors.notes\"}}</label>"]
+  ]
+}

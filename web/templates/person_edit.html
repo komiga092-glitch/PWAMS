@@ -5,14 +5,14 @@
     <div class="page-heading">
 
         <div>
-            <h1>Edit Care Seeker</h1>
-            <p>Update care seeker information.</p>
+            <h1>{{t .Lang "persons.edit_title"}}</h1>
+            <p>{{t .Lang "persons.edit_subtitle"}}</p>
         </div>
 
         <a
             href="/persons/{{ .person.ID }}/view"
             class="btn btn-light">
-            Cancel
+            {{t .Lang "common.cancel"}}
         </a>
 
     </div>
@@ -31,7 +31,7 @@
 
         <div class="panel-header">
 
-            <h2>Personal Information</h2>
+            <h2>{{t .Lang "persons.personal_info"}}</h2>
 
         </div>
 
@@ -47,7 +47,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Full Name
+                            {{t .Lang "persons.full_name"}}
                         </label>
 
                         <input
@@ -63,7 +63,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            NIC / Passport
+                            {{t .Lang "persons.nic_passport"}}
                         </label>
 
                         <input
@@ -79,7 +79,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Date of Birth
+                            {{t .Lang "persons.date_of_birth"}}
                         </label>
 
                         <input
@@ -94,7 +94,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Gender
+                            {{t .Lang "persons.gender"}}
                         </label>
 
                         <select
@@ -104,25 +104,25 @@
                             <option
                                 value=""
                                 {{ if eq .person.Gender "" }}selected{{ end }}>
-                                Select Gender
+                                {{t .Lang "persons.select_gender"}}
                             </option>
 
                             <option
                                 value="Male"
                                 {{ if eq .person.Gender "Male" }}selected{{ end }}>
-                                Male
+                                {{t .Lang "persons.male"}}
                             </option>
 
                             <option
                                 value="Female"
                                 {{ if eq .person.Gender "Female" }}selected{{ end }}>
-                                Female
+                                {{t .Lang "persons.female"}}
                             </option>
 
                             <option
                                 value="Other"
                                 {{ if eq .person.Gender "Other" }}selected{{ end }}>
-                                Other
+                                {{t .Lang "persons.other"}}
                             </option>
 
                         </select>
@@ -133,7 +133,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Phone
+                            {{t .Lang "persons.phone"}}
                         </label>
 
                         <input
@@ -148,7 +148,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Email
+                            {{t .Lang "persons.email"}}
                         </label>
 
                         <input
@@ -163,7 +163,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Occupation
+                            {{t .Lang "persons.occupation"}}
                         </label>
 
                         <input
@@ -178,7 +178,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Monthly Income
+                            {{t .Lang "persons.monthly_income"}}
                         </label>
 
                         <input
@@ -195,7 +195,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            Status
+                            {{t .Lang "common.status"}}
                         </label>
 
                         <select
@@ -206,19 +206,19 @@
                             <option
                                 value="Active"
                                 {{ if eq .person.Status "Active" }}selected{{ end }}>
-                                Active
+                                {{t .Lang "common.active"}}
                             </option>
 
                             <option
                                 value="Inactive"
                                 {{ if eq .person.Status "Inactive" }}selected{{ end }}>
-                                Inactive
+                                {{t .Lang "persons.inactive"}}
                             </option>
 
                             <option
                                 value="Pending"
                                 {{ if eq .person.Status "Pending" }}selected{{ end }}>
-                                Pending
+                                {{t .Lang "persons.pending"}}
                             </option>
 
                         </select>
@@ -229,7 +229,7 @@
                     <div class="form-group full">
 
                         <label class="form-label">
-                            Address
+                            {{t .Lang "persons.address"}}
                         </label>
 
                         <textarea
@@ -247,13 +247,13 @@
                     <a
                         href="/persons/{{ .person.ID }}/view"
                         class="btn btn-secondary">
-                        Cancel
+                        {{t .Lang "common.cancel"}}
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary">
-                        Update Care Seeker
+                        {{t .Lang "persons.update"}}
                     </button>
 
                 </div>

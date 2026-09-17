@@ -32,17 +32,17 @@ func RegisterAuthRoutes(
 
 	router.GET("/login", func(c *gin.Context) {
 		renderTempl(c, http.StatusOK, func(ctx context.Context, w interface{ Write([]byte) (int, error) }) error {
-			return components.LoginPage("").Render(ctx, w)
+			return components.LoginPage("", c.MustGet("lang").(string)).Render(ctx, w)
 		})
 	})
 	router.GET("/forgot-password", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "forgot_password.html", gin.H{})
+		c.HTML(http.StatusOK, "forgot_password.html", gin.H{"Lang": c.MustGet("lang")})
 	})
 	router.GET("/verify-reset-otp", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "verify_reset_otp.html", gin.H{})
+		c.HTML(http.StatusOK, "verify_reset_otp.html", gin.H{"Lang": c.MustGet("lang")})
 	})
 	router.GET("/reset-password", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "reset_password.html", gin.H{})
+		c.HTML(http.StatusOK, "reset_password.html", gin.H{"Lang": c.MustGet("lang")})
 	})
 
 	router.POST(

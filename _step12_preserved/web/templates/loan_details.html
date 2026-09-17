@@ -1,0 +1,336 @@
+{{ define "loan_details_content" }}
+
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{ .T "loan.details_title" }}</h1>
+      <p>{{ if .loan }}{{ .loan.Person.FullName }}{{ end }}</p>
+    </div>
+
+    <div style="display: flex; gap: 10px">
+      <a href="/loans/page" class="btn btn-secondary">{{ .T "loan.back_to_list" }}</a>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  {{ if .loan }}
+
+  <!-- Loan Information -->
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>{{ .T "loan.information" }}</h2>
+      </div>
+
+      {{ if eq .loan.Status "Active" }}
+      <span class="badge badge-success" data-loan-status-badge>{{ .T "status.active" }}</span>
+      {{ else if eq .loan.Status "Approved" }}
+      <span class="badge badge-success" data-loan-status-badge>{{ .T "status.approved" }}</span>
+      {{ else if eq .loan.Status "Completed" }}
+      <span class="badge badge-success" data-loan-status-badge>{{ .T "loan.fully_paid" }}</span>
+      {{ else if eq .loan.Status "Rejected" }}
+      <span class="badge badge-danger" data-loan-status-badge>{{ .T "status.rejected" }}</span>
+      {{ else if eq .loan.Status "Cancelled" }}
+      <span class="badge badge-muted" data-loan-status-badge>{{ .T "status.cancelled" }}</span>
+      {{ else }}
+      <span class="badge badge-warning" data-loan-status-badge>{{ .T "status.pending" }}</span>
+      {{ end }}
+    </div>
+
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.borrower" }}</label>
+          <div class="form-control">{{ .loan.Person.FullName }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.amount" }}</label>
+          <div class="form-control">{{ .loan.LoanAmount.StringFixed 2 }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.interest_rate" }}</label>
+          <div class="form-control">{{ .loan.InterestRate.StringFixed 2 }}%</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.tenure" }}</label>
+          <div class="form-control">{{ .loan.DurationMonths }} {{ .T "loan.months" }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.start_date" }}</label>
+          <div class="form-control">
+            {{ if .loan.StartDate }}{{ .loan.StartDate.Format "2006-01-02" }}{{ else }}—{{ end }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.due_day" }}</label>
+          <div class="form-control">{{ .loan.DueDay }}</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.status" }}</label>
+          <div class="form-control" data-loan-status-value>{{ if eq .loan.Status "Completed" }}{{ .T "loan.fully_paid" }}{{ else }}{{ .loan.Status }}{{ end }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial Summary -->
+
+  <div class="panel" style="margin-top: 18px">
+    <div class="panel-header">
+      <div>
+        <h2>{{ .T "loan.financial_summary" }}</h2>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.principal" }}</div>
+          <div class="stat-value">{{ .loan.LoanAmount.StringFixed 2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.total_interest" }}</div>
+          <div class="stat-value">{{ .loan.TotalInterest.StringFixed 2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.total_repayable" }}</div>
+          <div class="stat-value">{{ .loan.TotalRepayableAmount.StringFixed 2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.total_paid" }}</div>
+          <div class="stat-value" data-summary="total-paid">{{ .loan.TotalPaidAmount.StringFixed 2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.outstanding_amount" }}</div>
+          <div class="stat-value" data-summary="outstanding">{{ .loan.OutstandingAmount.StringFixed 2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.monthly_installment" }}</div>
+          <div class="stat-value">{{ .installmentAmount.StringFixed 2 }}</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.next_payment" }}</div>
+          <div class="stat-value" data-summary="next-payment">
+            {{ if .nextPaymentAmount.IsPositive }}{{ .nextPaymentAmount.StringFixed 2 }}{{ else }}—{{ end }}
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-label">{{ .T "loan.next_due_date" }}</div>
+          <div class="stat-value" data-summary="next-due-date">
+            {{ if .nextDueDate }}{{ .nextDueDate.Format "2006-01-02" }}{{ else }}—{{ end }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repayment Schedule -->
+
+  <div class="panel" style="margin-top: 18px">
+    <div class="panel-header">
+      <div>
+        <h2>{{ .T "loan.repayment_schedule" }}</h2>
+      </div>
+      <span class="badge">{{ len .schedule }} {{ .T "loan.installment" }}</span>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>{{ .T "loan.due_date" }}</th>
+            <th>{{ .T "loan.principal" }}</th>
+            <th>{{ .T "loan.interest" }}</th>
+            <th>{{ .T "loan.amount_due" }}</th>
+            <th>{{ .T "loan.paid_amount" }}</th>
+            <th>{{ .T "loan.outstanding" }}</th>
+            <th>{{ .T "loan.status" }}</th>
+            <th>{{ .T "loan.action" }}</th>
+          </tr>
+        </thead>
+
+        <tbody data-schedule-body>
+          {{ range .schedule }}
+          <tr data-repayment-row data-repayment-id="{{ .ID }}" data-row-status="{{ .Status }}">
+            <td>#{{ .InstallmentNumber }}</td>
+            <td>{{ .DueDate.Format "2006-01-02" }}</td>
+            <td>{{ .PrincipalAmount.StringFixed 2 }}</td>
+            <td>{{ .InterestAmount.StringFixed 2 }}</td>
+            <td>{{ .Amount.StringFixed 2 }}</td>
+            <td data-row-paid>{{ .PaidAmount.StringFixed 2 }}</td>
+            <td data-row-outstanding>{{ .OutstandingAmount.StringFixed 2 }}</td>
+            <td>
+              {{ if eq .Status "Paid" }}
+              <span class="badge badge-success">{{ $.T "status.paid" }}</span>
+              {{ else if eq .Status "Partially Paid" }}
+              <span class="badge badge-warning">{{ $.T "status.partially_paid" }}</span>
+              {{ else if eq .Status "Overdue" }}
+              <span class="badge badge-danger">{{ $.T "status.overdue" }}</span>
+              {{ else if eq .Status "Cancelled" }}
+              <span class="badge badge-muted">{{ $.T "status.cancelled" }}</span>
+              {{ else }}
+              <span class="badge badge-warning">{{ $.T "status.pending" }}</span>
+              {{ end }}
+            </td>
+            <td class="actions">
+              {{ if and (index $.user_permissions "repayment.create") (index $.payable .ID.String) }}
+              <button
+                type="button"
+                class="btn btn-small btn-primary"
+                data-repay-open
+                data-repayment-id="{{ .ID }}"
+                data-installment="{{ .InstallmentNumber }}"
+                data-due-date="{{ .DueDate.Format "2006-01-02" }}"
+                data-principal="{{ .PrincipalAmount.StringFixed 2 }}"
+                data-interest="{{ .InterestAmount.StringFixed 2 }}"
+                data-amount-due="{{ .Amount.StringFixed 2 }}"
+                data-outstanding="{{ .OutstandingAmount.StringFixed 2 }}"
+              >
+                {{ $.T "loan.repay" }}
+              </button>
+              {{ end }}
+            </td>
+          </tr>
+          {{ else }}
+          <tr>
+            <td colspan="9" class="empty">{{ .T "loan.no_repayments" }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {{ end }}
+</section>
+
+<!-- Repay Modal -->
+
+<div id="repayModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeRepayModal()"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>{{ .T "loan.repay_installment" }}</h2>
+        <p>{{ if .loan }}{{ .loan.Person.FullName }}{{ end }}</p>
+      </div>
+
+      <button type="button" class="modal-close" onclick="closeRepayModal()">
+        ×
+      </button>
+    </div>
+
+    <form
+      id="repay-form"
+      method="POST"
+      class="form"
+      onsubmit="submitRepaymentPayment(event)"
+    >
+      <input type="hidden" name="repayment_id" id="repayRepaymentID" />
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.installment_number" }}</label>
+          <div class="form-control" id="repayInstallment" data-repay-installment>—</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.due_date" }}</label>
+          <div class="form-control" id="repayDueDate" data-repay-due-date>—</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.principal" }}</label>
+          <div class="form-control" id="repayPrincipal" data-repay-principal>—</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.interest" }}</label>
+          <div class="form-control" id="repayInterest" data-repay-interest>—</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.amount_due" }}</label>
+          <div class="form-control" id="repayAmountDue" data-repay-amount-due>—</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.outstanding" }}</label>
+          <div class="form-control"><span id="repayOutstanding" data-repay-outstanding>—</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.payment_date" }}</label>
+          <input type="date" name="payment_date" id="repayPaymentDate" readonly />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.payment_amount" }}</label>
+          <input
+            type="number"
+            name="paid_amount"
+            id="repayPaidAmount"
+            min="0.01"
+            step="0.01"
+            required
+            placeholder="0.00"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.payment_method" }}</label>
+          <select name="payment_method" id="repayPaymentMethod">
+            <option value="Cash">{{ .T "payment_method.cash" }}</option>
+            <option value="Bank Transfer">{{ .T "payment_method.bank_transfer" }}</option>
+            <option value="Cheque">{{ .T "payment_method.cheque" }}</option>
+            <option value="Card">{{ .T "payment_method.card" }}</option>
+            <option value="Other">{{ .T "payment_method.other" }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ .T "loan.reference" }}</label>
+          <input type="text" name="payment_reference" id="repayPaymentReference" maxlength="255" placeholder="—" />
+        </div>
+
+        <div class="form-group form-full">
+          <label class="form-label">{{ .T "loan.notes" }}</label>
+          <textarea name="notes" id="repayNotes" rows="3" placeholder="—"></textarea>
+        </div>
+      </div>
+
+      <p id="repay-error" class="alert alert-danger hidden" role="alert"></p>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeRepayModal()">
+          {{ .T "common.cancel" }}
+        </button>
+
+        <button type="submit" class="btn btn-primary">{{ .T "loan.submit_payment" }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/static/js/loan-details.js"></script>
+
+{{ end }}

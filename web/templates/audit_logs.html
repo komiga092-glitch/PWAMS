@@ -2,20 +2,20 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Audit Logs</h1>
-      <p>Track important changes made within the PWAMS system.</p>
+      <h1>{{t .Lang "audit.title"}}</h1>
+      <p>{{t .Lang "audit.subtitle"}}</p>
     </div>
   </div>
 
   <div class="panel">
     <div class="panel-header">
-      <h2>Recent Activity</h2>
-      <span class="badge badge-muted">System</span>
+      <h2>{{t .Lang "audit.recent"}}</h2>
+      <span class="badge badge-muted">{{t .Lang "audit.system"}}</span>
     </div>
 
     <div class="panel-body">
       <div id="audit-log-container">
-        <div class="empty">Loading audit logs...</div>
+        <div class="empty">{{t .Lang "audit.loading"}}</div>
       </div>
     </div>
   </div>
@@ -42,7 +42,7 @@
         : result.data || result.logs || result.audit_logs || [];
 
       if (!logs.length) {
-        container.innerHTML = '<div class="empty">No audit logs found.</div>';
+        container.innerHTML = '<div class="empty">{{t .Lang "audit.empty"}}</div>';
         return;
       }
 
@@ -51,11 +51,11 @@
         <table class="table">
           <thead>
             <tr>
-              <th>Action</th>
-              <th>Entity</th>
-              <th>Details</th>
-              <th>IP Address</th>
-              <th>Created At</th>
+              <th>{{t .Lang "audit.action"}}</th>
+              <th>{{t .Lang "audit.entity"}}</th>
+              <th>{{t .Lang "audit.details"}}</th>
+              <th>{{t .Lang "audit.created_at"}}</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -66,7 +66,6 @@
                 <td>${escapeHtml(log.action || "-")}</td>
                 <td>${escapeHtml(log.entity || "-")}</td>
                 <td>${escapeHtml(log.details || "-")}</td>
-                <td>${escapeHtml(log.ip_address || "-")}</td>
                 <td>${formatDate(log.created_at)}</td>
               </tr>
             `,
@@ -80,7 +79,7 @@
       console.error("Audit log loading error:", error);
 
       container.innerHTML =
-        '<div class="empty">Unable to load audit logs.</div>';
+        '<div class="empty">{{t .Lang "audit.error"}}</div>';
     }
   }
 

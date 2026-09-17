@@ -46,12 +46,10 @@ func (s *AuditLogService) Create(
 	entity string,
 	entityID string,
 	details string,
-	ipAddress string,
 ) error {
 	action = strings.TrimSpace(action)
 	entity = strings.TrimSpace(entity)
 	details = strings.TrimSpace(details)
-	ipAddress = strings.TrimSpace(ipAddress)
 
 	if action == "" || entity == "" {
 		return ErrInvalidAuditLog
@@ -80,13 +78,12 @@ func (s *AuditLogService) Create(
 	}
 
 	auditLog := &models.AuditLog{
-		ID:        uuid.New(),
-		UserID:    parsedUserID,
-		Action:    action,
-		Entity:    entity,
-		EntityID:  parsedEntityID,
-		Details:   details,
-		IPAddress: ipAddress,
+		ID:       uuid.New(),
+		UserID:   parsedUserID,
+		Action:   action,
+		Entity:   entity,
+		EntityID: parsedEntityID,
+		Details:  details,
 	}
 
 	return s.auditLogRepo.Create(auditLog)

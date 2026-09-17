@@ -1,0 +1,40 @@
+{{ define "apply_for_loan_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Apply for Loan</h1>
+      <p>Submit a loan application.</p>
+    </div>
+  </div>
+
+  {{ if .error }}
+  <div class="alert alert-danger">{{ .error }}</div>
+  {{ end }}
+
+  <div class="panel">
+    <div class="panel-body">
+      <form method="POST" action="/my/loans/apply" class="form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="loan_amount">Requested Amount *</label>
+            <input id="loan_amount" type="number" name="loan_amount" step="0.01" min="0.01" required placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label for="interest_rate">Interest Rate (%)</label>
+            <input id="interest_rate" type="number" name="interest_rate" step="0.01" min="0" value="0" placeholder="0.00" />
+          </div>
+          <div class="form-group">
+            <label for="duration_months">Duration (Months) *</label>
+            <input id="duration_months" type="number" name="duration_months" min="1" required value="12" />
+          </div>
+          <div class="form-group form-full">
+            <label for="purpose">Purpose *</label>
+            <textarea id="purpose" name="purpose" rows="3" required placeholder="What is the loan for?"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+      </form>
+    </div>
+  </div>
+</section>
+{{ end }}

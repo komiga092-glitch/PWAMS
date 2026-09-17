@@ -1,0 +1,2 @@
+﻿go: -race requires cgo; enable cgo by setting CGO_ENABLED=1
+[2026-09-09 07:46:01] CAPTURED r2_go_race exit=2

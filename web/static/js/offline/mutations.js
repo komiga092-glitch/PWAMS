@@ -1,5 +1,5 @@
 import { createOfflineId, saveOfflineMutation, } from "./db.js";
-import { isOfflineSessionValid, OFFLINE_SESSION_EXPIRED_MESSAGE, } from "./session.js";
+import { isOfflineSessionValid, offlineSessionExpiredMessage, } from "./session.js";
 const STORE_BY_ENTITY = {
     person: "persons",
     student: "students",
@@ -29,7 +29,7 @@ export function offlineMutationsEnabled() {
 }
 export async function savePendingMutation(entityType, operation, payload, recordId = typeof payload.id === "string" ? payload.id : createOfflineId()) {
     if (!(await isOfflineSessionValid())) {
-        throw new Error(OFFLINE_SESSION_EXPIRED_MESSAGE);
+        throw new Error(offlineSessionExpiredMessage());
     }
     const now = new Date().toISOString();
     const operationId = createOfflineId();

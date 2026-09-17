@@ -10,10 +10,12 @@ import (
 const (
 	RoleSuperAdmin  = "Super Admin"
 	RoleAdmin       = "Admin"
+	RoleManager     = "Manager"
 	RoleStaff       = "Staff"
 	RoleVolunteer   = "Volunteer"
 	RoleDonor       = "Donor"
 	RoleBeneficiary = "Beneficiary"
+	RoleStudent     = "Student"
 )
 
 type Role struct {

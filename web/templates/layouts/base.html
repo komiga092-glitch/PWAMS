@@ -1,6 +1,6 @@
 {{ define "base" }}
 <!doctype html>
-<html lang="en">
+<html lang="{{ .Lang }}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,7 +21,7 @@
             class="menu-btn"
             type="button"
             data-menu-button
-            aria-label="Open menu"
+            aria-label="{{t .Lang "common.open_menu"}}"
           >
             ☰
           </button>
@@ -30,25 +30,25 @@
             <a
               class="notification-btn"
               href="/notifications/page"
-              aria-label="Notifications"
+              aria-label="{{t .Lang "nav.notifications"}}"
               >🔔</a
             >
             <details class="profile-menu">
-              <summary class="profile" aria-label="Open profile menu">
+              <summary class="profile" aria-label="{{t .Lang "common.open_profile_menu"}}">
                 <div class="avatar" data-profile-avatar>U</div>
                 <div>
-                  <div class="profile-name" data-profile-name>Account</div>
+                  <div class="profile-name" data-profile-name>{{t .Lang "nav.account"}}</div>
                   <div class="profile-username" data-profile-username></div>
                   <div class="profile-role" data-profile-role></div>
                 </div>
               </summary>
               <div class="profile-dropdown">
-                <a class="profile-action" href="/profile">My Profile</a>
+                <a class="profile-action" href="/profile">{{t .Lang "nav.my_profile"}}</a>
                 <a class="profile-action" href="/profile#change-password"
-                  >Change Password</a
+                  >{{t .Lang "profile.change_password"}}</a
                 >
                 <form method="post" action="/logout">
-                  <button class="profile-action" type="submit">Logout</button>
+                  <button class="profile-action" type="submit">{{t .Lang "nav.logout"}}</button>
                 </form>
               </div>
             </details>
@@ -110,7 +110,7 @@
       role="status"
       aria-live="polite"
     >
-      Online
+      {{t .Lang "common.online"}}
     </div>
     <script type="module" src="/static/js/offline/register.js"></script>
     <script type="module" src="/static/js/offline/pages.js"></script>

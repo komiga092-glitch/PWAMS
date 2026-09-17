@@ -1,0 +1,502 @@
+﻿{{ define "report_dashboard_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.dashboard_report"}}</h1>
+      <p>{{t .Lang "reports.dashboard_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_users"}}</span></div><div class="stat-value">{{ .report.TotalUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.beneficiaries"}}</span></div><div class="stat-value">{{ .report.TotalPersons }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "nav.students"}}</span></div><div class="stat-value">{{ .report.TotalStudents }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "nav.donors"}}</span></div><div class="stat-value">{{ .report.TotalDonors }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "nav.donations"}}</span></div><div class="stat-value">{{ .report.TotalDonations }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "nav.aid_requests"}}</span></div><div class="stat-value">{{ .report.TotalAidRequests }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "nav.care_provided"}}</span></div><div class="stat-value">{{ .report.TotalCareProvided }}</div></div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_users_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.users_report"}}</h1>
+      <p>{{t .Lang "reports.users_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_users"}}</span></div><div class="stat-value">{{ .report.TotalUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.active"}}</span></div><div class="stat-value">{{ .report.ActiveUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">Disabled</span></div><div class="stat-value">{{ .report.DisabledUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">Locked</span></div><div class="stat-value">{{ .report.LockedUsers }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.users_by_role"}}</h2></div>
+    <div class="panel-body">
+      {{ range $role, $count := .report.ByRole }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $role }}</span><strong>{{ $count }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_role_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.users_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $status, $count := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $status }}</span><strong>{{ $count }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_persons_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.beneficiaries_report"}}</h1>
+      <p>{{t .Lang "reports.beneficiaries_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_persons"}}</span></div><div class="stat-value">{{ .report.TotalPersons }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.active"}}</span></div><div class="stat-value">{{ .report.ActivePersons }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.inactive"}}</span></div><div class="stat-value">{{ .report.InactiveCount }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.persons_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.persons_by_gender"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByGender }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_gender_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+{{ define "report_students_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.students_report"}}</h1>
+      <p>{{t .Lang "reports.students_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_students"}}</span></div><div class="stat-value">{{ .report.TotalStudents }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.active"}}</span></div><div class="stat-value">{{ .report.ActiveStudents }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.inactive"}}</span></div><div class="stat-value">{{ .report.InactiveCount }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.pending"}}</span></div><div class="stat-value">{{ .report.PendingCount }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.students_by_grade"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByGrade }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_grade_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.students_by_academic_year"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByAcademicYear }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_academic_year_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_donors_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.donors_report"}}</h1>
+      <p>{{t .Lang "reports.donors_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_donors"}}</span></div><div class="stat-value">{{ .report.TotalDonors }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.active"}}</span></div><div class="stat-value">{{ .report.ActiveDonors }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.inactive"}}</span></div><div class="stat-value">{{ .report.InactiveCount }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.donors_by_type"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByType }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_type_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.donors_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+{{ define "report_donations_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.donations_report"}}</h1>
+      <p>{{t .Lang "reports.donations_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_donations"}}</span></div><div class="stat-value">{{ .report.TotalDonations }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_amount"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.TotalAmount }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.donations_by_type"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByType }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_type_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.donations_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.detailed_donation_records"}}</h2></div>
+    <div class="panel-body"><a class="btn btn-light" href="/reports/donation-detail/page">{{t .Lang "reports.open_donation_detail"}}</a></div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_aid_requests_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.aid_requests_report"}}</h1>
+      <p>{{t .Lang "reports.aid_requests_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_requests"}}</span></div><div class="stat-value">{{ .report.TotalRequests }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.pending"}}</span></div><div class="stat-value">{{ .report.PendingRequests }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.approved"}}</span></div><div class="stat-value">{{ .report.ApprovedRequests }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.rejected"}}</span></div><div class="stat-value">{{ .report.RejectedRequests }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.cancelled"}}</span></div><div class="stat-value">{{ .report.CancelledRequests }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.aid_requests_by_type"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByType }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_type_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.aid_requests_by_priority"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByPriority }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_priority_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+{{ define "report_care_provided_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.care_provided_report"}}</h1>
+      <p>{{t .Lang "reports.care_provided_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_records"}}</span></div><div class="stat-value">{{ .report.TotalRecords }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.completed"}}</span></div><div class="stat-value">{{ .report.Completed }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.pending"}}</span></div><div class="stat-value">{{ .report.Pending }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.cancelled"}}</span></div><div class="stat-value">{{ .report.Cancelled }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.care_by_type"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByType }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_type_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.care_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_loans_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.loans_report"}}</h1>
+      <p>{{t .Lang "reports.loans_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_loans"}}</span></div><div class="stat-value">{{ .report.TotalLoans }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.active"}}</span></div><div class="stat-value">{{ .report.ActiveLoans }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.pending"}}</span></div><div class="stat-value">{{ .report.PendingLoans }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.approved"}}</span></div><div class="stat-value">{{ .report.ApprovedLoans }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.completed"}}</span></div><div class="stat-value">{{ .report.CompletedLoans }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_amount"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.TotalAmount }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.loans_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_loan_repayments_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.loan_repayments_report"}}</h1>
+      <p>{{t .Lang "reports.loan_repayments_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_repayments"}}</span></div><div class="stat-value">{{ .report.TotalRepayments }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.paid"}}</span></div><div class="stat-value">{{ .report.Paid }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.pending"}}</span></div><div class="stat-value">{{ .report.Pending }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.overdue"}}</span></div><div class="stat-value">{{ .report.Overdue }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_amount"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.TotalAmount }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.paid_amount"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.TotalPaidAmount }}</div></div>
+  </div>
+</section>
+{{ end }}
+{{ define "report_revenue_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.revenue_report"}}</h1>
+      <p>{{t .Lang "reports.revenue_report_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.income"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.TotalIncome }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.expenses"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.TotalExpenses }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.net"}}</span></div><div class="stat-value">{{ printf "%.2f" .report.Net }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.net_by_category"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByCategory }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ printf "%.2f" $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_category_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_account_status_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.account_status_report"}}</h1>
+      <p>{{t .Lang "reports.account_status_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_accounts"}}</span></div><div class="stat-value">{{ .report.TotalUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "common.active"}}</span></div><div class="stat-value">{{ .report.ActiveUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">Disabled</span></div><div class="stat-value">{{ .report.DisabledUsers }}</div></div>
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">Locked</span></div><div class="stat-value">{{ .report.LockedUsers }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.accounts_by_status"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByStatus }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_status_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+
+{{ define "report_audit_log_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.audit_log_report"}}</h1>
+      <p>{{t .Lang "reports.audit_log_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/page">{{t .Lang "reports.all_reports"}}</a>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-top"><span class="stat-label">{{t .Lang "reports.total_entries"}}</span></div><div class="stat-value">{{ .report.TotalEntries }}</div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.activity_by_action"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByAction }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_action_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header"><h2>{{t .Lang "reports.activity_by_entity"}}</h2></div>
+    <div class="panel-body">
+      {{ range $k, $v := .report.ByEntity }}
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><span>{{ $k }}</span><strong>{{ $v }}</strong></div>
+      {{ else }}
+      <div class="empty">{{t .Lang "reports.no_entity_data"}}</div>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+{{ define "report_donation_detail_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>{{t .Lang "reports.donation_detail_report"}}</h1>
+      <p>{{t .Lang "reports.donation_detail_subtitle"}}</p>
+    </div>
+    <a class="btn btn-light" href="/reports/donations/page">{{t .Lang "reports.donations_summary"}}</a>
+  </div>
+
+  <div class="panel">
+    <div class="panel-body">
+      <form class="toolbar" method="get" action="/reports/donation-detail/page">
+        <input class="form-control search" type="search" name="search" placeholder="{{t .Lang "reports.search_item_placeholder"}}" value="{{ .filter.Search }}" />
+        <select class="form-control" name="status">
+          <option value="">{{t .Lang "reports.all_statuses"}}</option>
+          <option value="Pending">{{t .Lang "common.pending"}}</option>
+          <option value="Confirmed">{{t .Lang "reports.confirmed"}}</option>
+          <option value="Cancelled">{{t .Lang "reports.cancelled"}}</option>
+        </select>
+        <input class="form-control" type="date" name="from_date" value="{{ .filter.FromDate }}" />
+        <input class="form-control" type="date" name="to_date" value="{{ .filter.ToDate }}" />
+        <input type="hidden" name="page_size" value="20" />
+        <button class="btn btn-light" type="submit">{{t .Lang "common.filter"}}</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top: 18px">
+    <div class="panel-header">
+      <h2>{{t .Lang "nav.donations"}}</h2>
+      <span class="badge badge-muted">{{ .pagination.total_items }} Records</span>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{t .Lang "reports.donation_date"}}</th>
+            <th>{{t .Lang "reports.donor"}}</th>
+            <th>{{t .Lang "reports.type"}}</th>
+            <th>{{t .Lang "reports.item"}}</th>
+            <th>{{t .Lang "reports.amount"}}</th>
+            <th>{{t .Lang "reports.reference"}}</th>
+            <th>{{t .Lang "reports.status"}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range .report_data }}
+          <tr>
+            <td>{{ .donation_date }}</td>
+            <td>{{ .donor_name }}</td>
+            <td>{{ .donation_type }}</td>
+            <td>{{ .item_name }}</td>
+            <td>{{ .currency }} {{ printf "%.2f" .amount }}</td>
+            <td>{{ .reference_no }}</td>
+            <td>{{ .status }}</td>
+          </tr>
+          {{ else }}
+          <tr><td colspan="7" class="empty">{{t .Lang "reports.no_donation_records"}}</td></tr>
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-body">
+      {{ if gt .pagination.total_pages 1 }}
+      <nav class="pagination">
+        {{ if gt .pagination.page 1 }}
+        <a class="btn btn-light" href="/reports/donation-detail/page?page={{ sub .pagination.page 1 }}&page_size={{ .pagination.page_size }}&status={{ .filter.Status }}&search={{ .filter.Search }}">&larr; {{t .Lang "common.prev"}}</a>
+        {{ end }}
+        <span>Page {{ .pagination.page }} of {{ .pagination.total_pages }}</span>
+        {{ if lt .pagination.page .pagination.total_pages }}
+        <a class="btn btn-light" href="/reports/donation-detail/page?page={{ add .pagination.page 1 }}&page_size={{ .pagination.page_size }}&status={{ .filter.Status }}&search={{ .filter.Search }}">{{t .Lang "common.next"}} &rarr;</a>
+        {{ end }}
+      </nav>
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}

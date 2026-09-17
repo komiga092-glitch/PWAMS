@@ -1,0 +1,51 @@
+{{ define "permissions_content" }}
+<section class="page">
+  <div class="page-heading">
+    <div>
+      <h1>Permissions</h1>
+      <p>Manage the granular permissions assigned to each role.</p>
+    </div>
+  </div>
+
+  <div id="permissions-alert" class="alert" hidden role="status" aria-live="polite"></div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Role Permissions</h2>
+      <div class="form-group">
+        <label for="permission-role-select">Role</label>
+        <select id="permission-role-select" name="role" class="form-control">
+          <option value="">Select role</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      <div id="permissions-loading" class="empty">Loading permissions...</div>
+      <div id="permissions-error" class="empty permissions-error" hidden>
+        Unable to load permissions. Check that you have permission to manage them.
+      </div>
+
+      <div id="permissions-matrix" hidden></div>
+
+      <div id="permissions-actions" class="form-actions" hidden>
+        {{ if index .user_permissions "permission_management.edit" }}
+        <button
+          id="permissions-save"
+          class="btn btn-primary"
+          type="button"
+          data-permissions="permission_management.edit"
+        >
+          Save Permissions
+        </button>
+        {{ end }}
+        <button id="permissions-reset" class="btn btn-secondary" type="button">
+          Reset
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="module" src="/static/js/permissions.js"></script>
+{{ end }}

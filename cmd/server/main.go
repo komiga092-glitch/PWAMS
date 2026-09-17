@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"text/template"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/config"
 	"github.com/komiga092-glitch/pwams/internal/database"
 	"github.com/komiga092-glitch/pwams/internal/handlers"
+	"github.com/komiga092-glitch/pwams/internal/i18n"
 	"github.com/komiga092-glitch/pwams/internal/middleware"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
@@ -340,8 +342,10 @@ func main() {
 		careProvidedService,
 	)
 
+	reportPDFService := services.NewReportPDFService()
 	reportHandler := handlers.NewReportHandler(
 		reportService,
+		reportPDFService,
 	)
 
 	auditLogHandler := handlers.NewAuditLogHandler(
@@ -371,6 +375,9 @@ func main() {
 	// double-submit token on all unsafe methods.
 	router.Use(middleware.EnsureCSRF(secureCookie))
 
+	// UI language resolution (English / Tamil / Sinhala, SRS section 32).
+	router.Use(middleware.ResolveLocale(secureCookie))
+
 	/*
 		Template loading.
 
@@ -382,6 +389,14 @@ func main() {
 		Layout templates:
 			web/templates/layouts/*.html
 	*/
+
+	// Template helper functions used by the report templates loaded below
+	// (report_detail.html / report_page_content.html), e.g. pagination links.
+	router.SetFuncMap(template.FuncMap{
+		"add": func(a, b int) int { return a + b },
+		"sub": func(a, b int) int { return a - b },
+		"t":   i18n.T,
+	})
 
 	router.LoadHTMLFiles(
 		"web/templates/layouts/base.html",
@@ -420,6 +435,8 @@ func main() {
 		"web/templates/messages.html",
 		"web/templates/files.html",
 		"web/templates/reports.html",
+		"web/templates/report_detail.html",
+		"web/templates/report_page_content.html",
 		"web/templates/audit_logs.html",
 	)
 	router.Use(func(c *gin.Context) {

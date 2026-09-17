@@ -1,0 +1,2 @@
+﻿C:\Program Files\nodejs\node.exe: bad option: --experimental-default-type=module
+[2026-09-09 07:45:58] CAPTURED r2_node_session_test exit=9

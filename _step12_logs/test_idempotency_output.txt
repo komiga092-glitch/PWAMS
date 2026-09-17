@@ -1,0 +1,13 @@
+﻿{
+    "success":  true,
+    "results":  [
+                    {
+                        "operation_id":  "2ea381b7-ba64-4d5f-b693-c2dfc33b12ae",
+                        "entity_type":  "person",
+                        "record_id":  "23ac821b-5a9a-4c27-884d-83fdce752fd4",
+                        "success":  true,
+                        "server_version":  1,
+                        "client_version":  1
+                    }
+                ]
+}

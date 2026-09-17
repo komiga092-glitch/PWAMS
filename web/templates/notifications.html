@@ -3,17 +3,17 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>Notifications</h1>
-      <p>View and manage system notifications</p>
+      <h1>{{t .Lang "nav.notifications"}}</h1>
+      <p>{{t .Lang "notifications.subtitle"}}</p>
     </div>
     <button id="create-notification-btn" class="btn btn-primary" type="button" data-roles="Super Admin,Admin,Staff">
-      + Create Notification
+      {{t .Lang "notifications.create"}}
     </button>
   </div>
 
   <div class="panel">
     <div class="panel-header">
-      <h2>Notifications</h2>
+      <h2>{{t .Lang "nav.notifications"}}</h2>
     </div>
 
     <div class="panel-body">
@@ -35,9 +35,9 @@
 
           <div>
             {{ if not .IsRead }}
-            <span class="badge badge-warning"> Unread </span>
+            <span class="badge badge-warning"> {{t .Lang "notifications.unread"}} </span>
             {{ else }}
-            <span class="badge badge-success"> Read </span>
+            <span class="badge badge-success"> {{t .Lang "notifications.read"}} </span>
             {{ end }}
           </div>
         </div>
@@ -47,7 +47,7 @@
 
       {{ else }}
 
-      <div class="empty">No notifications available.</div>
+      <div class="empty">{{t .Lang "notifications.empty"}}</div>
 
       {{ end }}
     </div>

@@ -1,0 +1,32 @@
+{
+  "web/templates/donor_edit.html": [
+    ["<h1>Edit Donor</h1>", "<h1>{{t .Lang \"donors.edit_title\"}}</h1>"],
+    ["<p>Update donor information.</p>", "<p>{{t .Lang \"donors.edit_subtitle\"}}</p>"],
+    ["class=\"btn btn-secondary\">\n            Back\n        </a>", "class=\"btn btn-secondary\">\n            {{t .Lang \"donors.back\"}}\n        </a>"],
+    ["<label for=\"donorName\">\n                        Name *\n                    </label>", "<label for=\"donorName\">\n                        {{t .Lang \"donors.name\"}} *\n                    </label>"],
+    ["<label for=\"donorType\">\n        Donor Type *\n    </label>", "<label for=\"donorType\">\n        {{t .Lang \"donors.donor_type\"}} *\n    </label>"],
+    ["<option value=\"\">\n            Select donor type\n        </option>", "<option value=\"\">\n            {{t .Lang \"donors.select_donor_type\"}}\n        </option>"],
+    [">\n            Individual\n        </option>", ">\n            {{t .Lang \"donors.individual\"}}\n        </option>"],
+    [">\n            Organization\n        </option>", ">\n            {{t .Lang \"donors.organization\"}}\n        </option>"],
+    ["<label>NIC / Passport</label>", "<label>{{t .Lang \"donors.nic_passport\"}}</label>"],
+    ["<label>Organization Name</label>", "<label>{{t .Lang \"donors.organization_name\"}}</label>"],
+    ["<label>Registration Number</label>", "<label>{{t .Lang \"donors.registration_number\"}}</label>"],
+    ["<label>Phone</label>", "<label>{{t .Lang \"donors.phone\"}}</label>"],
+    ["<label>Email</label>", "<label>{{t .Lang \"donors.email\"}}</label>"],
+    ["<label>Contact Person Name</label>", "<label>{{t .Lang \"donors.contact_person_name\"}}</label>"],
+    ["<label>Contact Person Phone</label>", "<label>{{t .Lang \"donors.contact_person_phone\"}}</label>"],
+    ["<label>Preferred Donation Type</label>", "<label>{{t .Lang \"donors.preferred_donation_type\"}}</label>"],
+    [">\n                            Bank Transfer\n                        </option>", ">\n                            {{t .Lang \"donors.bank_transfer\"}}\n                        </option>"],
+    [">\n                            Goods\n                        </option>", ">\n                            {{t .Lang \"donors.goods\"}}\n                        </option>"],
+    [">\n                            Services\n                        </option>", ">\n                            {{t .Lang \"donors.services\"}}\n                        </option>"],
+    [">\n                            Other\n                        </option>", ">\n                            {{t .Lang \"donors.other\"}}\n                        </option>"],
+    ["<label>Status</label>", "<label>{{t .Lang \"common.status\"}}</label>"],
+    ["{{ end }}>\n                            Active\n                        </option>", "{{ end }}>\n                            {{t .Lang \"common.active\"}}\n                        </option>"],
+    ["{{ end }}>\n                            Inactive\n                        </option>", "{{ end }}>\n                            {{t .Lang \"donors.inactive\"}}\n                        </option>"],
+    ["{{ end }}>\n                            Pending\n                        </option>", "{{ end }}>\n                            {{t .Lang \"donors.pending\"}}\n                        </option>"],
+    ["<label>Address</label>", "<label>{{t .Lang \"donors.address\"}}</label>"],
+    ["<label>Notes</label>", "<label>{{t .Lang \"donors.notes\"}}</label>"],
+    ["class=\"btn btn-secondary\">\n                    Cancel\n                </a>", "class=\"btn btn-secondary\">\n                    {{t .Lang \"common.cancel\"}}\n                </a>"],
+    ["class=\"btn btn-primary\">\n                    Update Donor\n                </button>", "class=\"btn btn-primary\">\n                    {{t .Lang \"donors.update\"}}\n                </button>"]
+  ]
+}
