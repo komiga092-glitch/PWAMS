@@ -1,4 +1,0 @@
-﻿i18n.go:14: for _, lang := range []string{"en", "ta", "si"} {
-i18n.go:29: var SupportedLanguages = []string{"en", "ta", "si"}
-i18n.go:31: func IsSupported(lang string) bool {
-i18n.go:38: func T(lang, key string) string {

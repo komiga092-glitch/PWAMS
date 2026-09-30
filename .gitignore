@@ -15,6 +15,9 @@ tmp/
 temp/
 *.log
 
+# Reinstallable dependencies (restore with: npm install)
+node_modules/
+
 # VS Code
 .vscode/
 

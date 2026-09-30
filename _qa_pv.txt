@@ -1,3 +1,0 @@
-﻿3: <section class="page">
-27: <h2>{{t $.Lang "persons.personal_info"}}</h2>
-104: </section>
