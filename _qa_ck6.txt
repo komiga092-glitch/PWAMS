@@ -1,0 +1,18 @@
+﻿--- person_repository.go:92
+`LOWER(full_name) LIKE ?
+--- person_repository.go:93
+OR LOWER(nic_passport) LIKE ?
+--- person_repository.go:94
+OR LOWER(phone) LIKE ?
+--- person_repository.go:95
+OR LOWER(email) LIKE ?`,
+--- student_repository.go:103
+`LOWER(full_name) LIKE ?
+--- student_repository.go:104
+OR LOWER(student_code) LIKE ?
+--- student_repository.go:105
+OR LOWER(guardian_name) LIKE ?
+--- student_repository.go:106
+OR LOWER(guardian_phone) LIKE ?`,
+--- student_repository.go:116
+"LOWER(school_name) LIKE ?",

@@ -237,27 +237,6 @@ func (s *StudentService) UpdateStudent(
 		return nil, err
 	}
 
-	studentCode := strings.ToUpper(
-		strings.TrimSpace(request.StudentCode),
-	)
-	if studentCode == "" {
-		// Student codes are system-generated and never user-editable.
-		// Preserve the existing code when the edit form omits it.
-		studentCode = student.StudentCode
-	}
-
-	exists, err := s.studentRepo.ExistsByStudentCodeExceptID(
-		studentCode,
-		id,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	if exists {
-		return nil, ErrStudentAlreadyExists
-	}
-
 	status := strings.TrimSpace(request.Status)
 
 	if !isValidStudentStatus(status) {
@@ -289,7 +268,6 @@ func (s *StudentService) UpdateStudent(
 	student.FullName = strings.TrimSpace(request.FullName)
 	student.SchoolName = strings.TrimSpace(request.SchoolName)
 	student.Grade = strings.TrimSpace(request.Grade)
-	student.StudentCode = studentCode
 	student.DateOfBirth = dateOfBirth
 	student.Gender = strings.TrimSpace(request.Gender)
 	student.GuardianName = strings.TrimSpace(request.GuardianName)
@@ -308,7 +286,8 @@ func (s *StudentService) UpdateStudent(
 }
 
 func (s *StudentService) UpdateStudentStatus(
-	id, status string,
+	id string,
+	status string,
 	actor Actor,
 ) error {
 	id = strings.TrimSpace(id)

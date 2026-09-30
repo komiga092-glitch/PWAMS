@@ -6,14 +6,14 @@
     <div class="page-heading">
 
         <div>
-            <h1>{{t .Lang "students.edit_title"}}</h1>
-            <p>{{t .Lang "students.edit_subtitle"}}</p>
+            <h1>{{t $.Lang "students.edit_title"}}</h1>
+            <p>{{t $.Lang "students.edit_subtitle"}}</p>
         </div>
 
         <a
             href="/students/{{ .student.ID }}/view"
             class="btn btn-light">
-            {{t .Lang "common.cancel"}}
+            {{t $.Lang "common.cancel"}}
         </a>
 
     </div>
@@ -31,7 +31,7 @@
     <div class="panel">
 
         <div class="panel-header">
-            <h2>{{t .Lang "students.info_section"}}</h2>
+            <h2>{{t $.Lang "students.info_section"}}</h2>
         </div>
 
         <div class="panel-body">
@@ -50,7 +50,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.full_name"}}
+                            {{t $.Lang "students.full_name"}}
                         </label>
 
                         <input
@@ -66,7 +66,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.student_code"}}
+                            {{t $.Lang "students.student_code"}}
                         </label>
 
                         <div class="form-control">{{ .student.StudentCode }}</div>
@@ -77,7 +77,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.school"}}
+                            {{t $.Lang "students.school"}}
                         </label>
 
                         <input
@@ -93,7 +93,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.grade"}}
+                            {{t $.Lang "students.grade"}}
                         </label>
 
                         <input
@@ -109,7 +109,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.date_of_birth"}}
+                            {{t $.Lang "students.date_of_birth"}}
                         </label>
 
                         <input
@@ -124,7 +124,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.gender"}}
+                            {{t $.Lang "students.gender"}}
                         </label>
 
                         <select
@@ -163,7 +163,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.guardian_name"}}
+                            {{t $.Lang "students.guardian_name"}}
                         </label>
 
                         <input
@@ -178,7 +178,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.guardian_phone"}}
+                            {{t $.Lang "students.guardian_phone"}}
                         </label>
 
                         <input
@@ -193,7 +193,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "students.academic_year"}}
+                            {{t $.Lang "students.academic_year"}}
                         </label>
 
                         <input
@@ -211,7 +211,7 @@
                     <div class="form-group">
 
                         <label class="form-label">
-                            {{t .Lang "common.status"}}
+                            {{t $.Lang "common.status"}}
                         </label>
 
                         <select
@@ -221,19 +221,19 @@
                             <option
                                 value="Active"
                                 {{ if eq .student.Status "Active" }}selected{{ end }}>
-                                {{t .Lang "common.active"}}
+                                {{t $.Lang "common.active"}}
                             </option>
 
                             <option
                                 value="Inactive"
                                 {{ if eq .student.Status "Inactive" }}selected{{ end }}>
-                                {{t .Lang "students.inactive"}}
+                                {{t $.Lang "students.inactive"}}
                             </option>
 
                             <option
                                 value="Pending"
                                 {{ if eq .student.Status "Pending" }}selected{{ end }}>
-                                {{t .Lang "students.pending"}}
+                                {{t $.Lang "students.pending"}}
                             </option>
 
                         </select>
@@ -244,7 +244,7 @@
                     <div class="form-group full">
 
                         <label class="form-label">
-                            {{t .Lang "students.remarks"}}
+                            {{t $.Lang "students.remarks"}}
                         </label>
 
                         <textarea
@@ -262,13 +262,13 @@
                     <a
                         href="/students/{{ .student.ID }}/view"
                         class="btn btn-secondary">
-                        {{t .Lang "common.cancel"}}
+                        {{t $.Lang "common.cancel"}}
                     </a>
 
                     <button
                         type="submit"
                         class="btn btn-primary">
-                        {{t .Lang "students.update"}}
+                        {{t $.Lang "students.update"}}
                     </button>
 
                 </div>

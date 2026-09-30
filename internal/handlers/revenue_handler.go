@@ -7,29 +7,30 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
-// writeAudit records financial-record changes (FR-16 / NFR-09).
-// Failures are logged-and-ignored: auditing must not block CRUD.
-func (h *RevenueHandler) writeAudit(
-	c *gin.Context,
+// auditTx records financial-record changes (FR-16 / NFR-09) inside the
+// caller's transaction. Financial records are mandatory audit events, so a
+// failure is returned to the caller and rolls the business write back: a
+// revenue record must never be committed without its audit trail.
+func (h *RevenueHandler) auditTx(
+	tx *gorm.DB,
 	userID interface{ String() string },
 	action string,
 	entityID string,
 	details string,
-) {
-	if h.auditLogService == nil {
-		return
-	}
+) error {
 	id := ""
 	if userID != nil {
 		id = userID.String()
 	}
-	_ = h.auditLogService.Create(
+	return h.auditLogService.Audit(
+		tx,
 		id,
 		action,
 		"revenue_records",
@@ -66,13 +67,26 @@ func (h *RevenueHandler) Create(c *gin.Context) {
 	if !ok {
 		return
 	}
-	record, err := h.service.Create(request, user.ID)
+
+	var record *models.RevenueRecord
+
+	// The revenue record and its mandatory audit entry are committed together
+	// or not at all.
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.service.WithTx(tx).Create(request, user.ID)
+		if createErr != nil {
+			return createErr
+		}
+
+		record = created
+
+		return h.auditTx(tx, user.ID, "CREATE", created.ID.String(),
+			fmt.Sprintf("type=%s category=%s amount=%s", created.RecordType, created.Category, created.Amount.String()))
+	})
 	if err != nil {
 		h.writeError(c, err)
 		return
 	}
-	h.writeAudit(c, user.ID, "CREATE", record.ID.String(),
-		fmt.Sprintf("type=%s category=%s amount=%s", record.RecordType, record.Category, record.Amount.String()))
 	c.JSON(http.StatusCreated, gin.H{"success": true, "message": "Revenue record created successfully", "data": record})
 }
 
@@ -109,25 +123,47 @@ func (h *RevenueHandler) Update(c *gin.Context) {
 	if !ok {
 		return
 	}
-	record, err := h.service.Update(c.Param("id"), request)
+
+	var record *models.RevenueRecord
+
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		updated, updateErr := h.service.WithTx(tx).Update(c.Param("id"), request)
+		if updateErr != nil {
+			return updateErr
+		}
+
+		record = updated
+
+		return h.auditTx(tx, user.ID, "UPDATE", updated.ID.String(),
+			fmt.Sprintf("type=%s category=%s amount=%s", updated.RecordType, updated.Category, updated.Amount.String()))
+	})
 	if err != nil {
 		h.writeError(c, err)
 		return
 	}
-	h.writeAudit(c, user.ID, "UPDATE", record.ID.String(),
-		fmt.Sprintf("type=%s category=%s amount=%s", record.RecordType, record.Category, record.Amount.String()))
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Revenue record updated successfully", "data": record})
 }
 
 func (h *RevenueHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.service.Delete(id); err != nil {
+
+	user, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		if deleteErr := h.service.WithTx(tx).Delete(id); deleteErr != nil {
+			return deleteErr
+		}
+
+		return h.auditTx(tx, user.ID, "DELETE", id, "")
+	})
+	if err != nil {
 		h.writeError(c, err)
 		return
 	}
-	if user, ok := getCurrentUser(c); ok {
-		h.writeAudit(c, user.ID, "DELETE", id, "")
-	}
+
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Revenue record deleted successfully"})
 }
 

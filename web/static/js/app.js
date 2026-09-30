@@ -235,7 +235,12 @@ function setupAutoDismiss() {
 // Init
 // =========================
 updateRoleVisibility();
-void applyRoleVisibility();
+// Only fetch the session profile on pages that actually render profile/role
+// targets (standalone auth pages like /login have none, and the request would
+// needlessly log a 401 console error there).
+if (document.querySelector("[data-roles], [data-profile-avatar]")) {
+    void applyRoleVisibility();
+}
 new MutationObserver(updateRoleVisibility).observe(document.body, {
     childList: true,
     subtree: true,

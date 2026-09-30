@@ -20,7 +20,7 @@ func RegisterFileUploadRoutes(
 	files := router.Group("/files")
 
 	files.Use(authMiddleware.RequireAuth())
-	files.Use(middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin, models.RoleStaff))
+	files.Use(middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin, models.RoleManager, models.RoleStaff))
 
 	files.GET("/page", fileUploadHandler.Page)
 	files.GET("", fileUploadHandler.List)

@@ -95,7 +95,30 @@
           eq .page_template "files_content" }} {{ template "files_content" . }}
           {{ else if eq .page_template "audit_logs_content" }} {{ template
           "audit_logs_content" . }} {{ else if eq .page_template
-          "reports_content" }} {{ template "reports_content" . }} {{ end }}
+          "reports_content" }} {{ template "reports_content" . }} {{ else if eq
+          .page_template "report_dashboard_content" }} {{ template
+          "report_dashboard_content" . }} {{ else if eq .page_template
+          "report_users_content" }} {{ template "report_users_content" . }} {{
+          else if eq .page_template "report_persons_content" }} {{ template
+          "report_persons_content" . }} {{ else if eq .page_template
+          "report_students_content" }} {{ template "report_students_content" .
+          }} {{ else if eq .page_template "report_donors_content" }} {{ template
+          "report_donors_content" . }} {{ else if eq .page_template
+          "report_donations_content" }} {{ template "report_donations_content"
+          . }} {{ else if eq .page_template "report_aid_requests_content" }} {{
+          template "report_aid_requests_content" . }} {{ else if eq
+          .page_template "report_care_provided_content" }} {{ template
+          "report_care_provided_content" . }} {{ else if eq .page_template
+          "report_loans_content" }} {{ template "report_loans_content" . }} {{
+          else if eq .page_template "report_loan_repayments_content" }} {{
+          template "report_loan_repayments_content" . }} {{ else if eq
+          .page_template "report_revenue_content" }} {{ template
+          "report_revenue_content" . }} {{ else if eq .page_template
+          "report_account_status_content" }} {{ template
+          "report_account_status_content" . }} {{ else if eq .page_template
+          "report_audit_log_content" }} {{ template "report_audit_log_content"
+          . }} {{ else if eq .page_template "report_system_alerts_content" }} {{
+          template "report_system_alerts_content" . }} {{ end }}
         </main>
       </div>
 
@@ -103,6 +126,7 @@
     </div>
 
     <script src="/static/js/app.js"></script>
+    <script src="/static/js/csp-delegator.js" defer></script>
     <div
       class="offline-status"
       data-offline-status

@@ -1,0 +1,87 @@
+﻿loan_repayment_handler.go:34: query := models.LoanRepaymentListQuery{LoanID: c.Query("loan_id"), Status: c.Query("status")}
+loan_repayment_handler.go:183: LoanID:   c.Query("loan_id"),
+loan_repayment_handler.go:184: Status:   c.Query("status"),
+--- care_provided_service.go:142
+		offset,
+		pageSize,
+	)
+	if err != nil {
+		return nil, 0, 0, 0, err
+	}
+
+	totalPages := 0
+
+	if total > 0 {
+		totalPages = int(
+			(total + int64(pageSize) - 1) /
+				int64(pageSize),
+		)
+	}
+
+	return records, total, page, totalPages, nil
+}
+
+func (s *CareProvidedService) UpdateCareProvided(
+--- loan_repayment_service.go:192
+	query models.LoanRepaymentListQuery,
+	actor Actor,
+) ([]models.LoanRepayment, int64, int, int, error) {
+	// Fail closed for unauthenticated/invalid actors; scope non-
+	// privileged roles through the parent loan's owner.
+	ownerID, ok := ownershipFilter(actor)
+	if !ok {
+		return nil, 0, 0, 0, ErrRecordAccessDenied
+	}
+
+	query.LoanID = strings.TrimSpace(query.LoanID)
+	query.Status = strings.TrimSpace(query.Status)
+
+	if query.LoanID != "" {
+		if _, err := uuid.Parse(query.LoanID); err != nil {
+			return nil, 0, 0, 0, ErrInvalidLoanIDFormat
+		}
+	}
+
+	if query.Status != "" {
+--- loan_repayment_service.go:239
+	if err != nil {
+		return nil, 0, page, pageSize, err
+	}
+
+	return repayments, total, page, pageSize, nil
+}
+
+func (s *LoanRepaymentService) Pay(
+	id string,
+	request models.PayLoanRepaymentRequest,
+	actor Actor,
+) (*models.LoanRepayment, error) {
+	id = strings.TrimSpace(id)
+
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, ErrInvalidLoanRepaymentID
+	}
+
+	if request.PaidAmount.LessThanOrEqual(decimal.Zero) {
+		return nil, ErrInvalidRepaymentAmount
+--- loan_repayment_service.go:392
+		models.LoanRepaymentListQuery{
+			Status:   models.RepaymentStatusPending,
+			Page:     1,
+			PageSize: 1000,
+		},
+		uuid.Nil,
+	)
+	if err != nil {
+		return err
+	}
+
+	for i := range repayments {
+		repayment := &repayments[i]
+
+		if repayment.DueDate.Before(now) {
+			repayment.Status = models.RepaymentStatusOverdue
+
+			if err := s.repaymentRepo.Update(repayment); err != nil {
+				return err
+			}

@@ -24,6 +24,7 @@ func RegisterNotificationRoutes(
 	notifications.POST("", middleware.RequireAnyRole(
 		models.RoleSuperAdmin,
 		models.RoleAdmin,
+		models.RoleManager,
 		models.RoleStaff,
 	), notificationHandler.Create)
 	notifications.PATCH("/:id/read", notificationHandler.MarkAsRead)

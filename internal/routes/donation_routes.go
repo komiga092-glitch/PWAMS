@@ -21,6 +21,7 @@ func RegisterDonationRoutes(
 		middleware.RequireAnyRole(
 			models.RoleSuperAdmin,
 			models.RoleAdmin,
+			models.RoleManager,
 			models.RoleStaff,
 		),
 	)

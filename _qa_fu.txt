@@ -1,0 +1,145 @@
+﻿			"success": false,
+			"message": "Unable to inspect uploaded file",
+		})
+		return
+	}
+	if int64(len(content)) > maxUploadSize {
+		c.JSON(http.StatusRequestEntityTooLarge, gin.H{
+			"success": false,
+			"message": "File size must not exceed 2 MB",
+		})
+		return
+	}
+
+	contentType := http.DetectContentType(content[:minInt(len(content), 512)])
+
+	if !allowedTypes[contentType] {
+		c.JSON(http.StatusUnsupportedMediaType, gin.H{
+			"success":      false,
+			"message":      "Unsupported file type",
+			"content_type": contentType,
+		})
+		return
+	}
+
+	if err := validateUploadContent(contentType, content); err != nil {
+		c.JSON(http.StatusUnsupportedMediaType, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if err := os.MkdirAll(uploadDirectory, 0700); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to prepare upload directory",
+		})
+		return
+	}
+
+	extension := strings.ToLower(filepath.Ext(fileHeader.Filename))
+
+	allowedExtensions := map[string]bool{
+		".jpg":  true,
+		".jpeg": true,
+		".png":  true,
+		".webp": true,
+		".pdf":  true,
+	}
+	if !allowedExtensions[extension] {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Unsupported file extension",
+		})
+		return
+	}
+
+	storedName := uuid.NewString() + extension
+	storedPath := filepath.Join(uploadDirectory, storedName)
+
+	if err := c.SaveUploadedFile(fileHeader, storedPath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to save uploaded file",
+		})
+		return
+	}
+
+	var persistedIdempotencyKey *string
+	if idempotencyKey != "" {
+		persistedIdempotencyKey = &idempotencyKey
+	}
+
+	fileUpload := &models.FileUpload{
+		ID:             uuid.New(),
+		UserID:         currentUser.ID,
+		IdempotencyKey: persistedIdempotencyKey,
+		OriginalName:   filepath.Base(fileHeader.Filename),
+		StoredName:     storedName,
+		Path:           storedPath,
+		ContentType:    contentType,
+		Size:           fileHeader.Size,
+		SHA256:         sha256Hex(content),
+	}
+
+	if err := h.fileUploadService.Create(fileUpload); err != nil {
+		_ = os.Remove(storedPath)
+
+		if idempotencyKey != "" {
+			existing, lookupErr := h.fileUploadService.FindByUserAndIdempotencyKey(
+				currentUser.ID,
+				idempotencyKey,
+			)
+			if lookupErr == nil {
+				h.writeUploadSuccess(c, existing, http.StatusOK)
+				return
+			}
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Unable to save file information",
+		})
+		return
+	}
+	h.audit("UPLOAD", fileUpload, currentUser.ID.String(), c)
+
+	h.writeUploadSuccess(c, fileUpload, http.StatusCreated)
+}
+
+func minInt(left, right int) int {
+	if left < right {
+		return left
+	}
+	return right
+}
+
+func sha256Hex(content []byte) string {
+	digest := sha256.Sum256(content)
+	return hex.EncodeToString(digest[:])
+}
+
+func validateUploadContent(contentType string, content []byte) error {
+	switch contentType {
+	case "image/jpeg", "image/png":
+		if _, _, err := image.Decode(bytes.NewReader(content)); err != nil {
+			return fmt.Errorf("uploaded image could not be decoded")
+		}
+	case "image/webp":
+		if len(content) < 12 ||
+			!bytes.Equal(content[:4], []byte("RIFF")) ||
+			!bytes.Equal(content[8:12], []byte("WEBP")) {
+			return fmt.Errorf("uploaded WebP image has an invalid structure")
+		}
+	case "application/pdf":
+		if len(content) < 5 || !bytes.Equal(content[:5], []byte("%PDF-")) {
+			return fmt.Errorf("uploaded PDF has an invalid structure")
+		}
+	}
+
+	return nil
+}
+
+func (h *FileUploadHandler) writeUploadSuccess(
+	c *gin.Context,

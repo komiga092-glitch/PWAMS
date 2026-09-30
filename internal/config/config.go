@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -28,6 +29,14 @@ type Config struct {
 	SMTPUsername string
 	SMTPPassword string
 	SMTPFrom     string
+
+	// TrustedProxies lists the reverse proxy addresses (IPs or CIDRs) whose
+	// X-Forwarded-For / X-Real-IP headers may be trusted. It is empty by
+	// default: Gin is then configured with no trusted proxy, so the client
+	// IP always comes from the TCP connection. This keeps IP based controls
+	// such as the login rate limiter from being bypassed with a spoofed
+	// X-Forwarded-For header (TRUSTED_PROXIES).
+	TrustedProxies []string
 }
 
 func Load() (*Config, error) {
@@ -53,6 +62,8 @@ func Load() (*Config, error) {
 		SMTPUsername: os.Getenv("SMTP_USERNAME"),
 		SMTPPassword: os.Getenv("SMTP_PASSWORD"),
 		SMTPFrom:     os.Getenv("SMTP_FROM"),
+
+		TrustedProxies: parseTrustedProxies(os.Getenv("TRUSTED_PROXIES")),
 	}
 
 	if cfg.DBUser == "" || cfg.DBPassword == "" || cfg.DBName == "" {
@@ -76,4 +87,20 @@ func getEnv(key, fallback string) string {
 	}
 
 	return value
+}
+
+// parseTrustedProxies splits a comma separated list of proxy IPs or CIDRs
+// (TRUSTED_PROXIES) into a slice. Blank entries are ignored; an unset or
+// blank value yields nil, which means "trust no proxy".
+func parseTrustedProxies(raw string) []string {
+	var proxies []string
+
+	for _, part := range strings.Split(raw, ",") {
+		trimmed := strings.TrimSpace(part)
+		if trimmed != "" {
+			proxies = append(proxies, trimmed)
+		}
+	}
+
+	return proxies
 }

@@ -7,13 +7,13 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/middleware"
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/komiga092-glitch/pwams/internal/repository"
 	"github.com/komiga092-glitch/pwams/internal/services"
 )
 
@@ -245,27 +245,18 @@ func (h *SyncHandler) Pull(c *gin.Context) {
 	// (single-tenant deployment) receive the unfiltered feed.
 	tenantID := middleware.ContextTenantID(c)
 
-	cursorValue := strings.TrimSpace(c.Query("cursor"))
-	limitValue := strings.TrimSpace(c.Query("limit"))
-
-	var cursor time.Time
-
-	if cursorValue != "" {
-		parsed, err := time.Parse(time.RFC3339, cursorValue)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"message": "Invalid cursor",
-			})
-			return
-		}
-
-		cursor = parsed
+	cursor, err := repository.ParseSyncCursor(c.Query("cursor"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid cursor",
+		})
+		return
 	}
 
 	limit := 500
 
-	if limitValue != "" {
+	if limitValue := strings.TrimSpace(c.Query("limit")); limitValue != "" {
 		parsed, err := strconv.Atoi(limitValue)
 		if err != nil || parsed < 1 {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -291,9 +282,18 @@ func (h *SyncHandler) Pull(c *gin.Context) {
 		return
 	}
 
+	// The composite cursor ("<RFC3339Nano>~<uuid>") carries the id tiebreaker,
+	// so records that share an updated_at value are never replayed on the next
+	// page. An empty page keeps the caller's cursor: there is nothing newer to
+	// advance to, and echoing it back keeps the client's position stable.
+	nextCursorValue := repository.EncodeSyncCursor(nextCursor)
+	if nextCursorValue == "" && !cursor.IsZero() {
+		nextCursorValue = repository.EncodeSyncCursor(cursor)
+	}
+
 	response := models.SyncPullResponse{
 		Success: true,
-		Cursor:  nextCursor.UTC().Format(time.RFC3339),
+		Cursor:  nextCursorValue,
 		HasMore: hasMore,
 		Records: records,
 	}

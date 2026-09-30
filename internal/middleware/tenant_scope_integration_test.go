@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +13,30 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/config"
 	"github.com/komiga092-glitch/pwams/internal/database"
 	"github.com/komiga092-glitch/pwams/internal/models"
+	"github.com/komiga092-glitch/pwams/migrations"
 )
+
+// PHASE 4P follow-up — tenant middleware integration tests run inside a
+// dedicated throwaway PostgreSQL schema (`pwams_middleware_test`), mirroring
+// the Phase 4F migration-test harness convention.
+//
+// Previously these tests connected to the configured database with the
+// application search_path, i.e. the CANONICAL `pwams_user` production
+// schema. After migration 000006 every tenant_id must reference a real
+// organizations row (fk_donors_tenant_organization), so seeding donors with
+// random UUID tenants wrote production rows and failed the FK. On setups
+// without a canonical schema the same connection fell through to `public`,
+// which the application role may not CREATE in (PG15+ default).
+//
+// Safety rails (same as internal/database/migration_test_harness_test.go):
+//   - the gorm pool is pinned to a single connection whose search_path is
+//     hard-set to the throwaway schema; current_schema() is re-asserted
+//     before every test, so a pool reconnect can never redirect statements
+//     into `public` or `pwams_user`;
+//   - the canonical `pwams_user` schema and the legacy `public` schema are
+//     never dropped, migrated, or written by these tests;
+//   - tenants are REAL organizations rows created inside the test schema,
+//     so the tenancy FK is exercised, not bypassed.
 
 // tenantContextUser mimics an authenticated user carrying a tenant id — the
 // interface WithTenantScope introspects for isolation.
@@ -21,40 +46,135 @@ type tenantContextUser struct {
 
 func (u *tenantContextUser) GetTenantID() *uuid.UUID { return u.tenantID }
 
-// tenantTestDB connects to the configured PostgreSQL database. When no
-// database is reachable the tests are skipped so the suite still runs in a
-// plain `go test ./...` environment; when a database is available the
+const tenantTestSchema = "pwams_middleware_test"
+
+var (
+	tenantTestOnce sync.Once
+	tenantTestGorm *gorm.DB
+	tenantTestCfg  *config.Config
+	tenantTestErr  error
+)
+
+// tenantTestDB provisions the throwaway test schema once per test binary
+// and returns a gorm handle pinned to it. When no database is reachable
+// the tests are skipped so the suite still runs in a plain
+// `go test ./...` environment; when a database is available the
 // tenant-scoping behaviour is verified against real rows.
 func tenantTestDB(t *testing.T) (*gorm.DB, *config.Config) {
 	t.Helper()
 
-	// Load the workspace .env when running from a package directory
-	// (godotenv.Load only checks the current directory).
-	_ = godotenv.Load("../../.env")
+	tenantTestOnce.Do(func() {
+		// Test binaries run from the package directory; the repo-root
+		// .env is loaded as a fallback. Existing env vars are never
+		// overridden.
+		_ = godotenv.Load("../../.env")
 
-	cfg, err := config.Load()
-	if err != nil {
-		t.Skipf("tenant integration test skipped (configuration unavailable): %v", err)
-	}
+		cfg, err := config.Load()
+		if err != nil {
+			tenantTestErr = err
+			return
+		}
 
-	db, err := database.Connect(cfg)
-	if err != nil {
-		t.Skipf("tenant integration test skipped (database unavailable): %v", err)
-	}
+		db, err := database.Connect(cfg)
+		if err != nil {
+			tenantTestErr = fmt.Errorf("connect: %w", err)
+			return
+		}
 
-	if err := database.Migrate(db); err != nil {
-		t.Fatalf("tenant integration test migration failed: %v", err)
-	}
-	if err := database.SeedDefaultRoles(db); err != nil {
-		t.Fatalf("tenant integration test role seed failed: %v", err)
-	}
+		sqlDB, err := db.DB()
+		if err != nil {
+			tenantTestErr = err
+			return
+		}
 
-	return db, cfg
+		// Recreate the dedicated throwaway schema for a clean baseline.
+		// Destructive ONLY inside the test schema.
+		if _, err := sqlDB.Exec(fmt.Sprintf(`DROP SCHEMA IF EXISTS %q CASCADE`, tenantTestSchema)); err != nil {
+			tenantTestErr = fmt.Errorf("drop test schema: %w", err)
+			return
+		}
+		if _, err := sqlDB.Exec(fmt.Sprintf(`CREATE SCHEMA %q`, tenantTestSchema)); err != nil {
+			tenantTestErr = fmt.Errorf("create test schema: %w", err)
+			return
+		}
+
+		// Pin a single pooled connection: SET search_path then applies to
+		// every statement this gorm handle issues, and a single-conn pool
+		// cannot silently reconnect onto a default search_path.
+		sqlDB.SetMaxOpenConns(1)
+		sqlDB.SetMaxIdleConns(1)
+		if _, err := sqlDB.Exec(fmt.Sprintf(`SET search_path TO %q`, tenantTestSchema)); err != nil {
+			tenantTestErr = fmt.Errorf("set search_path: %w", err)
+			return
+		}
+
+		var current string
+		if err := db.Raw(`SELECT current_schema()`).Scan(&current).Error; err != nil {
+			tenantTestErr = err
+			return
+		}
+		if current != tenantTestSchema {
+			tenantTestErr = fmt.Errorf("current_schema() = %q, want %q (refusing to continue)", current, tenantTestSchema)
+			return
+		}
+
+		// Migrate + seed INSIDE the throwaway schema only. AutoMigrate
+		// covers the model tables; migration 000006 (resolved through the
+		// pinned search_path) adds the tenancy scaffolding — the
+		// organizations registry and the fk_*_tenant_organization
+		// constraints the tests must honour — without touching any
+		// production schema.
+		if err := database.Migrate(db); err != nil {
+			tenantTestErr = fmt.Errorf("tenant integration test migration failed: %w", err)
+			return
+		}
+		orgDDL, err := migrations.FS.ReadFile("000006_organization_tenancy.up.sql")
+		if err != nil {
+			tenantTestErr = fmt.Errorf("read 000006 DDL: %w", err)
+			return
+		}
+		if err := db.Exec(string(orgDDL)).Error; err != nil {
+			tenantTestErr = fmt.Errorf("apply 000006 DDL in test schema: %w", err)
+			return
+		}
+		if err := database.SeedDefaultRoles(db); err != nil {
+			tenantTestErr = fmt.Errorf("tenant integration test role seed failed: %w", err)
+			return
+		}
+
+		tenantTestGorm = db
+		tenantTestCfg = cfg
+	})
+
+	if tenantTestErr != nil {
+		t.Skipf("tenant integration test skipped (test database unavailable): %v", tenantTestErr)
+	}
+	if err := assertTenantTestSchema(tenantTestGorm); err != nil {
+		t.Fatalf("test schema assertion failed: %v", err)
+	}
+	return tenantTestGorm, tenantTestCfg
 }
 
-// seedTwoTenantDonors creates a donor in tenantA and a donor in tenantB and
-// returns a cleanup that removes both. The two rows are otherwise identical
-// in every field, so only the tenant predicate can distinguish them.
+// assertTenantTestSchema refuses to continue unless the connection
+// resolves to the dedicated throwaway schema. Called before every test.
+func assertTenantTestSchema(db *gorm.DB) error {
+	var current string
+	if err := db.Raw(`SELECT current_schema()`).Scan(&current).Error; err != nil {
+		return err
+	}
+	if current != tenantTestSchema {
+		return fmt.Errorf("current_schema() = %q, want %q (refusing to continue)", current, tenantTestSchema)
+	}
+	return nil
+}
+
+// seedTwoTenantDonors creates two REAL organizations (NGO A / NGO B) and a
+// donor in each. Because migration 000006 enforces
+// fk_donors_tenant_organization, tenant ids must be actual organizations
+// rows — the FK is part of the behaviour under test, not an obstacle.
+// The organizations table is DDL-only today (no Go model yet — Phase 4P
+// left organization bootstrap to an explicit operator action), so the
+// tenant rows are inserted with raw SQL inside the TEST schema.
 func seedTwoTenantDonors(t *testing.T, db *gorm.DB, cfg *config.Config) (uuid.UUID, uuid.UUID) {
 	t.Helper()
 
@@ -69,6 +189,26 @@ func seedTwoTenantDonors(t *testing.T, db *gorm.DB, cfg *config.Config) (uuid.UU
 
 	tenantA := uuid.New()
 	tenantB := uuid.New()
+
+	// organizations.code is UNIQUE and the throwaway schema persists for
+	// the whole test binary, so every seeding gets a run-scoped suffix.
+	orgCodes := []string{
+		"TENANT_A_" + uuid.NewString()[:8],
+		"TENANT_B_" + uuid.NewString()[:8],
+	}
+
+	for _, org := range []struct {
+		id   uuid.UUID
+		code string
+	}{
+		{tenantA, orgCodes[0]},
+		{tenantB, orgCodes[1]},
+	} {
+		if err := db.Exec(`INSERT INTO organizations (id, name, code, status) VALUES (?, ?, ?, 'Active')`,
+			org.id, "Test Org "+org.code, org.code).Error; err != nil {
+			t.Fatalf("tenant integration test: create organization %s: %v", org.code, err)
+		}
+	}
 
 	mk := func(name string, tenant *uuid.UUID) *models.Donor {
 		return &models.Donor{
@@ -90,7 +230,9 @@ func seedTwoTenantDonors(t *testing.T, db *gorm.DB, cfg *config.Config) (uuid.UU
 	}
 
 	t.Cleanup(func() {
+		// Donors first: organizations are RESTRICT-referenced by tenant_id.
 		_ = db.Unscoped().Where("name IN ?", []string{donorA.Name, donorB.Name}).Delete(&models.Donor{}).Error
+		_ = db.Exec(`DELETE FROM organizations WHERE id IN (?, ?)`, tenantA, tenantB).Error
 	})
 
 	return tenantA, tenantB
@@ -132,9 +274,11 @@ func TestAdminCannotAccessAnotherTenant(t *testing.T) {
 	}
 }
 
-// TestPartnerCannotAccessAnotherTenant verifies the same boundary for a
-// Partner account.
-func TestPartnerCannotAccessAnotherTenant(t *testing.T) {
+// TestManagerCannotAccessAnotherTenant verifies the same boundary for a
+// Manager account (the user-facing NGO role since migration 000005; the
+// legacy "Partner" name is only a compatibility alias and is never
+// re-introduced as a user-facing role).
+func TestManagerCannotAccessAnotherTenant(t *testing.T) {
 	db, cfg := tenantTestDB(t)
 	tenantA, tenantB := seedTwoTenantDonors(t, db, cfg)
 
@@ -143,11 +287,11 @@ func TestPartnerCannotAccessAnotherTenant(t *testing.T) {
 	rows := tenantScopedDonors(t, db, &tenantB, names)
 	for _, donor := range rows {
 		if donor.TenantID != nil && *donor.TenantID == tenantA {
-			t.Fatalf("Partner of NGO B must not see NGO A donor %q", donor.Name)
+			t.Fatalf("Manager of NGO B must not see NGO A donor %q", donor.Name)
 		}
 	}
 	if len(rows) != 1 {
-		t.Fatalf("Partner of NGO B must see exactly the NGO B donor, got %d rows", len(rows))
+		t.Fatalf("Manager of NGO B must see exactly the NGO B donor, got %d rows", len(rows))
 	}
 }
 

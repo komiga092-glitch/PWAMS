@@ -2,16 +2,16 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>{{t .Lang "revenue.title"}}</h1>
-      <p>{{t .Lang "revenue.subtitle"}}</p>
+      <h1>{{t $.Lang "revenue.title"}}</h1>
+      <p>{{t $.Lang "revenue.subtitle"}}</p>
     </div>
     <button
       class="btn btn-primary"
       type="button"
-      onclick="openRevenueModal()"
+      data-csp-action="revenue:open"
       data-roles="Super Admin,Admin"
     >
-      {{t .Lang "revenue.add"}}
+      {{t $.Lang "revenue.add"}}
     </button>
   </div>
 
@@ -20,17 +20,17 @@
   {{ end }}
 
   <div class="panel">
-    <div class="panel-header"><h2>{{t .Lang "revenue.income_expenses"}}</h2></div>
+    <div class="panel-header"><h2>{{t $.Lang "revenue.income_expenses"}}</h2></div>
     <div class="table-wrap">
       <table class="data-table">
         <thead>
           <tr>
-            <th>{{t .Lang "revenue.type"}}</th>
-            <th>{{t .Lang "revenue.category"}}</th>
-            <th>{{t .Lang "revenue.amount"}}</th>
-            <th>{{t .Lang "revenue.date"}}</th>
-            <th>{{t .Lang "revenue.description"}}</th>
-            <th>{{t .Lang "common.actions"}}</th>
+            <th>{{t $.Lang "revenue.type"}}</th>
+            <th>{{t $.Lang "revenue.category"}}</th>
+            <th>{{t $.Lang "revenue.amount"}}</th>
+            <th>{{t $.Lang "revenue.date"}}</th>
+            <th>{{t $.Lang "revenue.description"}}</th>
+            <th>{{t $.Lang "common.actions"}}</th>
           </tr>
         </thead>
         <tbody>
@@ -45,15 +45,15 @@
               <button
                 class="btn btn-small btn-danger"
                 type="button"
-                onclick="deleteRevenueRecord('{{ .ID }}')"
+                data-csp-action="revenue:delete" data-csp-id="{{ .ID }}"
               >
-                {{t .Lang "common.delete"}}
+                {{t $.Lang "common.delete"}}
               </button>
             </td>
           </tr>
           {{ else }}
           <tr>
-            <td colspan="6" class="empty">{{t .Lang "revenue.empty"}}</td>
+            <td colspan="6" class="empty">{{t $.Lang "revenue.empty"}}</td>
           </tr>
           {{ end }}
         </tbody>
@@ -62,41 +62,41 @@
   </div>
 
   <div class="panel">
-    <div class="panel-header"><h2>{{t .Lang "revenue.summaries"}}</h2></div>
-    <div id="revenue-summaries" class="panel-body">{{t .Lang "revenue.loading"}}</div>
+    <div class="panel-header"><h2>{{t $.Lang "revenue.summaries"}}</h2></div>
+    <div id="revenue-summaries" class="panel-body">{{t $.Lang "revenue.loading"}}</div>
   </div>
 </section>
 
 <div id="revenueModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeRevenueModal()"></div>
+  <div class="modal-backdrop" data-csp-action="revenue:close"></div>
   <div class="modal-card">
     <div class="modal-header">
-      <h2>{{t .Lang "revenue.modal_title"}}</h2>
-      <button type="button" class="modal-close" onclick="closeRevenueModal()">
+      <h2>{{t $.Lang "revenue.modal_title"}}</h2>
+      <button type="button" class="modal-close" data-csp-action="revenue:close">
         ×
       </button>
     </div>
-    <form id="revenue-form" class="form" onsubmit="submitRevenue(event)">
+    <form id="revenue-form" class="form" data-csp-action="revenue:submit">
       <div class="form-grid">
         <div class="form-group">
-          <label for="revenue-type">{{t .Lang "revenue.form_type"}} *</label
+          <label for="revenue-type">{{t $.Lang "revenue.form_type"}} *</label
           ><select id="revenue-type" name="record_type" required>
-            <option value="income">{{t .Lang "revenue.income"}}</option>
-            <option value="expense">{{t .Lang "revenue.expense"}}</option>
+            <option value="income">{{t $.Lang "revenue.income"}}</option>
+            <option value="expense">{{t $.Lang "revenue.expense"}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="revenue-category">{{t .Lang "revenue.form_category"}} *</label
+          <label for="revenue-category">{{t $.Lang "revenue.form_category"}} *</label
           ><select id="revenue-category" name="category" required>
-            <option>{{t .Lang "revenue.donations_cat"}}</option>
-            <option>{{t .Lang "revenue.loan_repayments_cat"}}</option>
-            <option>{{t .Lang "revenue.grants"}}</option>
-            <option>{{t .Lang "revenue.admin_expenses"}}</option>
-            <option>{{t .Lang "revenue.welfare_expenses"}}</option>
+            <option>{{t $.Lang "revenue.donations_cat"}}</option>
+            <option>{{t $.Lang "revenue.loan_repayments_cat"}}</option>
+            <option>{{t $.Lang "revenue.grants"}}</option>
+            <option>{{t $.Lang "revenue.admin_expenses"}}</option>
+            <option>{{t $.Lang "revenue.welfare_expenses"}}</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="revenue-amount">{{t .Lang "revenue.form_amount"}} *</label
+          <label for="revenue-amount">{{t $.Lang "revenue.form_amount"}} *</label
           ><input
             id="revenue-amount"
             name="amount"
@@ -107,7 +107,7 @@
           />
         </div>
         <div class="form-group">
-          <label for="revenue-currency">{{t .Lang "revenue.currency"}}</label>
+          <label for="revenue-currency">{{t $.Lang "revenue.currency"}}</label>
           <input
             id="revenue-currency"
             name="currency"
@@ -116,11 +116,11 @@
           />
         </div>
         <div class="form-group">
-          <label for="revenue-date">{{t .Lang "revenue.form_date"}} *</label
+          <label for="revenue-date">{{t $.Lang "revenue.form_date"}} *</label
           ><input id="revenue-date" name="record_date" type="date" required />
         </div>
         <div class="form-group form-full">
-          <label for="revenue-description">{{t .Lang "revenue.form_description"}}</label
+          <label for="revenue-description">{{t $.Lang "revenue.form_description"}}</label
           ><textarea
             id="revenue-description"
             name="description"
@@ -128,7 +128,7 @@
           ></textarea>
         </div>
         <div class="form-group">
-          <label for="revenue-reference">{{t .Lang "revenue.reference"}}</label
+          <label for="revenue-reference">{{t $.Lang "revenue.reference"}}</label
           ><input id="revenue-reference" name="reference_no" maxlength="100" />
         </div>
       </div>
@@ -136,10 +136,10 @@
         <button
           type="button"
           class="btn btn-secondary"
-          onclick="closeRevenueModal()"
+          data-csp-action="revenue:close"
         >
-          {{t .Lang "common.cancel"}}</button
-        ><button type="submit" class="btn btn-primary">{{t .Lang "revenue.save"}}</button>
+          {{t $.Lang "common.cancel"}}</button
+        ><button type="submit" class="btn btn-primary">{{t $.Lang "revenue.save"}}</button>
       </div>
     </form>
   </div>

@@ -18,7 +18,7 @@ func RegisterCareProvidedRoutes(
 	protected := router.Group("/")
 	protected.Use(
 		authMiddleware.RequireAuth(),
-		middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin, models.RoleStaff),
+		middleware.RequireAnyRole(models.RoleSuperAdmin, models.RoleAdmin, models.RoleManager, models.RoleStaff),
 	)
 
 	protected.GET(

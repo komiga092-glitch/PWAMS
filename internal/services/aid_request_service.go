@@ -55,6 +55,15 @@ var (
 	ErrAidRequestCannotBeDeleted = errors.New(
 		"only rejected or cancelled aid requests can be deleted",
 	)
+	ErrCannotReviewOwnSubmission = errors.New(
+		"you cannot approve or reject a request you submitted yourself",
+	)
+	// ErrInvalidAidRequestAmount rejects unusable monetary values before any
+	// row is written or mutated (QA AID-008 / AID-010): a requested amount
+	// must be strictly positive.
+	ErrInvalidAidRequestAmount = errors.New(
+		"requested amount must be greater than zero",
+	)
 )
 
 type AidRequestService struct {
@@ -103,6 +112,10 @@ func (s *AidRequestService) CreateAidRequest(
 	priority := strings.TrimSpace(request.Priority)
 	if !isValidAidPriority(priority) {
 		return nil, ErrInvalidAidPriority
+	}
+
+	if request.RequestedAmount.LessThanOrEqual(decimal.Zero) {
+		return nil, ErrInvalidAidRequestAmount
 	}
 
 	requestDate := time.Now().UTC()
@@ -333,6 +346,12 @@ func (s *AidRequestService) UpdateAidRequest(
 		return nil, err
 	}
 
+	// Validated before the record is touched so a rejected payload leaves the
+	// stored row exactly as it was (QA AID-010: "record left unchanged").
+	if request.RequestedAmount.LessThanOrEqual(decimal.Zero) {
+		return nil, ErrInvalidAidRequestAmount
+	}
+
 	requestDate, neededBy, err := resolveAidRequestDates(
 		aidRequest.RequestDate,
 		request.RequestDate,
@@ -499,6 +518,12 @@ func (s *AidRequestService) ReviewAidRequest(
 		newStatus,
 	) {
 		return nil, ErrInvalidAidStatusTransition
+	}
+
+	if newStatus == models.AidStatusApproved || newStatus == models.AidStatusRejected {
+		if aidRequest.CreatedByID == reviewerID {
+			return nil, ErrCannotReviewOwnSubmission
+		}
 	}
 
 	switch newStatus {

@@ -292,6 +292,8 @@ func (h *AuthHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
+	h.writeAudit(c, "", "PASSWORD_RESET", request.Email)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Password reset successfully",

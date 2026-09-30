@@ -7,17 +7,18 @@
   ========================== -->
   <div class="page-heading">
     <div>
-      <h1>{{t .Lang "donors.title"}}</h1>
-      <p>{{t .Lang "donors.subtitle"}}</p>
+      <h1>{{t $.Lang "donors.title"}}</h1>
+      <p>{{t $.Lang "donors.subtitle"}}</p>
     </div>
 
     <button
       id="add-donor-btn"
       class="btn btn-primary"
       type="button"
-      data-roles="Super Admin,Admin,Staff"
+      data-csp-action="donors:open"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
-      {{t .Lang "donors.add"}}
+      {{t $.Lang "donors.add"}}
     </button>
   </div>
 
@@ -37,25 +38,25 @@
         <input
           type="text"
           name="search"
-          placeholder="{{t .Lang "donors.search_placeholder"}}"
+          placeholder="{{t $.Lang "donors.search_placeholder"}}"
           value="{{ .search }}"
         />
 
         <select name="status">
-          <option value="">{{t .Lang "donors.all_status"}}</option>
+          <option value="">{{t $.Lang "donors.all_status"}}</option>
 
           <option
-            value="active"
-            {{ if eq .Status "Active" }}selected{{ end }}
+            value="Active"
+            {{ if eq .status "Active" }}selected{{ end }}
           >
-            {{t .Lang "common.active"}}
+            {{t $.Lang "common.active"}}
           </option>
 
           <option
-            value="inactive"
-            {{ if eq .status "inactive" }}selected{{ end }}
+            value="Inactive"
+            {{ if eq .status "Inactive" }}selected{{ end }}
           >
-            {{t .Lang "donors.inactive"}}
+            {{t $.Lang "donors.inactive"}}
           </option>
         </select>
 
@@ -63,7 +64,7 @@
           class="btn btn-secondary"
           type="submit"
         >
-          {{t .Lang "common.search"}}
+          {{t $.Lang "common.search"}}
         </button>
 
       </form>
@@ -79,13 +80,13 @@
 
     <div class="panel-header">
 
-      <h2>{{t .Lang "donors.list_title"}}</h2>
+      <h2>{{t $.Lang "donors.list_title"}}</h2>
 
       <span class="badge">
         {{ if .data }}
-          {{ len .data }} {{t .Lang "donors.records"}}
+          {{ len .data }} {{t $.Lang "donors.records"}}
         {{ else }}
-          0 {{t .Lang "donors.records"}}
+          0 {{t $.Lang "donors.records"}}
         {{ end }}
       </span>
 
@@ -98,12 +99,12 @@
 
         <thead>
           <tr>
-            <th>{{t .Lang "donors.name"}}</th>
-            <th>{{t .Lang "donors.phone"}}</th>
-            <th>{{t .Lang "donors.email"}}</th>
-            <th>{{t .Lang "donors.type"}}</th>
-            <th>{{t .Lang "common.status"}}</th>
-            <th>{{t .Lang "common.actions"}}</th>
+            <th>{{t $.Lang "donors.name"}}</th>
+            <th>{{t $.Lang "donors.phone"}}</th>
+            <th>{{t $.Lang "donors.email"}}</th>
+            <th>{{t $.Lang "donors.type"}}</th>
+            <th>{{t $.Lang "common.status"}}</th>
+            <th>{{t $.Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -134,19 +135,19 @@
   {{ if eq .Status "Active" }}
 
     <span class="status-badge status-active">
-      {{t .Lang "common.active"}}
+      {{t $.Lang "common.active"}}
     </span>
 
   {{ else if eq .Status "Pending" }}
 
     <span class="status-badge">
-      {{t .Lang "donors.pending"}}
+      {{t $.Lang "donors.pending"}}
     </span>
 
   {{ else }}
 
     <span class="status-badge status-inactive">
-      {{t .Lang "donors.inactive"}}
+      {{t $.Lang "donors.inactive"}}
     </span>
 
   {{ end }}
@@ -159,14 +160,14 @@
   class="btn btn-small"
   href="/donors/{{ .ID }}/view"
 >
-  {{t .Lang "common.view"}}
+  {{t $.Lang "common.view"}}
 </a>
 
               <a
                 class="btn btn-small"
                 href="/donors/{{ .ID }}/edit"
               >
-                {{t .Lang "common.edit"}}
+                {{t $.Lang "common.edit"}}
               </a>
 
             </td>
@@ -181,7 +182,7 @@
               colspan="6"
               class="empty"
             >
-              {{t .Lang "donors.empty"}}
+              {{t $.Lang "donors.empty"}}
             </td>
 
           </tr>
@@ -211,7 +212,7 @@
   <!-- BACKDROP -->
   <div
     class="modal-backdrop"
-    data-donor-modal-close
+    data-csp-action="donors:close"
   ></div>
 
 
@@ -223,19 +224,20 @@
 
       <div>
 
-        <h2>{{t .Lang "donors.add_modal_title"}}</h2>
+        <h2>{{t $.Lang "donors.add_modal_title"}}</h2>
 
         <p>
-          {{t .Lang "donors.add_modal_subtitle"}}
+          {{t $.Lang "donors.add_modal_subtitle"}}
         </p>
 
       </div>
 
 
       <button
+        id="donor-modal-close"
         type="button"
         class="modal-close"
-        data-donor-modal-close
+        data-csp-action="donors:close"
         aria-label="Close"
       >
         ×
@@ -262,7 +264,7 @@
         <div class="form-group">
 
           <label for="donorName">
-            {{t .Lang "donors.name"}} *
+            {{t $.Lang "donors.name"}} *
           </label>
 
           <input
@@ -270,7 +272,7 @@
             type="text"
             name="name"
             required
-            placeholder="{{t .Lang "donors.name"}}"
+            placeholder="{{t $.Lang "donors.name"}}"
           />
 
         </div>
@@ -280,7 +282,7 @@
         <div class="form-group">
 
           <label for="donorType">
-            {{t .Lang "donors.donor_type"}} *
+            {{t $.Lang "donors.donor_type"}} *
           </label>
 <select
   id="donorType"
@@ -288,15 +290,15 @@
   required
 >
   <option value="">
-    {{t .Lang "donors.select_donor_type"}}
+    {{t $.Lang "donors.select_donor_type"}}
   </option>
 
   <option value="Individual">
-    {{t .Lang "donors.individual"}}
+    {{t $.Lang "donors.individual"}}
   </option>
 
   <option value="Organization">
-    {{t .Lang "donors.organization"}}
+    {{t $.Lang "donors.organization"}}
   </option>
 </select>
 
@@ -307,14 +309,14 @@
         <div class="form-group">
 
           <label for="donorNicPassport">
-            {{t .Lang "donors.nic_passport"}}
+            {{t $.Lang "donors.nic_passport"}}
           </label>
 
           <input
             id="donorNicPassport"
             type="text"
             name="nic_passport"
-            placeholder="{{t .Lang "donors.nic_passport"}}"
+            placeholder="{{t $.Lang "donors.nic_passport"}}"
           />
 
         </div>
@@ -324,14 +326,14 @@
         <div class="form-group">
 
           <label for="donorOrganizationName">
-            {{t .Lang "donors.organization_name"}}
+            {{t $.Lang "donors.organization_name"}}
           </label>
 
           <input
             id="donorOrganizationName"
             type="text"
             name="organization_name"
-            placeholder="{{t .Lang "donors.organization_name"}}"
+            placeholder="{{t $.Lang "donors.organization_name"}}"
           />
 
         </div>
@@ -341,14 +343,14 @@
         <div class="form-group">
 
           <label for="donorRegistrationNumber">
-            {{t .Lang "donors.registration_number"}}
+            {{t $.Lang "donors.registration_number"}}
           </label>
 
           <input
             id="donorRegistrationNumber"
             type="text"
             name="registration_number"
-            placeholder="{{t .Lang "donors.registration_number"}}"
+            placeholder="{{t $.Lang "donors.registration_number"}}"
           />
 
         </div>
@@ -358,14 +360,14 @@
         <div class="form-group">
 
           <label for="donorPhone">
-            {{t .Lang "donors.phone"}}
+            {{t $.Lang "donors.phone"}}
           </label>
 
           <input
             id="donorPhone"
             type="tel"
             name="phone"
-            placeholder="{{t .Lang "donors.phone"}}"
+            placeholder="{{t $.Lang "donors.phone"}}"
           />
 
         </div>
@@ -375,14 +377,14 @@
         <div class="form-group">
 
           <label for="donorEmail">
-            {{t .Lang "donors.email"}}
+            {{t $.Lang "donors.email"}}
           </label>
 
           <input
             id="donorEmail"
             type="email"
             name="email"
-            placeholder="{{t .Lang "donors.email"}}"
+            placeholder="{{t $.Lang "donors.email"}}"
           />
 
         </div>
@@ -392,14 +394,14 @@
         <div class="form-group">
 
           <label for="donorContactPersonName">
-            {{t .Lang "donors.contact_person_name"}}
+            {{t $.Lang "donors.contact_person_name"}}
           </label>
 
           <input
             id="donorContactPersonName"
             type="text"
             name="contact_person_name"
-            placeholder="{{t .Lang "donors.contact_person_name"}}"
+            placeholder="{{t $.Lang "donors.contact_person_name"}}"
           />
 
         </div>
@@ -409,14 +411,14 @@
         <div class="form-group">
 
           <label for="donorContactPersonPhone">
-            {{t .Lang "donors.contact_person_phone"}}
+            {{t $.Lang "donors.contact_person_phone"}}
           </label>
 
           <input
             id="donorContactPersonPhone"
             type="tel"
             name="contact_person_phone"
-            placeholder="{{t .Lang "donors.contact_person_phone"}}"
+            placeholder="{{t $.Lang "donors.contact_person_phone"}}"
           />
 
         </div>
@@ -426,7 +428,7 @@
         <div class="form-group">
 
           <label for="preferredDonationType">
-            {{t .Lang "donors.preferred_donation_type"}}
+            {{t $.Lang "donors.preferred_donation_type"}}
           </label>
 
           <select
@@ -435,27 +437,27 @@
           >
 
             <option value="">
-              {{t .Lang "donors.select_donation_type"}}
+              {{t $.Lang "donors.select_donation_type"}}
             </option>
 
             <option value="cash">
-              {{t .Lang "donors.cash"}}
+              {{t $.Lang "donors.cash"}}
             </option>
 
             <option value="bank_transfer">
-              {{t .Lang "donors.bank_transfer"}}
+              {{t $.Lang "donors.bank_transfer"}}
             </option>
 
             <option value="goods">
-              {{t .Lang "donors.goods"}}
+              {{t $.Lang "donors.goods"}}
             </option>
 
             <option value="services">
-              {{t .Lang "donors.services"}}
+              {{t $.Lang "donors.services"}}
             </option>
 
             <option value="other">
-              {{t .Lang "donors.other"}}
+              {{t $.Lang "donors.other"}}
             </option>
 
           </select>
@@ -467,14 +469,14 @@
         <div class="form-group form-full">
 
           <label for="donorAddress">
-            {{t .Lang "donors.address"}}
+            {{t $.Lang "donors.address"}}
           </label>
 
           <textarea
             id="donorAddress"
             name="address"
             rows="3"
-            placeholder="{{t .Lang "donors.address"}}"
+            placeholder="{{t $.Lang "donors.address"}}"
           ></textarea>
 
         </div>
@@ -484,14 +486,14 @@
         <div class="form-group form-full">
 
           <label for="donorNotes">
-            {{t .Lang "donors.notes"}}
+            {{t $.Lang "donors.notes"}}
           </label>
 
           <textarea
             id="donorNotes"
             name="notes"
             rows="3"
-            placeholder="{{t .Lang "donors.notes"}}"
+            placeholder="{{t $.Lang "donors.notes"}}"
           ></textarea>
 
         </div>
@@ -509,9 +511,9 @@
           id="donor-cancel"
           type="button"
           class="btn btn-secondary"
-          data-donor-modal-close
+          data-csp-action="donors:close"
         >
-          {{t .Lang "common.cancel"}}
+          {{t $.Lang "common.cancel"}}
         </button>
 
 
@@ -520,7 +522,7 @@
           type="submit"
           class="btn btn-primary"
         >
-          {{t .Lang "donors.save"}}
+          {{t $.Lang "donors.save"}}
         </button>
 
       </div>

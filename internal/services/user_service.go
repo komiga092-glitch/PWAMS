@@ -28,6 +28,16 @@ var ErrActiveManagerExists = errors.New(
 	"an active Manager already exists; deactivate the current Manager before assigning a new one",
 )
 
+// ErrLastActiveSuperAdmin, ErrLastActiveAdmin and the supervised Admin
+// deletion errors are declared in user_admin_deletion.go (shared with the
+// admin deletion workflow). ErrAdminDeletionRequiresApproval below is the
+// service-level refusal for the generic delete path: an Admin actor deleting
+// another Admin must use the supervised workflow instead.
+
+var ErrAdminDeletionRequiresApproval = errors.New(
+	"deleting an Admin account requires the supervised admin deletion approval workflow",
+)
+
 type UserService struct {
 	userRepo    *repository.UserRepository
 	roleRepo    *repository.RoleRepository
@@ -78,12 +88,64 @@ func (s *UserService) ensureManagerSlotAvailable(
 	return nil
 }
 
+// isSuperAdminActor reports whether the actor role set grants the platform
+// Super Admin capability. An empty or unknown role set fails closed: it is
+// never treated as a Super Admin actor.
+func isSuperAdminActor(actorRoles []string) bool {
+	for _, role := range actorRoles {
+		if strings.TrimSpace(role) == models.RoleSuperAdmin {
+			return true
+		}
+	}
+	return false
+}
+
+// ensureOtherActiveSuperAdminExists refuses any change that would leave the
+// platform without an active Super Admin account (the target is excluded
+// from the count, so a lone Super Admin is protected).
+func (s *UserService) ensureOtherActiveSuperAdminExists(excludeUserID string) error {
+	count, err := s.userRepo.CountActiveByRoleNames(
+		[]string{models.RoleSuperAdmin},
+		excludeUserID,
+	)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return ErrLastActiveSuperAdmin
+	}
+	return nil
+}
+
+// ensureOtherActiveProtectedAdminExists refuses any change that would leave
+// the platform without an active protected admin (Admin or Super Admin).
+func (s *UserService) ensureOtherActiveProtectedAdminExists(excludeUserID string) error {
+	count, err := s.userRepo.CountActiveByRoleNames(
+		[]string{models.RoleAdmin, models.RoleSuperAdmin},
+		excludeUserID,
+	)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return ErrLastActiveAdmin
+	}
+	return nil
+}
+
 func (s *UserService) CreateUser(
 	request models.CreateUserRequest,
+	actorRoles ...string,
 ) (*models.User, error) {
 	username := strings.ToLower(strings.TrimSpace(request.Username))
 	email := strings.ToLower(strings.TrimSpace(request.Email))
-	roleName := strings.TrimSpace(request.Role)
+	roleName := models.NormalizeRoleInput(request.Role)
+
+	// Platform guard: only a Super Admin actor may mint a Super Admin
+	// account. An empty/unknown actor role set fails closed.
+	if roleName == models.RoleSuperAdmin && !isSuperAdminActor(actorRoles) {
+		return nil, ErrCannotModifySuperAdmin
+	}
 
 	exists, err := s.userRepo.ExistsByUsernameOrEmail(username, email)
 	if err != nil {
@@ -223,8 +285,12 @@ func (s *UserService) ChangeOwnPassword(
 func (s *UserService) GetUserByID(id string) (*models.User, error) {
 	id = strings.TrimSpace(id)
 
+	// A malformed identifier and a well-formed UUID that matches no row are
+	// the same outcome for a caller addressing GET /users/:id: there is no
+	// such user, so the read answers 404 Not Found (QA USR-003) instead of
+	// leaking identifier-format validation as a 400.
 	if _, err := uuid.Parse(id); err != nil {
-		return nil, ErrInvalidUserID
+		return nil, repository.ErrUserNotFound
 	}
 
 	user, err := s.userRepo.FindByID(id)
@@ -269,8 +335,14 @@ func (s *UserService) UpdateUser(
 
 	username := strings.ToLower(strings.TrimSpace(request.Username))
 	email := strings.ToLower(strings.TrimSpace(request.Email))
-	roleName := strings.TrimSpace(request.Role)
+	roleName := models.NormalizeRoleInput(request.Role)
 	status := strings.TrimSpace(request.Status)
+
+	// Privilege-escalation guard: granting the Super Admin role requires a
+	// Super Admin actor, no matter which account is being edited.
+	if roleName == models.RoleSuperAdmin && !isSuperAdminActor(actorRoles) {
+		return nil, ErrCannotModifySuperAdmin
+	}
 
 	if !isValidUserStatus(status) {
 		return nil, ErrInvalidUserStatus
@@ -302,6 +374,23 @@ func (s *UserService) UpdateUser(
 		return nil, err
 	}
 
+	// Last-active platform guards: the Super Admin set and the protected
+	// Admin set (Admin + Super Admin) must never become empty through a
+	// status change, demotion or role change of their last active member.
+	if user.Role.Name == models.RoleSuperAdmin &&
+		(role.Name != models.RoleSuperAdmin || status != models.UserStatusActive) {
+		if err := s.ensureOtherActiveSuperAdminExists(id); err != nil {
+			return nil, err
+		}
+	}
+	if user.Role.Name == models.RoleAdmin &&
+		((role.Name != models.RoleAdmin && role.Name != models.RoleSuperAdmin) ||
+			status != models.UserStatusActive) {
+		if err := s.ensureOtherActiveProtectedAdminExists(id); err != nil {
+			return nil, err
+		}
+	}
+
 	user.Username = username
 	user.Email = email
 	user.RoleID = role.ID
@@ -317,6 +406,7 @@ func (s *UserService) UpdateUser(
 
 func (s *UserService) UpdateUserStatus(
 	id, status string,
+	actorRoles ...string,
 ) error {
 	id = strings.TrimSpace(id)
 	status = strings.TrimSpace(status)
@@ -333,6 +423,27 @@ func (s *UserService) UpdateUserStatus(
 	if err != nil {
 		return err
 	}
+
+	// Platform guard: only a Super Admin actor may change the status of a
+	// Super Admin account. An empty/unknown actor role set fails closed.
+	if user.Role.Name == models.RoleSuperAdmin && !isSuperAdminActor(actorRoles) {
+		return ErrCannotModifySuperAdmin
+	}
+
+	// Last-active platform guards for deactivation.
+	if status != models.UserStatusActive {
+		if user.Role.Name == models.RoleSuperAdmin {
+			if err := s.ensureOtherActiveSuperAdminExists(id); err != nil {
+				return err
+			}
+		}
+		if user.Role.Name == models.RoleAdmin {
+			if err := s.ensureOtherActiveProtectedAdminExists(id); err != nil {
+				return err
+			}
+		}
+	}
+
 	if err := s.ensureManagerSlotAvailable(user.Role.Name, status, id); err != nil {
 		return err
 	}
@@ -385,6 +496,7 @@ func (s *UserService) ResetPassword(
 
 func (s *UserService) DeleteUser(
 	targetUserID, currentUserID string,
+	actorRoles ...string,
 ) error {
 	targetUserID = strings.TrimSpace(targetUserID)
 	currentUserID = strings.TrimSpace(currentUserID)
@@ -400,6 +512,32 @@ func (s *UserService) DeleteUser(
 	user, err := s.userRepo.FindByID(targetUserID)
 	if err != nil {
 		return err
+	}
+
+	actorIsSuperAdmin := isSuperAdminActor(actorRoles)
+
+	// Platform guard: only a Super Admin actor may delete a Super Admin
+	// account. An empty/unknown actor role set fails closed.
+	if user.Role.Name == models.RoleSuperAdmin && !actorIsSuperAdmin {
+		return ErrCannotModifySuperAdmin
+	}
+
+	// Two-person rule: an Admin actor deleting another Admin must go
+	// through the supervised admin deletion approval workflow.
+	if user.Role.Name == models.RoleAdmin && !actorIsSuperAdmin {
+		return ErrAdminDeletionRequiresApproval
+	}
+
+	// Last-active platform guards.
+	if user.Role.Name == models.RoleSuperAdmin {
+		if err := s.ensureOtherActiveSuperAdminExists(targetUserID); err != nil {
+			return err
+		}
+	}
+	if user.Role.Name == models.RoleAdmin {
+		if err := s.ensureOtherActiveProtectedAdminExists(targetUserID); err != nil {
+			return err
+		}
 	}
 
 	if err := s.sessionRepo.RevokeAllByUserID(targetUserID); err != nil {

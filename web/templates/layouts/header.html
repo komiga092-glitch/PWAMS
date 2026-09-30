@@ -14,7 +14,7 @@
     <a
       class="nav-link"
       href="/dashboard"
-      data-roles="Super Admin,Admin,Staff,Volunteer,Donor,Beneficiary"
+      data-roles="Super Admin,Admin,Manager,Staff,Volunteer,Donor,Beneficiary,Student"
     >
       <span class="nav-icon">⌂</span><span>{{t .Lang "nav.dashboard"}}</span>
     </a>
@@ -22,7 +22,7 @@
     <a
       class="nav-link"
       href="/persons/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">♙</span><span>{{t .Lang "nav.care_seekers"}}</span>
     </a>
@@ -30,7 +30,7 @@
     <a
       class="nav-link"
       href="/care-provided/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">🤝</span><span>{{t .Lang "nav.care_provided"}}</span>
     </a>
@@ -40,7 +40,7 @@
     <a
       class="nav-link"
       href="/students/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">🎓</span><span>{{t .Lang "nav.students"}}</span>
     </a>
@@ -48,7 +48,7 @@
     <a
       class="nav-link"
       href="/donors/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">♡</span><span>{{t .Lang "nav.donors"}}</span>
     </a>
@@ -56,7 +56,7 @@
     <a
       class="nav-link"
       href="/donations/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">◈</span><span>{{t .Lang "nav.donations"}}</span>
     </a>
@@ -64,19 +64,19 @@
     <a
       class="nav-link"
       href="/aid-requests/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">▣</span><span>{{t .Lang "nav.aid_requests"}}</span>
     </a>
 
-    <a class="nav-link" href="/loans/page" data-roles="Super Admin,Admin,Staff">
+    <a class="nav-link" href="/loans/page" data-roles="Super Admin,Admin,Manager,Staff">
       <span class="nav-icon">₹</span><span>{{t .Lang "nav.loans"}}</span>
     </a>
 
     <a
       class="nav-link"
       href="/loan-repayments/page"
-      data-roles="Super Admin,Admin,Staff"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
       <span class="nav-icon">↻</span><span>{{t .Lang "nav.repayments"}}</span>
     </a>
@@ -100,7 +100,7 @@
       <span id="messages-unread-count" class="nav-count" hidden>0</span>
     </a>
 
-    <a class="nav-link" href="/files/page" data-roles="Super Admin,Admin,Staff">
+    <a class="nav-link" href="/files/page" data-roles="Super Admin,Admin,Manager,Staff">
       <span class="nav-icon">▤</span><span>{{t .Lang "nav.files"}}</span>
     </a>
 
@@ -111,7 +111,7 @@
     <a
       class="nav-link"
       href="/reports/dashboard/page"
-      data-roles="Super Admin,Admin"
+      data-roles="Super Admin,Admin,Manager"
     >
       <span class="nav-icon">▥</span><span>{{t .Lang "nav.reports"}}</span>
     </a>

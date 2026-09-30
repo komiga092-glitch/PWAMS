@@ -1,0 +1,45 @@
+﻿	return files, total, page, pageSize, nil
+}
+
+func (s *FileUploadService) Reconcile(storageDirectory string) (*FileReconciliation, error) {
+	files, err := s.fileUploadRepo.ListAllUnscoped()
+	if err != nil {
+		return nil, err
+	}
+
+	knownNames := make(map[string]bool, len(files))
+	result := &FileReconciliation{
+		MissingFiles:  make([]FileReconciliationItem, 0),
+		OrphanedFiles: make([]string, 0),
+	}
+	for _, file := range files {
+		knownNames[file.StoredName] = true
+		if _, statErr := os.Stat(file.Path); errors.Is(statErr, os.ErrNotExist) {
+			result.MissingFiles = append(result.MissingFiles, FileReconciliationItem{
+				ID:           file.ID.String(),
+				OriginalName: file.OriginalName,
+			})
+		} else if statErr != nil {
+			return nil, fmt.Errorf("unable to inspect file metadata: %w", statErr)
+		}
+	}
+
+	entries, err := os.ReadDir(storageDirectory)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return result, nil
+		}
+		return nil, fmt.Errorf("unable to inspect upload storage: %w", err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() || knownNames[filepath.Base(entry.Name())] {
+			continue
+		}
+		result.OrphanedFiles = append(result.OrphanedFiles, entry.Name())
+	}
+
+	return result, nil
+}
+
+func (s *FileUploadService) FindByUserAndIdempotencyKey(
+	userID uuid.UUID,

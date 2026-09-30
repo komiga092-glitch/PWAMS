@@ -5,16 +5,16 @@
     <!-- Page Header -->
     <div class="page-heading">
         <div>
-            <h1>{{t .Lang "persons.title"}}</h1>
-            <p>{{t .Lang "persons.subtitle"}}</p>
+            <h1>{{t $.Lang "persons.title"}}</h1>
+            <p>{{t $.Lang "persons.subtitle"}}</p>
         </div>
 
         <button
             id="add-person-btn"
             type="button"
             class="btn btn-primary"
-            data-roles="Super Admin,Admin,Staff">
-            {{t .Lang "persons.add"}}
+            data-roles="Super Admin,Admin,Manager,Staff">
+            {{t $.Lang "persons.add"}}
         </button>
     </div>
 
@@ -31,20 +31,20 @@
 
                 <div>
                     <label for="person-search">
-                        {{t .Lang "common.search"}}
+                        {{t $.Lang "common.search"}}
                     </label>
 
                     <input
                         id="person-search"
                         type="text"
                         name="search"
-                        placeholder="{{t .Lang "persons.search_placeholder"}}"
+                        placeholder="{{t $.Lang "persons.search_placeholder"}}"
                         value="{{ .search }}">
                 </div>
 
                 <div>
                     <label for="person-status">
-                        {{t .Lang "common.status"}}
+                        {{t $.Lang "common.status"}}
                     </label>
 
                     <select
@@ -52,25 +52,25 @@
                         name="status">
 
                         <option value="">
-                            {{t .Lang "persons.all_status"}}
+                            {{t $.Lang "persons.all_status"}}
                         </option>
 
                         <option
                             value="Active"
                             {{ if eq .status "Active" }}selected{{ end }}>
-                            {{t .Lang "common.active"}}
+                            {{t $.Lang "common.active"}}
                         </option>
 
                         <option
                             value="Inactive"
                             {{ if eq .status "Inactive" }}selected{{ end }}>
-                            {{t .Lang "persons.inactive"}}
+                            {{t $.Lang "persons.inactive"}}
                         </option>
 
                         <option
                             value="Pending"
                             {{ if eq .status "Pending" }}selected{{ end }}>
-                            {{t .Lang "persons.pending"}}
+                            {{t $.Lang "persons.pending"}}
                         </option>
 
                     </select>
@@ -81,7 +81,7 @@
                     <button
                         type="submit"
                         class="btn btn-secondary">
-                        {{t .Lang "common.search"}}
+                        {{t $.Lang "common.search"}}
                     </button>
 
                 </div>
@@ -108,10 +108,10 @@
 
         <div class="panel-header">
 
-            <h2>{{t .Lang "persons.list_title"}}</h2>
+            <h2>{{t $.Lang "persons.list_title"}}</h2>
 
             <span class="badge">
-                {{ len .persons }} {{t .Lang "persons.records"}}
+                {{ len .persons }} {{t $.Lang "persons.records"}}
             </span>
 
         </div>
@@ -124,12 +124,12 @@
                 <thead>
 
                     <tr>
-                        <th>{{t .Lang "persons.name"}}</th>
-                        <th>{{t .Lang "persons.nic_passport"}}</th>
-                        <th>{{t .Lang "persons.phone"}}</th>
-                        <th>{{t .Lang "persons.gender"}}</th>
-                        <th>{{t .Lang "common.status"}}</th>
-                        <th>{{t .Lang "common.actions"}}</th>
+                        <th>{{t $.Lang "persons.name"}}</th>
+                        <th>{{t $.Lang "persons.nic_passport"}}</th>
+                        <th>{{t $.Lang "persons.phone"}}</th>
+                        <th>{{t $.Lang "persons.gender"}}</th>
+                        <th>{{t $.Lang "common.status"}}</th>
+                        <th>{{t $.Lang "common.actions"}}</th>
                     </tr>
 
                 </thead>
@@ -162,19 +162,19 @@
                             {{ if eq .Status "Active" }}
 
                             <span class="badge badge-success">
-                                {{t .Lang "common.active"}}
+                                {{t $.Lang "common.active"}}
                             </span>
 
                             {{ else if eq .Status "Pending" }}
 
                             <span class="badge badge-warning">
-                                {{t .Lang "persons.pending"}}
+                                {{t $.Lang "persons.pending"}}
                             </span>
 
                             {{ else }}
 
                             <span class="badge badge-muted">
-                                {{t .Lang "persons.inactive"}}
+                                {{t $.Lang "persons.inactive"}}
                             </span>
 
                             {{ end }}
@@ -188,13 +188,13 @@
                                 <a
                                     href="/persons/{{ .ID }}/view"
                                     class="btn btn-secondary">
-                                    {{t .Lang "common.view"}}
+                                    {{t $.Lang "common.view"}}
                                 </a>
 
                                 <a
                                     href="/persons/{{ .ID }}/edit"
                                     class="btn btn-primary">
-                                    {{t .Lang "common.edit"}}
+                                    {{t $.Lang "common.edit"}}
                                 </a>
 
                             </div>
@@ -211,7 +211,7 @@
                             colspan="6"
                             class="empty">
 
-                            {{t .Lang "persons.empty"}}
+                            {{t $.Lang "persons.empty"}}
 
                         </td>
 
@@ -244,10 +244,10 @@
         <div class="modal-header">
 
             <div>
-                <h2>{{t .Lang "persons.add_modal_title"}}</h2>
+                <h2>{{t $.Lang "persons.add_modal_title"}}</h2>
 
                 <p>
-                    {{t .Lang "persons.add_modal_subtitle"}}
+                    {{t $.Lang "persons.add_modal_subtitle"}}
                 </p>
             </div>
 
@@ -278,7 +278,7 @@
                             class="form-label"
                             for="person_full_name">
 
-                            {{t .Lang "persons.full_name"}} *
+                            {{t $.Lang "persons.full_name"}} *
 
                         </label>
 
@@ -301,7 +301,7 @@
                             class="form-label"
                             for="person_nic">
 
-                            {{t .Lang "persons.nic_passport"}}
+                            {{t $.Lang "persons.nic_passport"}}
 
                         </label>
 
@@ -323,7 +323,7 @@
                             class="form-label"
                             for="person_phone">
 
-                            {{t .Lang "persons.phone"}}
+                            {{t $.Lang "persons.phone"}}
 
                         </label>
 
@@ -344,7 +344,7 @@
                             class="form-label"
                             for="person_gender">
 
-                            {{t .Lang "persons.gender"}}
+                            {{t $.Lang "persons.gender"}}
 
                         </label>
 
@@ -354,19 +354,19 @@
                             class="form-control">
 
                             <option value="">
-                                {{t .Lang "persons.select_gender"}}
+                                {{t $.Lang "persons.select_gender"}}
                             </option>
 
                             <option value="Male">
-                                {{t .Lang "persons.male"}}
+                                {{t $.Lang "persons.male"}}
                             </option>
 
                             <option value="Female">
-                                {{t .Lang "persons.female"}}
+                                {{t $.Lang "persons.female"}}
                             </option>
 
                             <option value="Other">
-                                {{t .Lang "persons.other"}}
+                                {{t $.Lang "persons.other"}}
                             </option>
 
                         </select>
@@ -381,7 +381,7 @@
                             class="form-label"
                             for="person_date_of_birth">
 
-                            {{t .Lang "persons.date_of_birth"}}
+                            {{t $.Lang "persons.date_of_birth"}}
 
                         </label>
 
@@ -401,7 +401,7 @@
                             class="form-label"
                             for="person_address">
 
-                            {{t .Lang "persons.address"}}
+                            {{t $.Lang "persons.address"}}
 
                         </label>
 
@@ -422,7 +422,7 @@
                             class="form-label"
                             for="person_remarks">
 
-                            {{t .Lang "persons.remarks"}}
+                            {{t $.Lang "persons.remarks"}}
 
                         </label>
 
@@ -446,7 +446,7 @@
                         type="button"
                         class="btn btn-secondary">
 
-                        {{t .Lang "common.cancel"}}
+                        {{t $.Lang "common.cancel"}}
 
                     </button>
 
@@ -454,7 +454,7 @@
                         type="submit"
                         class="btn btn-primary">
 
-                        {{t .Lang "persons.save"}}
+                        {{t $.Lang "persons.save"}}
 
                     </button>
 

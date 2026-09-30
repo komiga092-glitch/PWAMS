@@ -3,17 +3,17 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>{{t .Lang "loans.title"}}</h1>
-      <p>{{t .Lang "loans.subtitle"}}</p>
+      <h1>{{t $.Lang "loans.title"}}</h1>
+      <p>{{t $.Lang "loans.subtitle"}}</p>
     </div>
 
     <button
       class="btn btn-primary"
       type="button"
-      onclick="openLoanModal()"
-      data-roles="Super Admin,Admin,Staff"
+      data-csp-action="loans:open"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
-      {{t .Lang "loans.add"}}
+      {{t $.Lang "loans.add"}}
     </button>
   </div>
 
@@ -25,21 +25,21 @@
         <input
           type="text"
           name="search"
-          placeholder="{{t .Lang "loans.search_placeholder"}}"
+          placeholder="{{t $.Lang "loans.search_placeholder"}}"
           value="{{ .search }}"
         />
 
         <select name="status">
-          <option value="">{{t .Lang "loans.all_status"}}</option>
-          <option value="pending">{{t .Lang "loans.pending"}}</option>
-          <option value="approved">{{t .Lang "loans.approved"}}</option>
-          <option value="rejected">{{t .Lang "loans.rejected"}}</option>
-          <option value="active">{{t .Lang "loans.active"}}</option>
-          <option value="completed">{{t .Lang "loans.completed"}}</option>
-          <option value="cancelled">{{t .Lang "loans.cancelled"}}</option>
+          <option value="">{{t $.Lang "loans.all_status"}}</option>
+          <option value="Pending">{{t $.Lang "loans.pending"}}</option>
+          <option value="Approved">{{t $.Lang "loans.approved"}}</option>
+          <option value="Rejected">{{t $.Lang "loans.rejected"}}</option>
+          <option value="Active">{{t $.Lang "loans.active"}}</option>
+          <option value="Completed">{{t $.Lang "loans.completed"}}</option>
+          <option value="Cancelled">{{t $.Lang "loans.cancelled"}}</option>
         </select>
 
-        <button class="btn btn-secondary" type="submit">{{t .Lang "common.search"}}</button>
+        <button class="btn btn-secondary" type="submit">{{t $.Lang "common.search"}}</button>
       </form>
     </div>
   </div>
@@ -49,12 +49,12 @@
   <div class="panel">
     <div class="panel-header">
       <div>
-        <h2>{{t .Lang "loans.list_title"}}</h2>
-        <p>{{t .Lang "loans.list_subtitle"}}</p>
+        <h2>{{t $.Lang "loans.list_title"}}</h2>
+        <p>{{t $.Lang "loans.list_subtitle"}}</p>
       </div>
 
       <span class="badge">
-        {{ if .data }} {{ len .data }} {{t .Lang "loans.records"}} {{ else }} 0 {{t .Lang "loans.records"}} {{ end }}
+        {{ if .data }} {{ len .data }} {{t $.Lang "loans.records"}} {{ else }} 0 {{t $.Lang "loans.records"}} {{ end }}
       </span>
     </div>
 
@@ -62,13 +62,13 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>{{t .Lang "loans.person"}}</th>
-            <th>{{t .Lang "loans.amount"}}</th>
-            <th>{{t .Lang "loans.interest"}}</th>
-            <th>{{t .Lang "loans.duration"}}</th>
-            <th>{{t .Lang "loans.installment"}}</th>
-            <th>{{t .Lang "common.status"}}</th>
-            <th>{{t .Lang "common.actions"}}</th>
+            <th>{{t $.Lang "loans.person"}}</th>
+            <th>{{t $.Lang "loans.amount"}}</th>
+            <th>{{t $.Lang "loans.interest"}}</th>
+            <th>{{t $.Lang "loans.duration"}}</th>
+            <th>{{t $.Lang "loans.installment"}}</th>
+            <th>{{t $.Lang "common.status"}}</th>
+            <th>{{t $.Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -76,53 +76,53 @@
           {{ range .data }}
 
           <tr>
-            <td>{{ .PersonID }}</td>
+            <td>{{ .PersonName }}</td>
 
             <td>{{ .LoanAmount }}</td>
 
             <td>{{ .InterestRate }}%</td>
 
-            <td>{{ .DurationMonths }} {{t .Lang "loans.months"}}</td>
+            <td>{{ .DurationMonths }} {{t $.Lang "loans.months"}}</td>
 
             <td>{{ .InstallmentAmount }}</td>
 
             <td>
-              {{ if eq .Status "approved" }}
+              {{ if eq .Status "Approved" }}
 
-              <span class="status-badge status-active"> {{t .Lang "loans.approved"}} </span>
+              <span class="status-badge status-active"> {{t $.Lang "loans.approved"}} </span>
 
-              {{ else if eq .Status "active" }}
+              {{ else if eq .Status "Active" }}
 
-              <span class="status-badge status-active"> {{t .Lang "loans.active"}} </span>
+              <span class="status-badge status-active"> {{t $.Lang "loans.active"}} </span>
 
-              {{ else if eq .Status "completed" }}
+              {{ else if eq .Status "Completed" }}
 
-              <span class="status-badge status-active"> {{t .Lang "loans.completed"}} </span>
+              <span class="status-badge status-active"> {{t $.Lang "loans.completed"}} </span>
 
-              {{ else if eq .Status "rejected" }}
+              {{ else if eq .Status "Rejected" }}
 
-              <span class="status-badge status-inactive"> {{t .Lang "loans.rejected"}} </span>
+              <span class="status-badge status-inactive"> {{t $.Lang "loans.rejected"}} </span>
 
-              {{ else if eq .Status "cancelled" }}
+              {{ else if eq .Status "Cancelled" }}
 
-              <span class="status-badge status-inactive"> {{t .Lang "loans.cancelled"}} </span>
+              <span class="status-badge status-inactive"> {{t $.Lang "loans.cancelled"}} </span>
 
               {{ else }}
 
-              <span class="status-badge"> {{t .Lang "loans.pending"}} </span>
+              <span class="status-badge"> {{t $.Lang "loans.pending"}} </span>
 
               {{ end }}
             </td>
 
             <td class="actions">
-              <a class="btn btn-small" href="/loans/{{ .ID }}"> {{t .Lang "loans.view"}} </a>
+              <a class="btn btn-small" href="/loans/{{ .ID }}"> {{t $.Lang "loans.view"}} </a>
             </td>
           </tr>
 
           {{ else }}
 
           <tr>
-            <td colspan="7" class="empty">{{t .Lang "loans.empty"}}</td>
+            <td colspan="7" class="empty">{{t $.Lang "loans.empty"}}</td>
           </tr>
 
           {{ end }}
@@ -135,16 +135,16 @@
 <!-- New Loan Modal -->
 
 <div id="loanModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeLoanModal()"></div>
+  <div class="modal-backdrop" data-csp-action="loans:close"></div>
 
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>{{t .Lang "loans.new_modal_title"}}</h2>
-        <p>{{t .Lang "loans.new_modal_subtitle"}}</p>
+        <h2>{{t $.Lang "loans.new_modal_title"}}</h2>
+        <p>{{t $.Lang "loans.new_modal_subtitle"}}</p>
       </div>
 
-      <button type="button" class="modal-close" onclick="closeLoanModal()">
+      <button type="button" class="modal-close" data-csp-action="loans:close">
         ×
       </button>
     </div>
@@ -154,19 +154,19 @@
       method="POST"
       action="/loans"
       class="form"
-      onsubmit="submitLoan(event)"
+      data-csp-action="loans:submit"
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="loanPersonID"> {{t .Lang "loans.person_id"}} </label>
+          <label for="loanPersonID"> {{t $.Lang "loans.person_id"}} </label>
 
           <select id="loanPersonID" type="text" name="person_id" required>
-            <option value="">{{t .Lang "loans.select_person"}}</option>
+            <option value="">{{t $.Lang "loans.select_person"}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="loanAmount"> {{t .Lang "loans.loan_amount"}} </label>
+          <label for="loanAmount"> {{t $.Lang "loans.loan_amount"}} </label>
 
           <input
             id="loanAmount"
@@ -180,7 +180,7 @@
         </div>
 
         <div class="form-group">
-          <label for="interestRate"> {{t .Lang "loans.interest_rate"}} </label>
+          <label for="interestRate"> {{t $.Lang "loans.interest_rate"}} </label>
 
           <input
             id="interestRate"
@@ -194,7 +194,7 @@
         </div>
 
         <div class="form-group">
-          <label for="durationMonths"> {{t .Lang "loans.duration_months"}} </label>
+          <label for="durationMonths"> {{t $.Lang "loans.duration_months"}} </label>
 
           <input
             id="durationMonths"
@@ -207,13 +207,13 @@
         </div>
 
         <div class="form-group form-full">
-          <label for="loanPurpose"> {{t .Lang "loans.purpose"}} </label>
+          <label for="loanPurpose"> {{t $.Lang "loans.purpose"}} </label>
 
           <textarea
             id="loanPurpose"
             name="purpose"
             rows="4"
-            placeholder="{{t .Lang "loans.purpose_placeholder"}}"
+            placeholder="{{t $.Lang "loans.purpose_placeholder"}}"
           ></textarea>
         </div>
       </div>
@@ -222,12 +222,12 @@
         <button
           type="button"
           class="btn btn-secondary"
-          onclick="closeLoanModal()"
+          data-csp-action="loans:close"
         >
-          {{t .Lang "common.cancel"}}
+          {{t $.Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">{{t .Lang "loans.save"}}</button>
+        <button type="submit" class="btn btn-primary">{{t $.Lang "loans.save"}}</button>
       </div>
     </form>
   </div>

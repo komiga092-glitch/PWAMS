@@ -1,0 +1,286 @@
+=== Auth-Login ===
+AUTH-001 | Login page loads correctly | App is running | 1. Navigate to /login
+2. Observe page | N/A | Login form with username/email and password fields is displayed
+AUTH-002 | Login with valid credentials | A valid active user account exists | 1. Go to /login
+2. Enter valid username & password
+3. Click Login | Valid username + correct password | User is authenticated and redirected to /dashboard
+AUTH-003 | Login with invalid password | A valid user account exists | 1. Go to /login
+2. Enter valid username, wrong password
+3. Click Login | Valid username + wrong password | Login rejected with a generic invalid-credentials error; no account/role details leaked
+AUTH-004 | Login with non-existent username | N/A | 1. Go to /login
+2. Enter unregistered username
+3. Click Login | Random username | Login rejected with generic error message
+AUTH-005 | Login rate limiting | N/A | 1. Attempt login with wrong password repeatedly (>threshold) in short time | Wrong credentials, repeated 6-10x | Requests beyond the limit are throttled/blocked (HTTP 429 or lockout message)
+AUTH-006 | Login with empty fields | N/A | 1. Go to /login
+2. Leave username/password blank
+3. Click Login | Empty fields | Client/server-side validation error shown; request not processed
+AUTH-007 | Forgot password - request OTP | A registered email exists | 1. Go to /forgot-password
+2. Enter registered email
+3. Submit | Registered email | OTP/reset email is triggered and generic confirmation message is shown
+AUTH-008 | Forgot password - unregistered email | N/A | 1. Go to /forgot-password
+2. Enter unregistered email
+3. Submit | Unregistered email | Generic confirmation shown without revealing whether the email exists (no enumeration)
+AUTH-009 | Verify reset OTP - valid code | OTP requested previously | 1. Go to /verify-reset-otp
+2. Enter correct OTP
+3. Submit | Valid OTP | OTP accepted; user proceeds to reset-password step
+AUTH-010 | Verify reset OTP - invalid/expired code | OTP requested previously | 1. Go to /verify-reset-otp
+2. Enter wrong/expired OTP
+3. Submit | Invalid OTP | OTP rejected with an appropriate error; user cannot proceed
+AUTH-011 | Reset password with valid session | OTP verified | 1. Go to /reset-password
+2. Enter new password + confirmation
+3. Submit | New strong password | Password updated; user can log in with new password
+AUTH-012 | Reset password - weak password rejected | OTP verified | 1. Go to /reset-password
+2. Enter weak password (e.g. '123')
+3. Submit | Weak password | Password policy validation error is shown; password not changed
+AUTH-013 | Rate limit on password reset endpoints | N/A | 1. Repeatedly POST /forgot-password or /reset-password beyond threshold | Repeated requests | Requests are throttled after the configured limit
+AUTH-014 | Logout | User is logged in | 1. Click Logout / POST /logout | N/A | Session/cookie invalidated; user redirected to /login; protected pages become inaccessible
+AUTH-015 | Session/current user info | User is logged in | 1. Call GET /auth/me | N/A | Returns current username, email, role with HTTP 200
+AUTH-016 | Access /auth/me while logged out | No active session | 1. Call GET /auth/me without auth | N/A | HTTP 401 Unauthorized with generic message
+=== Account-Activation ===
+ACT-001 | Request account activation - valid user | Inactive/unactivated account exists | 1. POST /request-account-activation with account identifier | Valid unactivated account | Activation OTP is sent; success response returned
+ACT-002 | Request account activation - already active account | Account already active | 1. POST /request-account-activation for active account | Active account identifier | Appropriate message returned without granting duplicate activation
+ACT-003 | Verify activation OTP - correct code | Activation requested | 1. POST /verify-account-activation-otp with correct OTP | Valid OTP | Account is activated; success response returned
+ACT-004 | Verify activation OTP - incorrect/expired code | Activation requested | 1. POST /verify-account-activation-otp with wrong/expired OTP | Invalid OTP | Request rejected; account remains unactivated
+ACT-005 | Reactivate a deactivated account | Account previously deactivated | 1. POST /reactivate-account with valid identifier | Deactivated account | Reactivation flow triggers correctly (OTP or direct reactivation per business rule)
+ACT-006 | Reactivate account - invalid identifier | N/A | 1. POST /reactivate-account with invalid/unknown identifier | Invalid identifier | Request rejected with appropriate error, no internal details leaked
+=== User-Management ===
+USR-001 | View users list page | Logged in as Admin/Super Admin | 1. Navigate to /users/page | N/A | Paginated list of users is displayed with role/status columns
+USR-002 | Get user by ID | Logged in as Admin | 1. Call GET /users/:id for existing user | Valid user ID | User details returned with HTTP 200
+USR-003 | Get non-existent user | Logged in as Admin | 1. Call GET /users/:id with random/invalid ID | Invalid user ID | HTTP 404 Not Found returned
+USR-004 | Update user profile details | Logged in as Admin | 1. PUT /users/:id with updated name/email/role | Valid updated fields | User record updated; changes reflected in list/detail views
+USR-005 | Update user - invalid email format | Logged in as Admin | 1. PUT /users/:id with malformed email | Invalid email string | Validation error returned; record not updated
+USR-006 | Activate/Deactivate user status | Logged in as Admin | 1. PATCH /users/:id/status toggling active/inactive | status = active/inactive | User status updated; deactivated user can no longer log in
+USR-007 | Change own password | Logged in user | 1. POST /users/password with current + new password | Correct current password, new strong password | Password updated successfully; user can log in with the new password
+USR-008 | Change password - wrong current password | Logged in user | 1. POST /users/password with incorrect current password | Wrong current password | Request rejected with an appropriate error
+USR-009 | Admin resets another user's password | Logged in as Admin | 1. PATCH /users/:id/password with new password | New password | Target user's password updated; user notified/forced to change on next login if applicable
+USR-010 | Non-admin cannot access user management | Logged in as Staff/Volunteer | 1. Attempt GET /users/page or /users API endpoints | N/A | HTTP 403 Forbidden or redirect; user list not exposed
+=== Dashboard ===
+DASH-001 | Dashboard loads for authorized roles | Logged in as any of Super Admin/Admin/Manager/Staff/Volunteer/Donor/Beneficiary/Student | 1. Navigate to /dashboard | N/A | Dashboard page renders without error, showing role-appropriate widgets
+DASH-002 | Dashboard stats API returns data | Logged in | 1. Call GET /dashboard/stats (or module stats endpoint) | N/A | Correct aggregate figures (students, donors, donations, loans, aid requests) are returned
+DASH-003 | Dashboard blocked when logged out | No active session | 1. Navigate to /dashboard directly | N/A | User is redirected to /login
+DASH-004 | Dashboard figures match underlying data | Known seeded data set | 1. Compare dashboard totals with actual record counts in Students/Donors/Donations | Seeded reference data | Dashboard numbers reconcile exactly with source records
+DASH-005 | Dashboard renders correctly on mobile/tablet width | Logged in | 1. Resize browser / use device emulation | N/A | Layout remains usable and readable at common breakpoints
+=== Students ===
+STU-001 | Student list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Student list page | N/A | Paginated student list renders with expected columns
+STU-002 | List students via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for students | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+STU-003 | Search/filter students | Multiple student records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+STU-004 | View single student by ID | A student record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+STU-005 | View non-existent student | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+STU-006 | Create student - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New student is created and appears in the list; HTTP 201
+STU-007 | Create student - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+STU-008 | Create student - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+STU-009 | Update student - valid changes | A student record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+STU-010 | Update student - invalid data | A student record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+STU-011 | Update non-existent student | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+STU-012 | Delete student as authorized role | Logged in as Super Admin, Admin; record exists | 1. Call DELETE /:id | Valid record ID | Record is deleted (or soft-deleted) and no longer appears in list
+STU-013 | Delete student as unauthorized role | Logged in as a role NOT in [Super Admin, Admin] | 1. Attempt DELETE /:id | Valid record ID | HTTP 403 Forbidden; record is not deleted
+STU-014 | Access student module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+STU-015 | Access student module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+STU-016 | Update student status (e.g. active/graduated/inactive) | A student record exists | 1. PATCH /students/:id/status with new status value | Valid status value | Status updated and reflected in list/detail view
+STU-017 | Student view page renders full profile | A student record exists | 1. Navigate to /students/:id/view | N/A | Full student profile (academic + personal details) renders correctly
+STU-018 | Student edit page pre-fills existing data | A student record exists | 1. Navigate to /students/:id/edit | N/A | Edit form is pre-populated with the student's current data
+=== Persons-Beneficiaries ===
+PER-001 | Person list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Person list page | N/A | Paginated person list renders with expected columns
+PER-002 | List persons via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for persons | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+PER-003 | Search/filter persons | Multiple person records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+PER-004 | View single person by ID | A person record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+PER-005 | View non-existent person | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+PER-006 | Create person - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New person is created and appears in the list; HTTP 201
+PER-007 | Create person - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+PER-008 | Create person - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+PER-009 | Update person - valid changes | A person record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+PER-010 | Update person - invalid data | A person record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+PER-011 | Update non-existent person | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+PER-012 | Delete person as authorized role | Logged in as Super Admin, Admin; record exists | 1. Call DELETE /:id | Valid record ID | Record is deleted (or soft-deleted) and no longer appears in list
+PER-013 | Delete person as unauthorized role | Logged in as a role NOT in [Super Admin, Admin] | 1. Attempt DELETE /:id | Valid record ID | HTTP 403 Forbidden; record is not deleted
+PER-014 | Access person module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+PER-015 | Access person module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+PER-016 | Update person status | A person record exists | 1. PATCH /persons/:id/status with new status | Valid status value | Status updated correctly and reflected across dependent modules (aid requests, care provided)
+PER-017 | Person view page shows linked records | A person with linked aid requests/care records exists | 1. Navigate to /persons/:id/view | N/A | Linked aid requests / care-provided history is visible on the profile
+=== Donors ===
+DNR-001 | Donor list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Donor list page | N/A | Paginated donor list renders with expected columns
+DNR-002 | List donors via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for donors | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+DNR-003 | Search/filter donors | Multiple donor records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+DNR-004 | View single donor by ID | A donor record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+DNR-005 | View non-existent donor | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+DNR-006 | Create donor - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New donor is created and appears in the list; HTTP 201
+DNR-007 | Create donor - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+DNR-008 | Create donor - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+DNR-009 | Update donor - valid changes | A donor record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+DNR-010 | Update donor - invalid data | A donor record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+DNR-011 | Update non-existent donor | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+DNR-012 | Delete donor as authorized role | Logged in as Super Admin, Admin; record exists | 1. Call DELETE /:id | Valid record ID | Record is deleted (or soft-deleted) and no longer appears in list
+DNR-013 | Delete donor as unauthorized role | Logged in as a role NOT in [Super Admin, Admin] | 1. Attempt DELETE /:id | Valid record ID | HTTP 403 Forbidden; record is not deleted
+DNR-014 | Access donor module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+DNR-015 | Access donor module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+DNR-016 | Update donor status (active/inactive) | A donor record exists | 1. PATCH /donors/:id/status | Valid status value | Donor status updated and reflected in donor list and donation forms
+DNR-017 | Donor view page shows donation history | Donor with prior donations exists | 1. Navigate to /donors/:id/view | N/A | Donation history for the donor is listed correctly with correct totals
+=== Donations ===
+DON-001 | Donation list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Donation list page | N/A | Paginated donation list renders with expected columns
+DON-002 | List donations via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for donations | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+DON-003 | Search/filter donations | Multiple donation records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+DON-004 | View single donation by ID | A donation record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+DON-005 | View non-existent donation | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+DON-006 | Create donation - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New donation is created and appears in the list; HTTP 201
+DON-007 | Create donation - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+DON-008 | Create donation - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+DON-009 | Update donation - valid changes | A donation record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+DON-010 | Update donation - invalid data | A donation record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+DON-011 | Update non-existent donation | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+DON-012 | Delete donation as authorized role | Logged in as Super Admin, Admin; record exists | 1. Call DELETE /:id | Valid record ID | Record is deleted (or soft-deleted) and no longer appears in list
+DON-013 | Delete donation as unauthorized role | Logged in as a role NOT in [Super Admin, Admin] | 1. Attempt DELETE /:id | Valid record ID | HTTP 403 Forbidden; record is not deleted
+DON-014 | Access donation module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+DON-015 | Access donation module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+DON-016 | Update donation status (e.g. pending/confirmed/cancelled) | A donation record exists | 1. PATCH /donations/:id/status | Valid status transition | Status updates correctly; invalid transitions (e.g. confirmed -> pending) are blocked if disallowed
+DON-017 | Donation amount validation | N/A | 1. Attempt to create donation with zero/negative amount | Amount = 0 or negative | Validation error returned; donation not created
+DON-018 | Donation totals roll up to Revenue/Reports | Multiple confirmed donations exist | 1. Compare donation totals against Revenue summary and Reports module | Seeded donation data | Figures reconcile across Donations, Revenue and Reports modules
+=== Loans ===
+LON-001 | Loan list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Loan list page | N/A | Paginated loan list renders with expected columns
+LON-002 | List loans via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for loans | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+LON-003 | Search/filter loans | Multiple loan records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+LON-004 | View single loan by ID | A loan record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+LON-005 | View non-existent loan | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+LON-006 | Create loan - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New loan is created and appears in the list; HTTP 201
+LON-007 | Create loan - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+LON-008 | Create loan - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+LON-009 | Update loan - valid changes | A loan record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+LON-010 | Update loan - invalid data | A loan record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+LON-011 | Update non-existent loan | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+LON-012 | Access loan module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+LON-013 | Access loan module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+LON-014 | Loan creation triggers pending/review status | Logged in as Manager/Staff | 1. Create a new loan request | Valid loan payload | Loan created with initial status (e.g. Pending Review)
+LON-015 | Review (approve) loan as Admin/Super Admin | A pending loan exists | 1. PATCH /loans/:id/review with approve decision | Approve decision | Loan status updated to Approved; loan becomes eligible for repayment scheduling
+LON-016 | Review (reject) loan as Admin/Super Admin | A pending loan exists | 1. PATCH /loans/:id/review with reject decision + reason | Reject decision + reason | Loan status updated to Rejected; reason stored/visible
+LON-017 | Staff cannot review/approve loans | Logged in as Staff/Manager | 1. Attempt PATCH /loans/:id/review | N/A | HTTP 403 Forbidden; loan status unchanged
+=== Loan-Repayments ===
+LRP-001 | Loan repayments list page loads | Logged in as Super Admin/Admin/Manager/Staff | 1. Navigate to /loan-repayments/page | N/A | List of repayment schedules/records renders with due dates and statuses
+LRP-002 | View single repayment record | A repayment record exists | 1. Call GET /:id for a repayment | Valid repayment ID | Repayment details (amount, due date, status) returned correctly
+LRP-003 | Record a repayment (pay) | A pending repayment installment exists | 1. PATCH /:id/pay with payment details | Valid payment amount/date | Repayment marked as paid; outstanding loan balance decreases accordingly
+LRP-004 | Overpayment / incorrect amount on repayment | A pending repayment exists | 1. PATCH /:id/pay with amount not matching the due installment | Mismatched amount | System either rejects or correctly handles partial/overpayment per business rule; no silent data corruption
+LRP-005 | Cancel a repayment record | A repayment record exists | 1. PATCH /:id/cancel | N/A | Repayment marked cancelled; loan balance/schedule recalculated correctly
+LRP-006 | Duplicate repayment prevention | A repayment already marked as paid | 1. Attempt to pay the same installment again | Same repayment ID | System blocks duplicate payment (per loan_repayment_dedup migration) with an appropriate error
+LRP-007 | Pay/cancel a non-existent repayment | N/A | 1. PATCH /:id/pay or /:id/cancel with invalid ID | Invalid ID | HTTP 404 Not Found returned
+LRP-008 | Unauthorized role cannot record repayments | Logged in as Volunteer/Donor/Student | 1. Attempt PATCH /:id/pay | N/A | HTTP 403 Forbidden; repayment unchanged
+=== Aid-Requests ===
+AID-001 | Aid Request list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Aid Request list page | N/A | Paginated aid request list renders with expected columns
+AID-002 | List aid requests via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for aid requests | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+AID-003 | Search/filter aid requests | Multiple aid request records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+AID-004 | View single aid request by ID | A aid request record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+AID-005 | View non-existent aid request | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+AID-006 | Create aid request - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New aid request is created and appears in the list; HTTP 201
+AID-007 | Create aid request - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+AID-008 | Create aid request - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+AID-009 | Update aid request - valid changes | A aid request record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+AID-010 | Update aid request - invalid data | A aid request record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+AID-011 | Update non-existent aid request | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+AID-012 | Delete aid request as authorized role | Logged in as Super Admin, Admin; record exists | 1. Call DELETE /:id | Valid record ID | Record is deleted (or soft-deleted) and no longer appears in list
+AID-013 | Delete aid request as unauthorized role | Logged in as a role NOT in [Super Admin, Admin] | 1. Attempt DELETE /:id | Valid record ID | HTTP 403 Forbidden; record is not deleted
+AID-014 | Access aid request module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+AID-015 | Access aid request module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+AID-016 | Review (approve) aid request | A pending aid request exists; logged in as Admin/Super Admin | 1. PATCH /aid-requests/:id/review with approve decision | Approve decision | Request status updated to Approved; linked person/care records updated as applicable
+AID-017 | Review (reject) aid request | A pending aid request exists; logged in as Admin/Super Admin | 1. PATCH /aid-requests/:id/review with reject decision + reason | Reject decision + reason | Request status updated to Rejected with reason stored
+AID-018 | Cancel an aid request | A pending aid request exists | 1. PATCH /aid-requests/:id/cancel | N/A | Request status updated to Cancelled by an authorized role (Super Admin/Admin/Staff)
+AID-019 | Staff cannot review aid requests | Logged in as Staff | 1. Attempt PATCH /aid-requests/:id/review | N/A | HTTP 403 Forbidden; request status unchanged
+=== Care-Provided ===
+CARE-001 | Care record list page loads | Logged in as Super Admin, Admin, Manager, Staff | 1. Navigate to the Care record list page | N/A | Paginated care record list renders with expected columns
+CARE-002 | List care records via API | Logged in as Super Admin, Admin, Manager, Staff | 1. Call GET list endpoint for care records | N/A | HTTP 200 with correctly structured JSON array/pagination metadata
+CARE-003 | Search/filter care records | Multiple care record records exist | 1. Apply search/filter/status query params on the list endpoint | Known keyword / status filter | Only matching records are returned
+CARE-004 | View single care record by ID | A care record record exists | 1. Call GET /:id for an existing record | Valid record ID | Full record details returned with HTTP 200
+CARE-005 | View non-existent care record | N/A | 1. Call GET /:id with a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+CARE-006 | Create care record - valid data | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API with all required fields valid | Complete valid payload | New care record is created and appears in the list; HTTP 201
+CARE-007 | Create care record - missing required fields | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create form/API omitting a required field | Payload missing a mandatory field | Validation error returned; no record created
+CARE-008 | Create care record - invalid field format | Logged in as Super Admin, Admin, Manager, Staff | 1. Submit create with malformed data (e.g. bad date, negative amount, invalid email/phone) | Malformed field value | Validation error returned; no record created
+CARE-009 | Update care record - valid changes | A care record record exists | 1. Submit PUT /:id with updated field values | Valid updated payload | Record updated; changes visible on subsequent GET
+CARE-010 | Update care record - invalid data | A care record record exists | 1. Submit PUT /:id with invalid data | Invalid payload | Validation error returned; record left unchanged
+CARE-011 | Update non-existent care record | N/A | 1. Submit PUT /:id for a random/invalid ID | Invalid ID | HTTP 404 Not Found returned
+CARE-012 | Delete care record as authorized role | Logged in as Super Admin, Admin; record exists | 1. Call DELETE /:id | Valid record ID | Record is deleted (or soft-deleted) and no longer appears in list
+CARE-013 | Delete care record as unauthorized role | Logged in as a role NOT in [Super Admin, Admin] | 1. Attempt DELETE /:id | Valid record ID | HTTP 403 Forbidden; record is not deleted
+CARE-014 | Access care record module as unauthorized role | Logged in as a role outside the allowed list | 1. Attempt to access list/create/update endpoints | N/A | HTTP 403 Forbidden or redirect; no data exposed
+CARE-015 | Access care record module while logged out | No active session | 1. Attempt to access any /{entity.lower()} endpoint directly | N/A | Redirected to /login or HTTP 401 returned
+CARE-016 | Update care-provided status | A care record exists | 1. PATCH /care-provided/:id/status | Valid status value | Status updated and reflected in the beneficiary's care history
+=== Revenue ===
+REV-001 | Revenue list page loads | Logged in as Super Admin/Admin/Manager/Staff | 1. Navigate to /revenue/page | N/A | Revenue entries render with amount, source and date columns
+REV-002 | Revenue summaries endpoint returns correct totals | Revenue data seeded for a date range | 1. Call GET /revenue/summaries with a date range filter | Known date range | Returned totals match the sum of underlying revenue records for that range
+REV-003 | View single revenue record | A revenue record exists | 1. Call GET /:id | Valid ID | Full revenue record detail returned
+REV-004 | Update revenue record | A revenue record exists | 1. PUT /:id with updated amount/category | Valid updated payload | Record updated; totals/summaries recalculate correctly
+REV-005 | Update revenue with invalid amount | A revenue record exists | 1. PUT /:id with negative/zero amount | Invalid amount | Validation error returned; record unchanged
+REV-006 | Delete revenue record | Logged in as Super Admin/Admin; record exists | 1. DELETE /:id | Valid ID | Record deleted and removed from summaries/reports
+REV-007 | Non-admin cannot delete revenue record | Logged in as Manager/Staff | 1. Attempt DELETE /:id | N/A | HTTP 403 Forbidden; record retained
+=== Messages ===
+MSG-001 | Messages page loads | Logged in user | 1. Navigate to /messages/page | N/A | Inbox/sent tabs render correctly
+MSG-002 | Get recipients list | Logged in user | 1. Call GET /messages/recipients | N/A | List of valid recipients (per role visibility rules) returned
+MSG-003 | Send a message to a valid recipient | At least one valid recipient exists | 1. Compose and send a message via POST endpoint | Valid recipient + message body | Message is created and appears in recipient's inbox and sender's sent folder
+MSG-004 | View inbox | Messages received | 1. Call GET /messages/inbox | N/A | All received messages listed, newest first
+MSG-005 | View sent messages | Messages sent by the user | 1. Call GET /messages/sent | N/A | All sent messages listed correctly
+MSG-006 | View unread messages / unread count | Unread messages exist | 1. Call GET /messages/unread and /messages/unread/count | N/A | Correct unread messages and matching count are returned
+MSG-007 | View a single message by ID | A message exists | 1. Call GET /messages/:id | Valid message ID | Full message content returned; message marked as read where applicable
+MSG-008 | Mark message as read | An unread message exists | 1. PATCH /messages/:id/read | N/A | Message status changes to read; unread count decreases by 1
+MSG-009 | Delete a message | A message exists | 1. DELETE /messages/:id | Valid message ID | Message removed from the user's view
+MSG-010 | Cannot view another user's private message | Two users, message belongs to user A | 1. As user B, call GET /messages/:id for user A's message | Message ID belonging to another user | HTTP 403/404; message content not exposed
+=== Notifications ===
+NOT-001 | Notifications page loads | Logged in user | 1. Navigate to /notifications/page | N/A | List of notifications renders with read/unread indicators
+NOT-002 | View a single notification | A notification exists | 1. Call GET /notifications/:id | Valid notification ID | Notification detail returned correctly
+NOT-003 | Mark notification as read | An unread notification exists | 1. PATCH /notifications/:id/read | N/A | Notification marked as read; unread badge count decreases
+NOT-004 | Delete a notification | A notification exists | 1. DELETE /notifications/:id | Valid notification ID | Notification removed from the list
+NOT-005 | System-triggered notifications are generated | An action that triggers a notification occurs (e.g. aid request approved) | 1. Perform the triggering action
+2. Check recipient's notifications | N/A | A corresponding notification is created for the correct recipient(s)
+NOT-006 | Cannot access another user's notification | Notification belongs to user A | 1. As user B, call GET /notifications/:id for user A's notification | Notification ID belonging to another user | HTTP 403/404; content not exposed
+=== File-Upload ===
+FILE-001 | File upload page loads | Logged in authorized user | 1. Navigate to /files/page | N/A | Upload form and existing file list render correctly
+FILE-002 | Upload a valid file | N/A | 1. POST /files/upload with an allowed file type/size | Valid PDF/image within size limit | File uploaded successfully; appears in file list with correct metadata
+FILE-003 | Upload rejected for disallowed file type | N/A | 1. POST /files/upload with an executable/script file | e.g. .exe or .sh file | Upload rejected with an appropriate validation error
+FILE-004 | Upload rejected for oversized file | N/A | 1. POST /files/upload with a file exceeding the max size limit | Oversized file | Upload rejected with a clear file-size error
+FILE-005 | View/download an uploaded file | A file has been uploaded | 1. Call GET /files/:id | Valid file ID | File is retrieved/downloaded correctly and matches the original
+FILE-006 | Delete an uploaded file | A file has been uploaded | 1. Call DELETE /files/:id | Valid file ID | File is removed from storage and the file list
+FILE-007 | File reconciliation report | Multiple files uploaded across records | 1. Navigate to /files/reconciliation | N/A | Reconciliation view correctly flags orphaned/missing/mismatched file references
+FILE-008 | Access uploaded file belonging to another org/record without permission | File tied to a record outside user's scope | 1. Attempt GET /files/:id for a file outside the user's access scope | Out-of-scope file ID | HTTP 403/404; file content not exposed
+=== Reports ===
+RPT-001 | Reports page loads | Logged in authorized user | 1. Navigate to /reports/page | N/A | List of available report types renders correctly
+RPT-002 | Generate a report (default parameters) | Data exists for the report type | 1. Select a report type
+2. Generate with default date range | Default parameters | Report renders with accurate data matching underlying records
+RPT-003 | Generate a report with custom date range/filters | Data exists spanning multiple periods | 1. Apply a custom date range and filters
+2. Generate report | Custom date range + filter | Report reflects only data within the specified range/filter
+RPT-004 | View report detail page | A generated report exists | 1. Navigate to report detail view | N/A | Detailed breakdown renders correctly with correct totals/subtotals
+RPT-005 | Report API returns correct JSON structure | N/A | 1. Call GET /api/reports/ endpoint | N/A | HTTP 200 with well-formed JSON payload matching documented schema (see docs/swagger.json)
+RPT-006 | Report figures reconcile with source modules | Known seeded data across Donations/Loans/Aid Requests | 1. Compare report totals against Donations, Loans, and Aid Requests modules directly | Seeded reference data | All totals reconcile exactly; no discrepancies
+RPT-007 | Generate report with no matching data | A date range with no records | 1. Generate report for an empty period | Empty date range | Report renders gracefully with a 'no data' state, not an error
+RPT-008 | Export/print report (if supported) | A generated report exists | 1. Trigger export/print action | N/A | Exported file (PDF/CSV) matches the on-screen report data
+RPT-009 | Unauthorized role cannot access reports | Logged in as a role without report access | 1. Attempt to navigate to /reports/page | N/A | HTTP 403 Forbidden or redirect; report data not exposed
+=== Audit-Logs ===
+AUD-001 | Audit logs page loads for Admin/Super Admin | Logged in as Admin/Super Admin | 1. Navigate to /audit-logs/page | N/A | Audit log list renders with actor, action, entity and timestamp columns
+AUD-002 | List audit logs via API | Logged in as Admin/Super Admin | 1. Call GET /audit-logs | N/A | HTTP 200 with paginated audit log entries
+AUD-003 | View single audit log entry | An audit log entry exists | 1. Call GET /audit-logs/:id | Valid log ID | Full entry detail (before/after values where applicable) returned
+AUD-004 | Create/Update/Delete actions are logged | N/A | 1. Perform a create, update, and delete action in any module
+2. Check audit logs | N/A | Corresponding audit log entries are created accurately for each action with correct actor and timestamp
+AUD-005 | Non-admin roles cannot access audit logs | Logged in as Manager/Staff/Volunteer | 1. Attempt to access /audit-logs/page or API | N/A | HTTP 403 Forbidden; audit data not exposed
+AUD-006 | Audit logs are immutable | An audit log entry exists | 1. Attempt to find any update/delete endpoint for audit logs | N/A | No update/delete endpoint exists; audit trail cannot be altered
+=== Offline-Sync ===
+SYNC-001 | Push local changes to server | Client has offline changes queued | 1. Call POST /sync/push with a batch of local changes | Valid change payload | Server accepts and applies changes; returns success/conflict status per item
+SYNC-002 | Pull server changes to client | Server has newer data than client | 1. Call GET /sync/pull with client's last-sync timestamp/version | Last sync token | Server returns only the changes made since that point
+SYNC-003 | Conflict handling on push | Same record modified both offline and on server | 1. Push a change that conflicts with a newer server-side change | Conflicting payload | Conflict is detected and resolved per the defined strategy (e.g. last-write-wins or explicit conflict response), not silently corrupted
+SYNC-004 | Push with malformed payload | N/A | 1. POST /sync/push with invalid/corrupted JSON | Malformed payload | Request rejected with a clear validation error; no partial/corrupt data applied
+SYNC-005 | Pull with no new changes | Client is already up to date | 1. Call GET /sync/pull | Current sync token | Empty change set returned; no errors
+SYNC-006 | Sync respects role/data-scope permissions | Logged in as a restricted role | 1. Push/pull data outside the user's permitted scope | Out-of-scope record | Out-of-scope records are rejected/excluded rather than synced
+=== Security-RBAC ===
+SEC-001 | Unauthenticated user redirected from all protected routes | No active session | 1. Attempt to directly access each protected module URL | N/A | Every protected route redirects to /login or returns HTTP 401
+SEC-002 | Role-based menu/UI visibility | Logged in as each role in turn | 1. Log in as Super Admin, Admin, Manager, Staff, Volunteer, Donor, Beneficiary, Student
+2. Inspect visible sidebar/menu items | One login per role | Only the modules/actions permitted for that role are visible in the UI
+SEC-003 | Direct API access bypassing UI restrictions | Logged in as a restricted role | 1. Call a restricted API endpoint directly (not via UI) e.g. DELETE on a record | Restricted endpoint + valid session token | Server enforces the same role check as the UI; request is rejected with HTTP 403
+SEC-004 | Session expiry / idle timeout | Logged in user, session idle beyond timeout | 1. Leave session idle past configured timeout
+2. Attempt an action | N/A | User is required to re-authenticate; stale session is rejected
+SEC-005 | CSRF protection on state-changing requests | Logged in user | 1. Attempt a POST/PUT/PATCH/DELETE request without a valid CSRF token | Missing/invalid CSRF token | Request is rejected
+SEC-006 | SQL injection attempt on search/filter fields | N/A | 1. Enter SQL injection payloads into search/filter inputs (e.g. student search, donor search) | e.g. ' OR '1'='1 | Input is safely escaped/parameterized; no data leakage or error stack trace exposed
+SEC-007 | XSS attempt on free-text fields | N/A | 1. Enter script payloads into free-text fields (e.g. remarks, message body) | e.g. <script>alert(1)</script> | Input is sanitized/escaped on output; script does not execute
+SEC-008 | Multi-tenancy / organization data isolation | Two organizations with separate data exist (per organization_tenancy migration) | 1. Log in as a user from Organization A
+2. Attempt to view/access Organization B's records via ID guessing | Record ID belonging to another organization | Request is rejected (403/404); cross-tenant data is never exposed
+SEC-009 | Password stored securely | N/A | 1. Inspect database/user table for password storage (via existing docs/migrations, not by attempting to crack it) | N/A | Passwords are stored as salted hashes, never in plain text
+=== Localization-i18n ===
+I18N-001 | Switch UI language to Sinhala | Logged in user | 1. Change language setting to Sinhala
+2. Browse key pages | N/A | UI labels render in Sinhala without missing keys or layout breakage
+I18N-002 | Switch UI language to Tamil | Logged in user | 1. Change language setting to Tamil
+2. Browse key pages | N/A | UI labels render in Tamil without missing keys or layout breakage
+I18N-003 | Switch UI language to English | Logged in user | 1. Change language setting to English
+2. Browse key pages | N/A | UI labels render in English correctly (default/reference language)
+I18N-004 | Language preference persists across sessions | Language changed and logged out/in again | 1. Set language
+2. Log out
+3. Log back in | N/A | Previously selected language is remembered for the user

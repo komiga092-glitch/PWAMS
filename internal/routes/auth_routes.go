@@ -83,10 +83,12 @@ func RegisterAuthRoutes(
 		middleware.RequireAnyRole(
 			models.RoleSuperAdmin,
 			models.RoleAdmin,
+			models.RoleManager,
 			models.RoleStaff,
 			models.RoleVolunteer,
 			models.RoleDonor,
 			models.RoleBeneficiary,
+			models.RoleStudent,
 		),
 		dashboardHandler.Page,
 	)

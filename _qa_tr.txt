@@ -1,0 +1,90 @@
+﻿	return time.Parse("2006-01-02", value)
+}
+
+type CareProvidedService struct {
+	careProvidedRepo *repository.CareProvidedRepository
+}
+
+func NewCareProvidedService(
+	careProvidedRepo *repository.CareProvidedRepository,
+) *CareProvidedService {
+	return &CareProvidedService{
+		careProvidedRepo: careProvidedRepo,
+	}
+}
+
+func isValidCareProvidedStatus(status string) bool {
+	switch status {
+	case models.CareProvidedStatusPending,
+		models.CareProvidedStatusCompleted,
+		models.CareProvidedStatusCancelled:
+		return true
+	default:
+		return false
+	}
+}
+
+func (s *CareProvidedService) CreateCareProvided(
+	request models.CreateCareProvidedRequest,
+	createdByID string,
+) (*models.CareProvided, error) {
+	aidRequestID, err := uuid.Parse(
+		strings.TrimSpace(request.AidRequestID),
+	)
+	if err != nil {
+		return nil, errors.New("invalid aid request ID")
+	}
+
+	personID, err := uuid.Parse(
+		strings.TrimSpace(request.PersonID),
+	)
+	if err != nil {
+		return nil, errors.New("invalid person ID")
+	}
+
+	userID, err := uuid.Parse(strings.TrimSpace(createdByID))
+	ErrDonorNotActive = errors.New(
+		"donor account is not active",
+	)
+
+	ErrInvalidDonationDateRange = errors.New(
+		"invalid donation date range",
+	)
+
+	ErrInvalidDonationStatus = errors.New(
+		"invalid donation status",
+	)
+	ErrInvalidDonationID = errors.New("invalid donation id")
+)
+var ErrConfirmedDonationCannotDelete = errors.New(
+	"confirmed donations cannot be deleted",
+)
+
+func isValidDonationStatus(status string) bool {
+	switch status {
+	case models.DonationStatusPending,
+		models.DonationStatusConfirmed,
+		models.DonationStatusCancelled:
+		return true
+
+	default:
+		return false
+	}
+}
+
+type DonationService struct {
+	donationRepo *repository.DonationRepository
+	donorRepo    *repository.DonorRepository
+	personRepo   *repository.PersonRepository
+}
+
+func NewDonationService(
+	donationRepo *repository.DonationRepository,
+	donorRepo *repository.DonorRepository,
+	personRepo *repository.PersonRepository,
+) *DonationService {
+	return &DonationService{
+		donationRepo: donationRepo,
+		donorRepo:    donorRepo,
+		personRepo:   personRepo,
+	}

@@ -21,7 +21,7 @@ templ DonationsPage(donations []Donation, search string, errorMsg string) {
 				<button
 					type="button"
 					class="btn btn-primary"
-					data-roles="Super Admin,Admin,Staff"
+					data-roles="Super Admin,Admin,Manager,Staff"
 					hx-get="/donations/new"
 					hx-target="body"
 					hx-swap="innerHTML"

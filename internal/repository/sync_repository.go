@@ -91,38 +91,30 @@ func applyTenantFilter(query *gorm.DB, tenantID *uuid.UUID) *gorm.DB {
 }
 
 func (r *SyncRepository) PullPersons(
-	cursor time.Time,
+	cursor SyncCursor,
 	limit int,
 	tenantID *uuid.UUID,
-) ([]models.SyncPullRecord, time.Time, bool, error) {
-	if limit <= 0 {
-		limit = 500
-	}
+) ([]models.SyncPullRecord, SyncCursor, bool, error) {
+	pageLimit := clampSyncLimit(limit)
 
-	if limit > 500 {
-		limit = 500
+	query := applyTenantFilter(r.db, tenantID).
+		Order("updated_at ASC, id ASC").
+		Limit(pageLimit + 1)
+
+	// Same keyset predicate and ordering the composite cursor encodes, so a
+	// record that shares the boundary updated_at can be neither replayed nor
+	// skipped between pages.
+	if predicate, args := syncCursorWhere(cursor); predicate != "" {
+		query = query.Where(predicate, args...)
 	}
 
 	var records []models.Person
-
-	query := applyTenantFilter(r.db, tenantID).
-		Where("updated_at > ?", cursor).
-		Order("updated_at ASC").
-		Limit(limit + 1)
 
 	if err := query.Find(&records).Error; err != nil {
 		return nil, cursor, false, err
 	}
 
-	hasMore := len(records) > limit
-
-	if hasMore {
-		records = records[:limit]
-	}
-
 	result := make([]models.SyncPullRecord, 0, len(records))
-
-	nextCursor := cursor
 
 	for _, person := range records {
 		payload := map[string]interface{}{
@@ -139,23 +131,22 @@ func (r *SyncRepository) PullPersons(
 			IsDeleted:  person.IsDeleted,
 			Payload:    payload,
 		})
-
-		if person.UpdatedAt.After(nextCursor) {
-			nextCursor = person.UpdatedAt
-		}
 	}
 
-	return result, nextCursor, hasMore, nil
+	page, nextCursor, hasMore, err := paginateSyncRecords(result, pageLimit, cursor)
+	if err != nil {
+		return nil, cursor, false, err
+	}
+
+	return page, nextCursor, hasMore, nil
 }
 
 func (r *SyncRepository) PullEntities(
-	cursor time.Time,
+	cursor SyncCursor,
 	limit int,
 	tenantID *uuid.UUID,
-) ([]models.SyncPullRecord, time.Time, bool, error) {
-	if limit <= 0 || limit > 500 {
-		limit = 500
-	}
+) ([]models.SyncPullRecord, SyncCursor, bool, error) {
+	pageLimit := clampSyncLimit(limit)
 
 	type entityTable struct {
 		name  string
@@ -181,14 +172,21 @@ func (r *SyncRepository) PullEntities(
 		Payload   map[string]any `gorm:"-"`
 	}
 
+	predicate, predicateArgs := syncCursorWhere(cursor)
+
 	result := make([]models.SyncPullRecord, 0)
 	for _, table := range tables {
 		var rows []map[string]any
-		if err := applyTenantFilter(r.db.Table(table.name).Unscoped(), tenantID).
-			Where("updated_at > ?", cursor).
-			Order("updated_at ASC").
-			Limit(limit + 1).
-			Find(&rows).Error; err != nil {
+
+		query := applyTenantFilter(r.db.Table(table.name).Unscoped(), tenantID).
+			Order("updated_at ASC, id ASC").
+			Limit(pageLimit + 1)
+
+		if predicate != "" {
+			query = query.Where(predicate, predicateArgs...)
+		}
+
+		if err := query.Find(&rows).Error; err != nil {
 			return nil, cursor, false, fmt.Errorf("failed to pull %s: %w", table.label, err)
 		}
 		for _, row := range rows {
@@ -205,26 +203,23 @@ func (r *SyncRepository) PullEntities(
 		}
 	}
 
-	sort.SliceStable(result, func(left, right int) bool {
+	// The merged order must match the keyset order exactly (updated_at, then
+	// id) — the per-table predicate above compares the same two columns, so
+	// the cursor derived from the last record of a page can never replay a
+	// record of an earlier page.
+	sort.Slice(result, func(left, right int) bool {
 		if result[left].UpdatedAt.Equal(result[right].UpdatedAt) {
-			if result[left].EntityType == result[right].EntityType {
-				return result[left].RecordID.String() < result[right].RecordID.String()
-			}
-			return result[left].EntityType < result[right].EntityType
+			return result[left].RecordID.String() < result[right].RecordID.String()
 		}
 		return result[left].UpdatedAt.Before(result[right].UpdatedAt)
 	})
-	hasMore := len(result) > limit
-	if hasMore {
-		result = result[:limit]
+
+	page, nextCursor, hasMore, err := paginateSyncRecords(result, pageLimit, cursor)
+	if err != nil {
+		return nil, cursor, false, err
 	}
-	nextCursor := cursor
-	for _, record := range result {
-		if record.UpdatedAt.After(nextCursor) {
-			nextCursor = record.UpdatedAt
-		}
-	}
-	return result, nextCursor, hasMore, nil
+
+	return page, nextCursor, hasMore, nil
 }
 
 func syncUUID(value any) (uuid.UUID, error) {

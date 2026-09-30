@@ -1,5 +1,6 @@
 -- PWAMS Schema Migration v1
 -- Run with: migrate -path migrations -database "$DATABASE_URL" up
+-- or with the tracked in-app runner: go run ./cmd/migrate up
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
@@ -180,7 +181,25 @@ CREATE TABLE IF NOT EXISTS care_provided (
     tenant_id UUID
 );
 CREATE INDEX IF NOT EXISTS idx_care_provided_person_id ON care_provided(person_id);
-CREATE INDEX IF NOT EXISTS idx_care_provided_deleted_at ON care_provided(deleted_at);
+
+-- PHASE 4P baseline-safety (project convention, see migrations/embed.go):
+-- the canonical AutoMigrate-shaped schema has no care_provided.deleted_at
+-- (the CareProvided model is not soft-deletable), so this index is created
+-- only when the column exists; on a fresh 000001 baseline it always does.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = current_schema()
+          AND table_name = 'care_provided'
+          AND column_name = 'deleted_at'
+    ) THEN
+        CREATE INDEX IF NOT EXISTS idx_care_provided_deleted_at ON care_provided(deleted_at);
+    ELSE
+        RAISE NOTICE '000001: care_provided has no deleted_at column on this baseline; idx_care_provided_deleted_at skipped';
+    END IF;
+END $$;
+
 CREATE INDEX IF NOT EXISTS idx_care_provided_tenant_id ON care_provided(tenant_id);
 
 -- Loans

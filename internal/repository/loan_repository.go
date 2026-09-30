@@ -107,6 +107,29 @@ func (r *LoanRepository) List(
 	return loans, total, nil
 }
 
+func (r *LoanRepository) CountActiveByPersonID(personID string) (int64, error) {
+	var total int64
+
+	if strings.TrimSpace(personID) == "" {
+		return 0, nil
+	}
+
+	statuses := []string{
+		models.LoanStatusPending,
+		models.LoanStatusApproved,
+		models.LoanStatusActive,
+	}
+
+	if err := r.db.Model(&models.Loan{}).
+		Where("person_id = ?", personID).
+		Where("status IN ?", statuses).
+		Count(&total).Error; err != nil {
+		return 0, err
+	}
+
+	return total, nil
+}
+
 func (r *LoanRepository) Update(loan *models.Loan) error {
 	return r.db.Save(loan).Error
 }

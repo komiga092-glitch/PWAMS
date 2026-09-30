@@ -19,6 +19,7 @@ func RegisterLoanRepaymentRoutes(
 	repayments.Use(middleware.RequireAnyRole(
 		models.RoleSuperAdmin,
 		models.RoleAdmin,
+		models.RoleManager,
 		models.RoleStaff,
 	))
 

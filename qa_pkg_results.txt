@@ -1,0 +1,8 @@
+ok  	github.com/komiga092-glitch/pwams/internal/database	0.282s
+ok  	github.com/komiga092-glitch/pwams/internal/handlers	0.298s
+ok  	github.com/komiga092-glitch/pwams/internal/middleware	1.228s
+ok  	github.com/komiga092-glitch/pwams/internal/models	0.833s
+ok  	github.com/komiga092-glitch/pwams/internal/repository	0.834s
+ok  	github.com/komiga092-glitch/pwams/internal/routes	3.263s
+ok  	github.com/komiga092-glitch/pwams/internal/services	0.337s
+ok  	github.com/komiga092-glitch/pwams/internal/utils	0.731s

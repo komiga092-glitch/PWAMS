@@ -8,16 +8,16 @@
     <div class="page-heading">
 
         <div>
-            <h1>{{t .Lang "students.title"}}</h1>
-            <p>{{t .Lang "students.subtitle"}}</p>
+            <h1>{{t $.Lang "students.title"}}</h1>
+            <p>{{t $.Lang "students.subtitle"}}</p>
         </div>
 
         <button
             id="add-student-btn"
             class="btn btn-primary"
             type="button"
-            data-roles="Super Admin,Admin,Staff">
-            {{t .Lang "students.add"}}
+            data-roles="Super Admin,Admin,Manager,Staff">
+            {{t $.Lang "students.add"}}
         </button>
 
     </div>
@@ -37,21 +37,21 @@
 
                 <div>
                     <label for="student-search">
-                        {{t .Lang "common.search"}}
+                        {{t $.Lang "common.search"}}
                     </label>
 
                     <input
                         id="student-search"
                         type="text"
                         name="search"
-                        placeholder="{{t .Lang "students.search_placeholder"}}"
+                        placeholder="{{t $.Lang "students.search_placeholder"}}"
                         value="{{ .search }}">
                 </div>
 
 
                 <div>
                     <label for="student-status">
-                        {{t .Lang "common.status"}}
+                        {{t $.Lang "common.status"}}
                     </label>
 
                     <select
@@ -59,25 +59,25 @@
                         name="status">
 
                         <option value="">
-                            {{t .Lang "students.all_status"}}
+                            {{t $.Lang "students.all_status"}}
                         </option>
 
                         <option
                             value="Active"
                             {{ if eq .status "Active" }}selected{{ end }}>
-                            {{t .Lang "common.active"}}
+                            {{t $.Lang "common.active"}}
                         </option>
 
                         <option
                             value="Inactive"
                             {{ if eq .status "Inactive" }}selected{{ end }}>
-                            {{t .Lang "students.inactive"}}
+                            {{t $.Lang "students.inactive"}}
                         </option>
 
                         <option
                             value="Pending"
                             {{ if eq .status "Pending" }}selected{{ end }}>
-                            {{t .Lang "students.pending"}}
+                            {{t $.Lang "students.pending"}}
                         </option>
 
                     </select>
@@ -89,7 +89,7 @@
                     <button
                         type="submit"
                         class="btn btn-secondary">
-                        {{t .Lang "common.search"}}
+                        {{t $.Lang "common.search"}}
                     </button>
 
                 </div>
@@ -120,10 +120,10 @@
 
         <div class="panel-header">
 
-            <h2>{{t .Lang "students.list_title"}}</h2>
+            <h2>{{t $.Lang "students.list_title"}}</h2>
 
             <span class="badge badge-muted">
-                {{ len .students }} {{t .Lang "students.records"}}
+                {{ len .students }} {{t $.Lang "students.records"}}
             </span>
 
         </div>
@@ -136,12 +136,12 @@
                 <thead>
 
                     <tr>
-                        <th>{{t .Lang "students.name"}}</th>
-                        <th>{{t .Lang "students.student_id"}}</th>
-                        <th>{{t .Lang "students.phone"}}</th>
-                        <th>{{t .Lang "students.school"}}</th>
-                        <th>{{t .Lang "common.status"}}</th>
-                        <th>{{t .Lang "common.actions"}}</th>
+                        <th>{{t $.Lang "students.name"}}</th>
+                        <th>{{t $.Lang "students.student_id"}}</th>
+                        <th>{{t $.Lang "students.phone"}}</th>
+                        <th>{{t $.Lang "students.school"}}</th>
+                        <th>{{t $.Lang "common.status"}}</th>
+                        <th>{{t $.Lang "common.actions"}}</th>
                     </tr>
 
                 </thead>
@@ -183,19 +183,19 @@
                            {{ if eq .Status "Active" }}
 
 <span class="badge badge-success">
-    {{t .Lang "common.active"}}
+    {{t $.Lang "common.active"}}
 </span>
 
 {{ else if eq .Status "Pending" }}
 
 <span class="badge badge-warning">
-    {{t .Lang "students.pending"}}
+    {{t $.Lang "students.pending"}}
 </span>
 
 {{ else }}
 
 <span class="badge badge-danger">
-    {{t .Lang "students.inactive"}}
+    {{t $.Lang "students.inactive"}}
 </span>
 
 {{ end }}
@@ -210,13 +210,13 @@
 <a
     href="/students/{{ .ID }}/view"
     class="btn btn-secondary">
-    {{t .Lang "common.view"}}
+    {{t $.Lang "common.view"}}
 </a>
 
                                 <a
                                     href="/students/{{ .ID }}/edit"
                                     class="btn btn-primary">
-                                    {{t .Lang "common.edit"}}
+                                    {{t $.Lang "common.edit"}}
                                 </a>
 
                             </div>
@@ -233,7 +233,7 @@
                             colspan="6"
                             class="empty">
 
-                            {{t .Lang "students.empty"}}
+                            {{t $.Lang "students.empty"}}
 
                         </td>
 
@@ -266,7 +266,7 @@
         <div class="modal-header">
 
             <div>
-                <h2>{{t .Lang "students.add_modal_title"}}</h2>
+                <h2>{{t $.Lang "students.add_modal_title"}}</h2>
             </div>
 
             <button
@@ -291,11 +291,11 @@
                 <div class="form-group">
 
                     <label for="student_person_id">
-                        {{t .Lang "students.person"}} *
+                        {{t $.Lang "students.person"}} *
                     </label>
 
                     <select id="student_person_id" name="person_id" required>
-    <option value="">{{t .Lang "students.select_person"}}</option>
+    <option value="">{{t $.Lang "students.select_person"}}</option>
 </select>
                     
 
@@ -306,7 +306,7 @@
                 <div class="form-group">
 
                     <label for="student_name">
-                        {{t .Lang "students.full_name"}} *
+                        {{t $.Lang "students.full_name"}} *
                     </label>
 
                     <input
@@ -324,7 +324,7 @@
                 <div class="form-group">
 
                     <label for="student_school">
-                        {{t .Lang "students.school"}} *
+                        {{t $.Lang "students.school"}} *
                     </label>
 
                     <input
@@ -342,7 +342,7 @@
                 <div class="form-group">
 
                     <label for="student_grade">
-                        {{t .Lang "students.grade"}} *
+                        {{t $.Lang "students.grade"}} *
                     </label>
 
                     <input
@@ -359,7 +359,7 @@
                 <div class="form-group">
 
                     <label for="student_dob">
-                        {{t .Lang "students.date_of_birth"}}
+                        {{t $.Lang "students.date_of_birth"}}
                     </label>
 
                     <input
@@ -374,7 +374,7 @@
                 <div class="form-group">
 
                     <label for="student_gender">
-                        {{t .Lang "students.gender"}}
+                        {{t $.Lang "students.gender"}}
                     </label>
 
                     <select
@@ -382,19 +382,19 @@
                         name="gender">
 
                         <option value="">
-                            {{t .Lang "students.select_gender"}}
+                            {{t $.Lang "students.select_gender"}}
                         </option>
 
                         <option value="Male">
-                            {{t .Lang "students.male"}}
+                            {{t $.Lang "students.male"}}
                         </option>
 
                         <option value="Female">
-                            {{t .Lang "students.female"}}
+                            {{t $.Lang "students.female"}}
                         </option>
 
                         <option value="Other">
-                            {{t .Lang "students.other"}}
+                            {{t $.Lang "students.other"}}
                         </option>
 
                     </select>
@@ -406,7 +406,7 @@
                 <div class="form-group">
 
                     <label for="student_guardian">
-                        {{t .Lang "students.guardian_name"}}
+                        {{t $.Lang "students.guardian_name"}}
                     </label>
 
                     <input
@@ -422,7 +422,7 @@
                 <div class="form-group">
 
                     <label for="student_guardian_phone">
-                        {{t .Lang "students.guardian_phone"}}
+                        {{t $.Lang "students.guardian_phone"}}
                     </label>
 
                     <input
@@ -438,7 +438,7 @@
                 <div class="form-group">
 
                     <label for="student_academic_year">
-                        {{t .Lang "students.academic_year"}} *
+                        {{t $.Lang "students.academic_year"}} *
                     </label>
 
                     <input
@@ -457,7 +457,7 @@
                 <div class="form-group">
 
                     <label for="student_remarks">
-                        {{t .Lang "students.remarks"}}
+                        {{t $.Lang "students.remarks"}}
                     </label>
 
                     <textarea
@@ -475,13 +475,13 @@
                         id="student-cancel"
                         type="button"
                         class="btn btn-secondary">
-                        {{t .Lang "common.cancel"}}
+                        {{t $.Lang "common.cancel"}}
                     </button>
 
                     <button
                         type="submit"
                         class="btn btn-primary">
-                        {{t .Lang "students.save"}}
+                        {{t $.Lang "students.save"}}
                     </button>
 
                 </div>

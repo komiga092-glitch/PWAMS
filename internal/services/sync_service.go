@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -198,17 +197,17 @@ func (s *SyncService) SaveIdempotencyResponse(
 	)
 }
 func (s *SyncService) PullPersons(
-	cursor time.Time,
+	cursor repository.SyncCursor,
 	limit int,
 	tenantID *uuid.UUID,
-) ([]models.SyncPullRecord, time.Time, bool, error) {
+) ([]models.SyncPullRecord, repository.SyncCursor, bool, error) {
 	return s.repo.PullPersons(cursor, limit, tenantID)
 }
 
 func (s *SyncService) Pull(
-	cursor time.Time,
+	cursor repository.SyncCursor,
 	limit int,
 	tenantID *uuid.UUID,
-) ([]models.SyncPullRecord, time.Time, bool, error) {
+) ([]models.SyncPullRecord, repository.SyncCursor, bool, error) {
 	return s.repo.PullEntities(cursor, limit, tenantID)
 }

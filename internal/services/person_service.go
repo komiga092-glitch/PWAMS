@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
@@ -22,6 +23,13 @@ var ErrInvalidPersonID = errors.New("invalid person id")
 
 var ErrInvalidPersonStatus = errors.New(
 	"selected person status is invalid",
+)
+
+// ErrInvalidMonthlyIncome rejects unusable monetary values before any row is
+// written or mutated (QA PER-008 / PER-010): monthly income cannot be
+// negative.
+var ErrInvalidMonthlyIncome = errors.New(
+	"monthly income cannot be negative",
 )
 
 type PersonService struct {
@@ -46,6 +54,10 @@ func (s *PersonService) CreatePerson(
 	)
 	if !isValidPhone(strings.TrimSpace(request.Phone)) {
 		return nil, ErrInvalidPhone
+	}
+
+	if request.MonthlyIncome.LessThan(decimal.Zero) {
+		return nil, ErrInvalidMonthlyIncome
 	}
 
 	exists, err := s.personRepo.ExistsByNICPassport(nicPassport)
@@ -193,6 +205,10 @@ func (s *PersonService) UpdatePerson(
 	status := strings.TrimSpace(request.Status)
 	if !isValidPhone(strings.TrimSpace(request.Phone)) {
 		return nil, ErrInvalidPhone
+	}
+
+	if request.MonthlyIncome.LessThan(decimal.Zero) {
+		return nil, ErrInvalidMonthlyIncome
 	}
 
 	if !isValidPersonStatus(status) {

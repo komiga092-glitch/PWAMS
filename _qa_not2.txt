@@ -1,0 +1,60 @@
+﻿
+	err := h.notificationService.Delete(id, currentUser.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidNotification):
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"message": "Invalid notification ID",
+			})
+
+		case errors.Is(err, repository.ErrNotificationNotFound):
+			c.JSON(http.StatusNotFound, gin.H{
+				"success": false,
+				"message": "Notification not found",
+			})
+
+		default:
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to delete notification",
+			})
+		}
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Notification deleted successfully",
+	})
+}
+
+// Create creates a notification for a user.
+func (h *NotificationHandler) Create(c *gin.Context) {
+	var request struct {
+		UserID  string `json:"user_id" binding:"required"`
+		Title   string `json:"title" binding:"required"`
+		Message string `json:"message" binding:"required"`
+		Type    string `json:"type" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid notification data",
+		})
+		return
+	}
+
+	userID, err := uuid.Parse(request.UserID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "Invalid user ID",
+		})
+		return
+	}
+
+	notification := &models.Notification{
+		UserID:  userID,

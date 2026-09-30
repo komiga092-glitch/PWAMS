@@ -1,0 +1,1200 @@
+?   	github.com/komiga092-glitch/pwams/cmd/haskeys	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/i18nrepl	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/jsoncheck	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/keydump	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/keyparity	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/locchk	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/logogen	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/migrate	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/pdfsmoke	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/pdfverify	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/server	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/tplcheck	[no test files]
+?   	github.com/komiga092-glitch/pwams/docs	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/config	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/constants	[no test files]
+=== RUN   TestExistingDataPreservedThroughTenancyMigrations
+    migrations_schema_integration_test.go:23: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestExistingDataPreservedThroughTenancyMigrations (0.00s)
+=== RUN   TestTenantForeignKeyEnforcement
+    migrations_schema_integration_test.go:133: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestTenantForeignKeyEnforcement (0.00s)
+=== RUN   TestUniqueConstraintsAfterMigrations
+    migrations_schema_integration_test.go:175: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestUniqueConstraintsAfterMigrations (0.00s)
+=== RUN   TestOneActiveManagerPerOrganization
+    migrations_schema_integration_test.go:222: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestOneActiveManagerPerOrganization (0.00s)
+=== RUN   TestPartnerMergePathReconciliation
+    migrations_schema_integration_test.go:299: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestPartnerMergePathReconciliation (0.00s)
+=== RUN   TestManagerUniquenessConcurrentAssignments
+    migrations_schema_integration_test.go:373: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestManagerUniquenessConcurrentAssignments (0.00s)
+=== RUN   TestMigrationsDoNotTouchOtherSchemas
+    migrations_schema_integration_test.go:447: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrationsDoNotTouchOtherSchemas (0.00s)
+=== RUN   TestMigrationStatusAndVerifyAreReadOnly
+    migrator_integration_test.go:14: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrationStatusAndVerifyAreReadOnly (0.00s)
+=== RUN   TestMigrationsUpFromCleanBaseline
+    migrator_integration_test.go:50: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrationsUpFromCleanBaseline (0.00s)
+=== RUN   TestMigrationsUpIsIdempotent
+    migrator_integration_test.go:112: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrationsUpIsIdempotent (0.00s)
+=== RUN   TestMigrationChecksumDriftFailsClosed
+    migrator_integration_test.go:146: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrationChecksumDriftFailsClosed (0.00s)
+=== RUN   TestMigrateUpToStagedOrdering
+    migrator_integration_test.go:167: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrateUpToStagedOrdering (0.00s)
+=== RUN   TestMigrationPartialFailureRollsBack
+    migrator_integration_test.go:185: set PWAMS_RUN_MIGRATION_TESTS=1 to run the migration suite against the dedicated test schema
+--- SKIP: TestMigrationPartialFailureRollsBack (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/database	0.282s
+=== RUN   TestLogoutRedirectsBrowserRequestsAndClearsCookie
+--- PASS: TestLogoutRedirectsBrowserRequestsAndClearsCookie (0.00s)
+=== RUN   TestValidateUploadContent
+=== RUN   TestValidateUploadContent/valid_png
+=== RUN   TestValidateUploadContent/invalid_png
+=== RUN   TestValidateUploadContent/valid_pdf_signature
+=== RUN   TestValidateUploadContent/invalid_pdf
+=== RUN   TestValidateUploadContent/valid_webp_signature
+=== RUN   TestValidateUploadContent/invalid_webp
+--- PASS: TestValidateUploadContent (0.00s)
+    --- PASS: TestValidateUploadContent/valid_png (0.00s)
+    --- PASS: TestValidateUploadContent/invalid_png (0.00s)
+    --- PASS: TestValidateUploadContent/valid_pdf_signature (0.00s)
+    --- PASS: TestValidateUploadContent/invalid_pdf (0.00s)
+    --- PASS: TestValidateUploadContent/valid_webp_signature (0.00s)
+    --- PASS: TestValidateUploadContent/invalid_webp (0.00s)
+=== RUN   TestSHA256Hex
+--- PASS: TestSHA256Hex (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/handlers	0.298s
+?   	github.com/komiga092-glitch/pwams/internal/i18n	[no test files]
+=== RUN   TestRequireAnyRole
+=== RUN   TestRequireAnyRole/missing_user
+=== RUN   TestRequireAnyRole/wrong_role
+=== RUN   TestRequireAnyRole/allowed_role
+--- PASS: TestRequireAnyRole (0.00s)
+    --- PASS: TestRequireAnyRole/missing_user (0.00s)
+    --- PASS: TestRequireAnyRole/wrong_role (0.00s)
+    --- PASS: TestRequireAnyRole/allowed_role (0.00s)
+=== RUN   TestAdminCannotAccessAnotherTenant
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/database/seed_admin.go:38 [35;1mrecord not found
+[0m[33m[1.789ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (email = 'kk6176078@gmail.com' OR username = 'komikukan') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+--- PASS: TestAdminCannotAccessAnotherTenant (0.82s)
+=== RUN   TestManagerCannotAccessAnotherTenant
+--- PASS: TestManagerCannotAccessAnotherTenant (0.08s)
+=== RUN   TestWithTenantScope_NoTenantIsNoOp
+--- PASS: TestWithTenantScope_NoTenantIsNoOp (0.00s)
+=== RUN   TestContextTenantID
+--- PASS: TestContextTenantID (0.00s)
+=== RUN   TestRateLimitGeneric_AllowsNormalTraffic
+--- PASS: TestRateLimitGeneric_AllowsNormalTraffic (0.00s)
+=== RUN   TestRateLimitLogin_NotBypassedBySpoofedForwardedFor
+--- PASS: TestRateLimitLogin_NotBypassedBySpoofedForwardedFor (0.00s)
+=== RUN   TestRateLimitLogin_TrustedProxyHeaderHonoured
+--- PASS: TestRateLimitLogin_TrustedProxyHeaderHonoured (0.00s)
+=== RUN   TestSecurityHeaders
+--- PASS: TestSecurityHeaders (0.00s)
+=== RUN   TestSecurityHeaders_CSPHardened
+--- PASS: TestSecurityHeaders_CSPHardened (0.00s)
+=== RUN   TestCSRF_SafeMethodSkipsValidation
+--- PASS: TestCSRF_SafeMethodSkipsValidation (0.00s)
+=== RUN   TestCSRF_MissingTokenRejects
+--- PASS: TestCSRF_MissingTokenRejects (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/middleware	1.228s
+=== RUN   TestNormalizeRoleInput
+--- PASS: TestNormalizeRoleInput (0.00s)
+=== RUN   TestIsManagerRole
+--- PASS: TestIsManagerRole (0.00s)
+=== RUN   TestRoleDisplayName
+--- PASS: TestRoleDisplayName (0.00s)
+=== RUN   TestUserIsLocked_NilTime
+--- PASS: TestUserIsLocked_NilTime (0.00s)
+=== RUN   TestUserIsLocked_PastTime
+--- PASS: TestUserIsLocked_PastTime (0.00s)
+=== RUN   TestUserIsLocked_FutureTime
+--- PASS: TestUserIsLocked_FutureTime (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/models	0.833s
+=== RUN   TestParseSyncCursor_EmptyIsFirstPage
+--- PASS: TestParseSyncCursor_EmptyIsFirstPage (0.00s)
+=== RUN   TestParseSyncCursor_CompositeRoundTrip
+--- PASS: TestParseSyncCursor_CompositeRoundTrip (0.00s)
+=== RUN   TestParseSyncCursor_LegacyTimeOnly
+--- PASS: TestParseSyncCursor_LegacyTimeOnly (0.00s)
+=== RUN   TestParseSyncCursor_Invalid
+--- PASS: TestParseSyncCursor_Invalid (0.00s)
+=== RUN   TestClampSyncLimit
+--- PASS: TestClampSyncLimit (0.00s)
+=== RUN   TestPaginateSyncRecords_600IdenticalTimestamps
+--- PASS: TestPaginateSyncRecords_600IdenticalTimestamps (0.00s)
+=== RUN   TestPaginateSyncRecords_AcrossPageBoundary
+--- PASS: TestPaginateSyncRecords_AcrossPageBoundary (0.00s)
+=== RUN   TestPaginateSyncRecords_DuplicatePrevention
+--- PASS: TestPaginateSyncRecords_DuplicatePrevention (0.00s)
+=== RUN   TestPaginateSyncRecords_EmptyPage
+--- PASS: TestPaginateSyncRecords_EmptyPage (0.00s)
+=== RUN   TestPaginateSyncRecords_LimitClamping
+--- PASS: TestPaginateSyncRecords_LimitClamping (0.00s)
+=== RUN   TestSyncCursorWhere_CompositePredicate
+--- PASS: TestSyncCursorWhere_CompositePredicate (0.00s)
+=== RUN   TestNextSyncCursor_Advances
+--- PASS: TestNextSyncCursor_Advances (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/repository	0.834s
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//persons
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//students
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//donors
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//donations
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//aid-requests
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//care-provided
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//loans
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//loan-repayments
+=== RUN   TestAuditBackedCRUDRoutesRegisterAndStayProtected//revenue
+--- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//persons (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//students (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//donors (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//donations (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//aid-requests (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//care-provided (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//loans (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//loan-repayments (0.00s)
+    --- PASS: TestAuditBackedCRUDRoutesRegisterAndStayProtected//revenue (0.00s)
+=== RUN   TestPasswordResetFlowEndToEnd
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/user_repository.go:40 [35;1mrecord not found
+[0m[33m[1.411ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (LOWER(username) = 'nobody@example.test' OR LOWER(email) = 'nobody@example.test') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+2026/09/23 13:40:32 forgot password failed for "flow_probe_134032.501472100@example.test": failed to send password reset OTP: SMTP configuration is missing
+    auth_flow_blackbox_test.go:420: SMTP is not configured for this environment: OTP delivery returns 500 while the token row is still created
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/password_reset_repository.go:43 [35;1mrecord not found
+[0m[33m[0.801ms] [34;1m[rows:0][0m SELECT * FROM "password_reset_tokens" WHERE user_id = '58a4b5a8-25dd-4c75-bb39-298bb05dcf83' AND otp = '000000' AND verified = false AND expires_at > '2026-09-23 13:40:32.527' ORDER BY created_at DESC,"password_reset_tokens"."id" LIMIT 1
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/session_repository.go:45 [35;1mrecord not found
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "sessions" WHERE token_hash = '6865a5fb692232ddbf1864d87f817bb1f1d10db7f08ec594e9a3c7554179cecc' AND revoked_at IS NULL AND expires_at > '2026-09-23 13:40:32.606' ORDER BY "sessions"."id" LIMIT 1
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/password_reset_repository.go:66 [35;1mrecord not found
+[0m[33m[1.506ms] [34;1m[rows:0][0m SELECT * FROM "password_reset_tokens" WHERE user_id = '58a4b5a8-25dd-4c75-bb39-298bb05dcf83' AND otp = '598180' AND verified = true AND used_at IS NULL AND expires_at > '2026-09-23 08:10:32.606' ORDER BY created_at DESC,"password_reset_tokens"."id" LIMIT 1
+--- PASS: TestPasswordResetFlowEndToEnd (1.00s)
+=== RUN   TestAccountActivationFlowEndToEnd
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/user_repository.go:294 [35;1mrecord not found
+[0m[33m[1.015ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE LOWER(email) = 'nobody@example.test' AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/account_activation_repository.go:78 [35;1mrecord not found
+[0m[33m[0.578ms] [34;1m[rows:0][0m SELECT * FROM "account_activation_tokens" WHERE user_id = '831ecb6f-a574-46e7-9a1a-d1e56336d433' AND otp = '707429' AND verified = true AND used_at IS NULL AND expires_at > '2026-09-23 08:10:32.912' ORDER BY created_at DESC,"account_activation_tokens"."id" LIMIT 1
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/account_activation_repository.go:43 [35;1mrecord not found
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "account_activation_tokens" WHERE user_id = '831ecb6f-a574-46e7-9a1a-d1e56336d433' AND otp = '111111' AND verified = false AND used_at IS NULL AND expires_at > '2026-09-23 08:10:32.914' ORDER BY created_at DESC,"account_activation_tokens"."id" LIMIT 1
+
+2026/09/23 13:40:32 [31;1mE:/PWAMS/internal/repository/account_activation_repository.go:43 [35;1mrecord not found
+[0m[33m[0.000ms] [34;1m[rows:0][0m SELECT * FROM "account_activation_tokens" WHERE user_id = '831ecb6f-a574-46e7-9a1a-d1e56336d433' AND otp = '707429' AND verified = false AND used_at IS NULL AND expires_at > '2026-09-23 08:10:32.993' ORDER BY created_at DESC,"account_activation_tokens"."id" LIMIT 1
+--- PASS: TestAccountActivationFlowEndToEnd (0.24s)
+=== RUN   TestLoginRateLimitIsEnforced
+
+2026/09/23 13:40:33 [31;1mE:/PWAMS/internal/repository/user_repository.go:40 [35;1mrecord not found
+[0m[33m[0.512ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (LOWER(username) = 'definitely_not_a_user' OR LOWER(email) = 'definitely_not_a_user') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+
+2026/09/23 13:40:33 [31;1mE:/PWAMS/internal/repository/user_repository.go:40 [35;1mrecord not found
+[0m[33m[0.531ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (LOWER(username) = 'definitely_not_a_user' OR LOWER(email) = 'definitely_not_a_user') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+
+2026/09/23 13:40:33 [31;1mE:/PWAMS/internal/repository/user_repository.go:40 [35;1mrecord not found
+[0m[33m[0.611ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (LOWER(username) = 'definitely_not_a_user' OR LOWER(email) = 'definitely_not_a_user') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+
+2026/09/23 13:40:33 [31;1mE:/PWAMS/internal/repository/user_repository.go:40 [35;1mrecord not found
+[0m[33m[0.510ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (LOWER(username) = 'definitely_not_a_user' OR LOWER(email) = 'definitely_not_a_user') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+
+2026/09/23 13:40:33 [31;1mE:/PWAMS/internal/repository/user_repository.go:40 [35;1mrecord not found
+[0m[33m[0.521ms] [34;1m[rows:0][0m SELECT * FROM "users" WHERE (LOWER(username) = 'definitely_not_a_user' OR LOWER(email) = 'definitely_not_a_user') AND "users"."deleted_at" IS NULL ORDER BY "users"."id" LIMIT 1
+--- PASS: TestLoginRateLimitIsEnforced (0.01s)
+=== RUN   TestTemplates_NoInlineEventHandlers
+--- PASS: TestTemplates_NoInlineEventHandlers (0.01s)
+=== RUN   TestTemplates_NoInlineScriptBlocks
+--- PASS: TestTemplates_NoInlineScriptBlocks (0.00s)
+=== RUN   TestSecurityHeaders_ScriptSrcSelfOnly
+--- PASS: TestSecurityHeaders_ScriptSrcSelfOnly (0.00s)
+=== RUN   TestBaseLayout_LoadsCSPDelegatorAndApp
+--- PASS: TestBaseLayout_LoadsCSPDelegatorAndApp (0.00s)
+=== RUN   TestPageScripts_ReferencedByTemplates
+--- PASS: TestPageScripts_ReferencedByTemplates (0.00s)
+=== RUN   TestPasswordFlowPages_LoadExternalScripts
+--- PASS: TestPasswordFlowPages_LoadExternalScripts (0.00s)
+=== RUN   TestCSPDelegator_CoversAllDataCspActions
+--- PASS: TestCSPDelegator_CoversAllDataCspActions (0.01s)
+=== RUN   TestPageScripts_ResolveDomIds
+--- PASS: TestPageScripts_ResolveDomIds (0.01s)
+=== RUN   TestUsersPage_UserStatusControlsExcludePending
+--- PASS: TestUsersPage_UserStatusControlsExcludePending (0.00s)
+=== RUN   TestCSPDelegator_HandlerFunctionsExist
+--- PASS: TestCSPDelegator_HandlerFunctionsExist (0.00s)
+=== RUN   TestDonorsPage_CSPDelegationOnly
+--- PASS: TestDonorsPage_CSPDelegationOnly (0.00s)
+=== RUN   TestStaticJS_ServedAsJavaScript
+--- PASS: TestStaticJS_ServedAsJavaScript (0.05s)
+=== RUN   TestSidebar_ManagerSeesEveryOperationalModule
+--- PASS: TestSidebar_ManagerSeesEveryOperationalModule (0.00s)
+=== RUN   TestSidebar_ManagerCannotSeePlatformModules
+--- PASS: TestSidebar_ManagerCannotSeePlatformModules (0.00s)
+=== RUN   TestSidebar_DashboardVisibleToEveryRole
+--- PASS: TestSidebar_DashboardVisibleToEveryRole (0.00s)
+=== RUN   TestSidebar_PlatformModulesRestrictedToSuperAdminAndAdmin
+--- PASS: TestSidebar_PlatformModulesRestrictedToSuperAdminAndAdmin (0.00s)
+=== RUN   TestSidebar_StaffDeniedPlatformModules
+--- PASS: TestSidebar_StaffDeniedPlatformModules (0.00s)
+=== RUN   TestOperationalTemplates_DoNotHideManagerFromAllowedActions
+--- PASS: TestOperationalTemplates_DoNotHideManagerFromAllowedActions (0.00s)
+=== RUN   TestCareProvided_DeleteControlStaysRestrictedToSuperAdminAndAdmin
+--- PASS: TestCareProvided_DeleteControlStaysRestrictedToSuperAdminAndAdmin (0.00s)
+=== RUN   TestUsersPage_SuperAdminOptionIsRoleGated
+--- PASS: TestUsersPage_SuperAdminOptionIsRoleGated (0.00s)
+=== RUN   TestUsersPage_AddEditSelectorOffersExactlyTheEightRoles
+--- PASS: TestUsersPage_AddEditSelectorOffersExactlyTheEightRoles (0.00s)
+=== RUN   TestUsersPage_FilterListsEveryRole
+--- PASS: TestUsersPage_FilterListsEveryRole (0.00s)
+=== RUN   TestTemplates_DoNotReferenceRetiredPartnerRole
+--- PASS: TestTemplates_DoNotReferenceRetiredPartnerRole (0.00s)
+=== RUN   TestReportRoutesRoleMatrix
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/users/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/users/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/students/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/students/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Super_Admin/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin
+=== RUN   TestReportRoutesRoleMatrix/Admin/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/users/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/users/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/students/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/students/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Admin/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Admin/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Admin/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager
+=== RUN   TestReportRoutesRoleMatrix/Manager/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/users/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/users/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/students/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/students/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Manager/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Manager/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Manager/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff
+=== RUN   TestReportRoutesRoleMatrix/Staff/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/users/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/users/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/students/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/students/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Staff/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Staff/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Staff/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/users/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/users/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/students/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/students/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Volunteer/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor
+=== RUN   TestReportRoutesRoleMatrix/Donor/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/users/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/users/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/students/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/students/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Donor/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Donor/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Donor/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/users/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/users/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/students/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/students/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Beneficiary/system-alerts/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student
+=== RUN   TestReportRoutesRoleMatrix/Student/dashboard/page
+=== RUN   TestReportRoutesRoleMatrix/Student/dashboard/api
+=== RUN   TestReportRoutesRoleMatrix/Student/dashboard/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/users/page
+=== RUN   TestReportRoutesRoleMatrix/Student/users/api
+=== RUN   TestReportRoutesRoleMatrix/Student/users/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/persons/page
+=== RUN   TestReportRoutesRoleMatrix/Student/persons/api
+=== RUN   TestReportRoutesRoleMatrix/Student/persons/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/students/page
+=== RUN   TestReportRoutesRoleMatrix/Student/students/api
+=== RUN   TestReportRoutesRoleMatrix/Student/students/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/donors/page
+=== RUN   TestReportRoutesRoleMatrix/Student/donors/api
+=== RUN   TestReportRoutesRoleMatrix/Student/donors/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/donations/page
+=== RUN   TestReportRoutesRoleMatrix/Student/donations/api
+=== RUN   TestReportRoutesRoleMatrix/Student/donations/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/aid-requests/page
+=== RUN   TestReportRoutesRoleMatrix/Student/aid-requests/api
+=== RUN   TestReportRoutesRoleMatrix/Student/aid-requests/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/care-provided/page
+=== RUN   TestReportRoutesRoleMatrix/Student/care-provided/api
+=== RUN   TestReportRoutesRoleMatrix/Student/care-provided/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/loans/page
+=== RUN   TestReportRoutesRoleMatrix/Student/loans/api
+=== RUN   TestReportRoutesRoleMatrix/Student/loans/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/loan-repayments/page
+=== RUN   TestReportRoutesRoleMatrix/Student/loan-repayments/api
+=== RUN   TestReportRoutesRoleMatrix/Student/loan-repayments/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/revenue/page
+=== RUN   TestReportRoutesRoleMatrix/Student/revenue/api
+=== RUN   TestReportRoutesRoleMatrix/Student/revenue/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/account-status/page
+=== RUN   TestReportRoutesRoleMatrix/Student/account-status/api
+=== RUN   TestReportRoutesRoleMatrix/Student/account-status/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/audit-log/page
+=== RUN   TestReportRoutesRoleMatrix/Student/audit-log/api
+=== RUN   TestReportRoutesRoleMatrix/Student/audit-log/pdf
+=== RUN   TestReportRoutesRoleMatrix/Student/system-alerts/page
+=== RUN   TestReportRoutesRoleMatrix/Student/system-alerts/api
+=== RUN   TestReportRoutesRoleMatrix/Student/system-alerts/pdf
+--- PASS: TestReportRoutesRoleMatrix (1.37s)
+    --- PASS: TestReportRoutesRoleMatrix/Super_Admin (0.16s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/dashboard/page (0.02s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/dashboard/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/donors/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/aid-requests/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/loans/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/account-status/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Super_Admin/system-alerts/pdf (0.00s)
+    --- PASS: TestReportRoutesRoleMatrix/Admin (0.20s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/dashboard/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/dashboard/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/loans/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/loan-repayments/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/revenue/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/revenue/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/revenue/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/account-status/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/account-status/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/audit-log/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/audit-log/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/audit-log/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/system-alerts/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/system-alerts/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Admin/system-alerts/pdf (0.01s)
+    --- PASS: TestReportRoutesRoleMatrix/Manager (0.14s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/dashboard/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/dashboard/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/dashboard/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/persons/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/persons/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/students/page (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/students/api (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/donors/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/donations/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/care-provided/pdf (0.01s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Manager/system-alerts/pdf (0.00s)
+    --- PASS: TestReportRoutesRoleMatrix/Staff (0.10s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/dashboard/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/dashboard/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Staff/system-alerts/pdf (0.00s)
+    --- PASS: TestReportRoutesRoleMatrix/Volunteer (0.05s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/dashboard/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/dashboard/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Volunteer/system-alerts/pdf (0.00s)
+    --- PASS: TestReportRoutesRoleMatrix/Donor (0.04s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/dashboard/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/dashboard/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Donor/system-alerts/pdf (0.00s)
+    --- PASS: TestReportRoutesRoleMatrix/Beneficiary (0.04s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/dashboard/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/dashboard/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Beneficiary/system-alerts/pdf (0.00s)
+    --- PASS: TestReportRoutesRoleMatrix/Student (0.04s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/dashboard/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/dashboard/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/dashboard/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/users/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/users/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/users/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/persons/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/persons/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/persons/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/students/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/students/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/students/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/donors/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/donors/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/donors/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/donations/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/donations/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/donations/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/aid-requests/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/aid-requests/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/aid-requests/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/care-provided/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/care-provided/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/care-provided/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/loans/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/loans/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/loans/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/loan-repayments/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/loan-repayments/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/loan-repayments/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/revenue/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/revenue/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/revenue/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/account-status/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/account-status/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/account-status/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/audit-log/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/audit-log/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/audit-log/pdf (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/system-alerts/page (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/system-alerts/api (0.00s)
+        --- PASS: TestReportRoutesRoleMatrix/Student/system-alerts/pdf (0.00s)
+=== RUN   TestReportsLandingPageRendersCardsWithLiveLinks
+--- PASS: TestReportsLandingPageRendersCardsWithLiveLinks (0.02s)
+=== RUN   TestReportsDonationDetailPageContent
+--- PASS: TestReportsDonationDetailPageContent (0.02s)
+=== RUN   TestReportsDonationDetailPageFiltersAndEmptyState
+--- PASS: TestReportsDonationDetailPageFiltersAndEmptyState (0.03s)
+=== RUN   TestReportsJSONResponseStructure
+--- PASS: TestReportsJSONResponseStructure (0.02s)
+=== RUN   TestReportsPaginationRendersAndPreservesFilters
+--- PASS: TestReportsPaginationRendersAndPreservesFilters (0.02s)
+=== RUN   TestReportsAuditLogContainsNoIPAddress
+--- PASS: TestReportsAuditLogContainsNoIPAddress (0.02s)
+=== RUN   TestReportsPDFContract
+--- PASS: TestReportsPDFContract (0.02s)
+=== RUN   TestReportsRenderInAllLanguages
+--- PASS: TestReportsRenderInAllLanguages (0.04s)
+=== RUN   TestReportRoutesRejectInactiveUserSession
+--- PASS: TestReportRoutesRejectInactiveUserSession (0.02s)
+=== RUN   TestReportRegistryRegistersAllSurfaces
+--- PASS: TestReportRegistryRegistersAllSurfaces (0.00s)
+=== RUN   TestReportRegistryTemplatesExistAndExecute
+--- PASS: TestReportRegistryTemplatesExistAndExecute (0.01s)
+=== RUN   TestReportUILinksPointToRegisteredRoutes
+--- PASS: TestReportUILinksPointToRegisteredRoutes (0.00s)
+=== RUN   TestReportSourcesContainNoIPAddressFields
+--- PASS: TestReportSourcesContainNoIPAddressFields (0.00s)
+=== RUN   TestReportRoutesRejectUnauthenticatedRequests
+--- PASS: TestReportRoutesRejectUnauthenticatedRequests (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/routes	3.263s
+=== RUN   TestParseDateValue
+--- PASS: TestParseDateValue (0.00s)
+=== RUN   TestParseDateValueUsesDefaultLayout
+--- PASS: TestParseDateValueUsesDefaultLayout (0.00s)
+=== RUN   TestRemoveFileAfterSoftDelete
+=== RUN   TestRemoveFileAfterSoftDelete/removes_existing_file_without_restoring_metadata
+=== RUN   TestRemoveFileAfterSoftDelete/treats_missing_file_as_already_removed
+=== RUN   TestRemoveFileAfterSoftDelete/restores_metadata_when_file_removal_fails
+=== RUN   TestRemoveFileAfterSoftDelete/reports_metadata_restoration_failure
+--- PASS: TestRemoveFileAfterSoftDelete (0.01s)
+    --- PASS: TestRemoveFileAfterSoftDelete/removes_existing_file_without_restoring_metadata (0.00s)
+    --- PASS: TestRemoveFileAfterSoftDelete/treats_missing_file_as_already_removed (0.00s)
+    --- PASS: TestRemoveFileAfterSoftDelete/restores_metadata_when_file_removal_fails (0.00s)
+    --- PASS: TestRemoveFileAfterSoftDelete/reports_metadata_restoration_failure (0.00s)
+=== RUN   TestAuditWrittenForUserCreation
+    audit_behavioral_test.go:97: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForUserCreation (0.00s)
+=== RUN   TestNoAuditForForbiddenSuperAdminCreation
+    audit_behavioral_test.go:131: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestNoAuditForForbiddenSuperAdminCreation (0.00s)
+=== RUN   TestAuditWrittenForPersonCreation
+    audit_behavioral_test.go:158: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForPersonCreation (0.00s)
+=== RUN   TestNoAuditForObjectLevelAuthorizationDenial
+    audit_behavioral_test.go:184: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestNoAuditForObjectLevelAuthorizationDenial (0.00s)
+=== RUN   TestAuditWrittenForStudentCreation
+    audit_behavioral_test.go:208: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForStudentCreation (0.00s)
+=== RUN   TestAuditWrittenForDonorCreation
+    audit_behavioral_test.go:239: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForDonorCreation (0.00s)
+=== RUN   TestAuditWrittenForDonationCreation
+    audit_behavioral_test.go:264: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForDonationCreation (0.00s)
+=== RUN   TestAuditWrittenForAidRequestCreation
+    audit_behavioral_test.go:296: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForAidRequestCreation (0.00s)
+=== RUN   TestAuditWrittenForCareProvidedCreation
+    audit_behavioral_test.go:329: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForCareProvidedCreation (0.00s)
+=== RUN   TestAuditWrittenForLoanCreation
+    audit_behavioral_test.go:382: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForLoanCreation (0.00s)
+=== RUN   TestAuditWrittenForLoanRepaymentCreation
+    audit_behavioral_test.go:413: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForLoanRepaymentCreation (0.00s)
+=== RUN   TestAuditWrittenForRevenueCreation
+    audit_behavioral_test.go:464: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForRevenueCreation (0.00s)
+=== RUN   TestAuditWrittenForFileDeletion
+    audit_behavioral_test.go:491: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditWrittenForFileDeletion (0.00s)
+=== RUN   TestNilAuditServiceCreateFailsClosed
+--- PASS: TestNilAuditServiceCreateFailsClosed (0.00s)
+=== RUN   TestNilAuditServiceTransactionFailsClosed
+--- PASS: TestNilAuditServiceTransactionFailsClosed (0.00s)
+=== RUN   TestNilAuditServiceAuditFailsClosed
+--- PASS: TestNilAuditServiceAuditFailsClosed (0.00s)
+=== RUN   TestNilAuditServiceReadsFailClosed
+--- PASS: TestNilAuditServiceReadsFailClosed (0.00s)
+=== RUN   TestAuditFailureRollsBackBusinessWrite
+    audit_nil_safety_test.go:112: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditFailureRollsBackBusinessWrite (0.00s)
+=== RUN   TestAuditSuccessCommitsBothRows
+    audit_nil_safety_test.go:157: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestAuditSuccessCommitsBothRows (0.00s)
+=== RUN   TestLastActiveAdminConcurrency
+    authz_concurrency_test.go:51: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestLastActiveAdminConcurrency (0.00s)
+=== RUN   TestDonationObjectLevelAuthorization
+    authz_donation_test.go:18: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestDonationObjectLevelAuthorization (0.00s)
+=== RUN   TestDonationListObjectLevelAuthorization
+    authz_list_donation_test.go:16: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestDonationListObjectLevelAuthorization (0.00s)
+=== RUN   TestListAuthorization_NonPrivilegedRolesAreScoped
+    authz_list_nonpriv_test.go:15: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestListAuthorization_NonPrivilegedRolesAreScoped (0.00s)
+=== RUN   TestListAuthorization_OwnerSeesOwnRecordsOnly
+    authz_list_nonpriv_test.go:58: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestListAuthorization_OwnerSeesOwnRecordsOnly (0.00s)
+=== RUN   TestPersonListObjectLevelAuthorization
+    authz_list_person_test.go:16: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestPersonListObjectLevelAuthorization (0.00s)
+=== RUN   TestListAuthorization_PrivilegedRolesRetainAccess
+    authz_list_roles_test.go:20: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestListAuthorization_PrivilegedRolesRetainAccess (0.00s)
+=== RUN   TestStudentListObjectLevelAuthorization
+    authz_list_student_test.go:16: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestStudentListObjectLevelAuthorization (0.00s)
+=== RUN   TestLoanListObjectLevelAuthorization
+    authz_loan_test.go:40: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestLoanListObjectLevelAuthorization (0.00s)
+=== RUN   TestLoanRepaymentListObjectLevelAuthorization
+    authz_loan_test.go:216: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestLoanRepaymentListObjectLevelAuthorization (0.00s)
+=== RUN   TestLoanSingleRecordAuthorization
+    authz_loan_test.go:352: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestLoanSingleRecordAuthorization (0.00s)
+=== RUN   TestLoanRepaymentMutationSafety
+    authz_loan_test.go:441: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestLoanRepaymentMutationSafety (0.00s)
+=== RUN   TestLoanListFailClosedWithoutDB
+--- PASS: TestLoanListFailClosedWithoutDB (0.00s)
+=== RUN   TestObjectLevel_DonorSeesOwnDonationButNotAnotherUsers
+    authz_object_level_donor_test.go:19: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestObjectLevel_DonorSeesOwnDonationButNotAnotherUsers (0.00s)
+=== RUN   TestObjectLevel_UnknownActorCannotListDonations
+    authz_object_level_donor_test.go:86: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestObjectLevel_UnknownActorCannotListDonations (0.00s)
+=== RUN   TestPersonObjectLevelAuthorization
+    authz_person_test.go:17: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestPersonObjectLevelAuthorization (0.00s)
+=== RUN   TestStudentObjectLevelAuthorization
+    authz_student_test.go:18: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestStudentObjectLevelAuthorization (0.00s)
+=== RUN   TestCalculateLoanInstallment
+=== RUN   TestCalculateLoanInstallment/no_interest,_12_months
+=== RUN   TestCalculateLoanInstallment/10%_interest,_10_months
+=== RUN   TestCalculateLoanInstallment/5%_interest,_6_months
+--- PASS: TestCalculateLoanInstallment (0.00s)
+    --- PASS: TestCalculateLoanInstallment/no_interest,_12_months (0.00s)
+    --- PASS: TestCalculateLoanInstallment/10%_interest,_10_months (0.00s)
+    --- PASS: TestCalculateLoanInstallment/5%_interest,_6_months (0.00s)
+=== RUN   TestCanAccessRecord_OwnerAllowed
+--- PASS: TestCanAccessRecord_OwnerAllowed (0.00s)
+=== RUN   TestCanAccessRecord_NonOwnerBeneficiaryDenied
+--- PASS: TestCanAccessRecord_NonOwnerBeneficiaryDenied (0.00s)
+=== RUN   TestCanAccessRecord_NonOwnerDonorDenied
+--- PASS: TestCanAccessRecord_NonOwnerDonorDenied (0.00s)
+=== RUN   TestCanAccessRecord_PrivilegedRolesAllowed
+--- PASS: TestCanAccessRecord_PrivilegedRolesAllowed (0.00s)
+=== RUN   TestCanAccessRecord_StudentIsNotPrivileged
+--- PASS: TestCanAccessRecord_StudentIsNotPrivileged (0.00s)
+=== RUN   TestCanAccessRecord_UnknownIdentityDenied
+--- PASS: TestCanAccessRecord_UnknownIdentityDenied (0.00s)
+=== RUN   TestIsPrivilegedRole_Matrix
+--- PASS: TestIsPrivilegedRole_Matrix (0.00s)
+=== RUN   TestIsPrivilegedRole_CaseInsensitive
+--- PASS: TestIsPrivilegedRole_CaseInsensitive (0.00s)
+=== RUN   TestActorFromUser
+--- PASS: TestActorFromUser (0.00s)
+=== RUN   TestErrRecordAccessDenied_DistinctError
+--- PASS: TestErrRecordAccessDenied_DistinctError (0.00s)
+=== RUN   TestRequestHash_Stability
+--- PASS: TestRequestHash_Stability (0.00s)
+=== RUN   TestRequestHash_DifferentPayloadProducesDifferentHash
+--- PASS: TestRequestHash_DifferentPayloadProducesDifferentHash (0.00s)
+=== RUN   TestCreateUser_RejectsSecondActiveManager
+    user_service_test.go:18: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestCreateUser_RejectsSecondActiveManager (0.00s)
+=== RUN   TestCreateUser_AllowsManagerWhenNoneActive
+    user_service_test.go:54: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestCreateUser_AllowsManagerWhenNoneActive (0.00s)
+=== RUN   TestUpdateUserStatus_RejectsActivatingSecondManager
+    user_service_test.go:96: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUserStatus_RejectsActivatingSecondManager (0.00s)
+=== RUN   TestUpdateUserStatus_AllowsManagerActivationAfterOtherDeactivated
+    user_service_test.go:133: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUserStatus_AllowsManagerActivationAfterOtherDeactivated (0.00s)
+=== RUN   TestCreateUser_NonSuperAdminCannotCreateSuperAdmin
+    user_superadmin_guard_test.go:80: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestCreateUser_NonSuperAdminCannotCreateSuperAdmin (0.00s)
+=== RUN   TestCreateUser_SuperAdminCanCreateSuperAdmin
+    user_superadmin_guard_test.go:110: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestCreateUser_SuperAdminCanCreateSuperAdmin (0.00s)
+=== RUN   TestCreateUser_NonSuperAdminCanStillCreateOperationalRoles
+    user_superadmin_guard_test.go:136: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestCreateUser_NonSuperAdminCanStillCreateOperationalRoles (0.00s)
+=== RUN   TestUpdateUser_NonSuperAdminCannotGrantSuperAdminRole
+    user_superadmin_guard_test.go:166: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUser_NonSuperAdminCannotGrantSuperAdminRole (0.00s)
+=== RUN   TestUpdateUser_SuperAdminCanPromoteAnotherAccount
+    user_superadmin_guard_test.go:197: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUser_SuperAdminCanPromoteAnotherAccount (0.00s)
+=== RUN   TestUpdateUser_NonSuperAdminCannotModifySuperAdminAccount
+    user_superadmin_guard_test.go:227: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUser_NonSuperAdminCannotModifySuperAdminAccount (0.00s)
+=== RUN   TestUpdateUserStatus_NonSuperAdminCannotDeactivateSuperAdmin
+    user_superadmin_guard_test.go:249: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUserStatus_NonSuperAdminCannotDeactivateSuperAdmin (0.00s)
+=== RUN   TestResetPassword_NonSuperAdminCannotResetSuperAdminPassword
+    user_superadmin_guard_test.go:274: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestResetPassword_NonSuperAdminCannotResetSuperAdminPassword (0.00s)
+=== RUN   TestUpdateUserStatus_LastActiveSuperAdminCannotBeDisabled
+    user_superadmin_guard_test.go:301: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUserStatus_LastActiveSuperAdminCannotBeDisabled (0.00s)
+=== RUN   TestUpdateUserStatus_LastActiveAdminCannotBeDisabled
+    user_superadmin_guard_test.go:327: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUserStatus_LastActiveAdminCannotBeDisabled (0.00s)
+=== RUN   TestUpdateUser_LastActiveSuperAdminCannotLoseSuperAdminRole
+    user_superadmin_guard_test.go:347: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestUpdateUser_LastActiveSuperAdminCannotLoseSuperAdminRole (0.00s)
+=== RUN   TestDeleteUser_LastActiveSuperAdminCannotBeDeleted
+    user_superadmin_guard_test.go:382: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestDeleteUser_LastActiveSuperAdminCannotBeDeleted (0.00s)
+=== RUN   TestDeleteUser_NonSuperAdminCannotDeleteSuperAdmin
+    user_superadmin_guard_test.go:412: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestDeleteUser_NonSuperAdminCannotDeleteSuperAdmin (0.00s)
+=== RUN   TestDeleteUser_NonSuperAdminDeletingAdminRequiresApproval
+    user_superadmin_guard_test.go:430: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestDeleteUser_NonSuperAdminDeletingAdminRequiresApproval (0.00s)
+=== RUN   TestDeleteUser_SuperAdminCanDeleteAdminWhenAnotherRemains
+    user_superadmin_guard_test.go:453: set PWAMS_FORCE_INTEGRATION=1 to run the live-DB integration suite
+--- SKIP: TestDeleteUser_SuperAdminCanDeleteAdminWhenAnotherRemains (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/services	0.337s
+?   	github.com/komiga092-glitch/pwams/internal/services/email	[no test files]
+=== RUN   TestGenerateOTPProducesSixDigitValues
+--- PASS: TestGenerateOTPProducesSixDigitValues (0.00s)
+PASS
+ok  	github.com/komiga092-glitch/pwams/internal/utils	0.731s
+?   	github.com/komiga092-glitch/pwams/migrations	[no test files]
+?   	github.com/komiga092-glitch/pwams/web/templates/components	[no test files]

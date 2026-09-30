@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -20,13 +21,8 @@ type CareProvidedHandler struct {
 
 func NewCareProvidedHandler(
 	careProvidedService *services.CareProvidedService,
-	auditLogServices ...*services.AuditLogService,
+	auditLogService *services.AuditLogService,
 ) *CareProvidedHandler {
-	var auditLogService *services.AuditLogService
-	if len(auditLogServices) > 0 {
-		auditLogService = auditLogServices[0]
-	}
-
 	return &CareProvidedHandler{
 		careProvidedService: careProvidedService,
 		auditLogService:     auditLogService,
@@ -62,28 +58,47 @@ func (h *CareProvidedHandler) Create(c *gin.Context) {
 		return
 	}
 
-	record, err := h.careProvidedService.CreateCareProvided(
-		request,
-		currentUser.ID.String(),
-	)
+	var record *models.CareProvided
+
+	// The care record and its mandatory audit entry are committed together
+	// or not at all. An unavailable audit dependency fails closed before the
+	// business write is attempted (no panic, no orphaned record).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.careProvidedService.WithTx(tx).CreateCareProvided(
+			request,
+			currentUser.ID.String(),
+		)
+		if createErr != nil {
+			return createErr
+		}
+
+		record = created
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CREATE",
+			"care_provided",
+			created.ID.String(),
+			"Care provided record created successfully",
+		)
+	})
 	if err != nil {
+		// An audit failure is an infrastructure failure, not a validation
+		// error: report it as such and keep the business write rolled back.
+		if errors.Is(err, services.ErrAuditLogWriteFailed) {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"success": false,
+				"message": "Unable to create care provided record",
+			})
+			return
+		}
+
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			"success": false,
 			"message": err.Error(),
 		})
 		return
-	}
-
-	if currentUser, ok := getCurrentUser(c); ok {
-		if err := h.auditLogService.Create(
-			currentUser.ID.String(),
-			"CREATE",
-			"care_provided",
-			record.ID.String(),
-			"Care provided record created successfully",
-		); err != nil {
-			// Audit logging failure must not fail the care record creation.
-		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -99,6 +114,8 @@ func (h *CareProvidedHandler) List(c *gin.Context) {
 
 	records, total, currentPage, totalPages, err :=
 		h.careProvidedService.ListCareProvided(
+			c.Query("search"),
+			c.Query("status"),
 			page,
 			pageSize,
 		)
@@ -206,6 +223,18 @@ func (h *CareProvidedHandler) Update(c *gin.Context) {
 		return
 	}
 
+	if currentUser, ok := getCurrentUser(c); ok {
+		if auditErr := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"UPDATE",
+			"care_provided",
+			record.ID.String(),
+			"Care provided record updated successfully",
+		); auditErr != nil {
+			// Audit logging failure must not fail the care update.
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Care provided record updated successfully",
@@ -265,6 +294,18 @@ func (h *CareProvidedHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	if currentUser, ok := getCurrentUser(c); ok {
+		if auditErr := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"STATUS_CHANGE",
+			"care_provided",
+			c.Param("id"),
+			"Care provided status changed to "+request.Status,
+		); auditErr != nil {
+			// Audit logging failure must not fail the care status update.
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Care provided status updated successfully",
@@ -304,6 +345,18 @@ func (h *CareProvidedHandler) Delete(c *gin.Context) {
 		}
 
 		return
+	}
+
+	if currentUser, ok := getCurrentUser(c); ok {
+		if auditErr := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"DELETE",
+			"care_provided",
+			c.Param("id"),
+			"Care provided record deleted successfully",
+		); auditErr != nil {
+			// Audit logging failure must not fail the care deletion.
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{

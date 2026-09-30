@@ -1,0 +1,139 @@
+﻿message_handler.go:27: func (h *MessageHandler) List(c *gin.Context) {
+message_handler.go:31: func (h *MessageHandler) Inbox(c *gin.Context) {
+message_handler.go:35: func (h *MessageHandler) Sent(c *gin.Context) {
+message_handler.go:56: c.JSON(http.StatusOK, gin.H{
+message_handler.go:64: func (h *MessageHandler) Unread(c *gin.Context) {
+message_handler.go:85: c.JSON(http.StatusOK, gin.H{
+message_handler.go:93: func (h *MessageHandler) UnreadCount(c *gin.Context) {
+message_handler.go:105: c.JSON(http.StatusOK, gin.H{
+message_handler.go:112: func (h *MessageHandler) GetByID(c *gin.Context) {
+message_handler.go:127: c.JSON(http.StatusOK, gin.H{
+message_handler.go:134: func (h *MessageHandler) Create(c *gin.Context) {
+message_handler.go:141: if err := c.ShouldBindJSON(&request); err != nil {
+message_handler.go:142: c.JSON(http.StatusBadRequest, gin.H{
+message_handler.go:160: c.JSON(http.StatusCreated, gin.H{
+message_handler.go:167: func (h *MessageHandler) MarkAsRead(c *gin.Context) {
+message_handler.go:182: c.JSON(http.StatusOK, gin.H{
+message_handler.go:188: func (h *MessageHandler) Delete(c *gin.Context) {
+message_handler.go:203: c.JSON(http.StatusOK, gin.H{
+message_handler.go:209: func (h *MessageHandler) listInbox(c *gin.Context) {
+message_handler.go:230: c.JSON(http.StatusOK, gin.H{
+message_handler.go:246: c.JSON(http.StatusBadRequest, gin.H{
+message_handler.go:254: c.JSON(http.StatusBadRequest, gin.H{
+message_handler.go:270: c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
+message_handler.go:274: c.JSON(http.StatusUnprocessableEntity, gin.H{"success": false, "message": err.Error()})
+message_handler.go:277: c.JSON(http.StatusNotFound, gin.H{"success": false, "message": err.Error()})
+message_handler.go:279: c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": fallback})
+notification_handler.go:19: func (h *NotificationHandler) Page(c *gin.Context) {
+notification_handler.go:27: c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{
+notification_handler.go:36: c.HTML(http.StatusOK, "base", PageData(c, gin.H{
+notification_handler.go:52: func (h *NotificationHandler) List(c *gin.Context) {
+notification_handler.go:55: c.JSON(http.StatusUnauthorized, gin.H{
+notification_handler.go:64: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:73: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:80: c.JSON(http.StatusOK, gin.H{
+notification_handler.go:87: func (h *NotificationHandler) GetByID(c *gin.Context) {
+notification_handler.go:92: c.JSON(http.StatusUnauthorized, gin.H{
+notification_handler.go:101: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:111: c.JSON(http.StatusNotFound, gin.H{
+notification_handler.go:118: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:126: c.JSON(http.StatusNotFound, gin.H{
+notification_handler.go:133: c.JSON(http.StatusOK, gin.H{
+notification_handler.go:140: func (h *NotificationHandler) MarkAsRead(c *gin.Context) {
+notification_handler.go:145: c.JSON(http.StatusUnauthorized, gin.H{
+notification_handler.go:154: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:165: c.JSON(http.StatusBadRequest, gin.H{
+notification_handler.go:171: c.JSON(http.StatusNotFound, gin.H{
+notification_handler.go:177: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:186: c.JSON(http.StatusOK, gin.H{
+notification_handler.go:193: func (h *NotificationHandler) Delete(c *gin.Context) {
+notification_handler.go:198: c.JSON(http.StatusUnauthorized, gin.H{
+notification_handler.go:207: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:218: c.JSON(http.StatusBadRequest, gin.H{
+notification_handler.go:224: c.JSON(http.StatusNotFound, gin.H{
+notification_handler.go:230: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:239: c.JSON(http.StatusOK, gin.H{
+notification_handler.go:246: func (h *NotificationHandler) Create(c *gin.Context) {
+notification_handler.go:254: if err := c.ShouldBindJSON(&request); err != nil {
+notification_handler.go:255: c.JSON(http.StatusBadRequest, gin.H{
+notification_handler.go:264: c.JSON(http.StatusBadRequest, gin.H{
+notification_handler.go:280: c.JSON(http.StatusBadRequest, gin.H{
+notification_handler.go:287: c.JSON(http.StatusInternalServerError, gin.H{
+notification_handler.go:294: c.JSON(http.StatusCreated, gin.H{
+revenue_handler.go:51: func (h *RevenueHandler) Page(c *gin.Context) {
+revenue_handler.go:54: c.HTML(http.StatusInternalServerError, "base", PageData(c, gin.H{"page_template": "revenue_content", "title": "Revenue Management", "error": "Unable to retrieve revenue records"}))
+revenue_handler.go:57: c.HTML(http.StatusOK, "base", PageData(c, gin.H{"page_template": "revenue_content", "title": "Revenue Management", "records": records}))
+revenue_handler.go:60: func (h *RevenueHandler) Create(c *gin.Context) {
+revenue_handler.go:63: c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid revenue record"})
+revenue_handler.go:90: c.JSON(http.StatusCreated, gin.H{"success": true, "message": "Revenue record created successfully", "data": record})
+revenue_handler.go:93: func (h *RevenueHandler) List(c *gin.Context) {
+revenue_handler.go:96: c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid revenue query"})
+revenue_handler.go:104: c.JSON(http.StatusOK, gin.H{"success": true, "data": records, "pagination": buildPagination(total, page, pageSize)})
+revenue_handler.go:107: func (h *RevenueHandler) GetByID(c *gin.Context) {
+revenue_handler.go:113: c.JSON(http.StatusOK, gin.H{"success": true, "data": record})
+revenue_handler.go:116: func (h *RevenueHandler) Update(c *gin.Context) {
+revenue_handler.go:119: c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "Invalid revenue record"})
+revenue_handler.go:144: c.JSON(http.StatusOK, gin.H{"success": true, "message": "Revenue record updated successfully", "data": record})
+revenue_handler.go:147: func (h *RevenueHandler) Delete(c *gin.Context) {
+revenue_handler.go:167: c.JSON(http.StatusOK, gin.H{"success": true, "message": "Revenue record deleted successfully"})
+revenue_handler.go:170: func (h *RevenueHandler) Summaries(c *gin.Context) {
+revenue_handler.go:173: c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "Unable to retrieve revenue summaries"})
+revenue_handler.go:176: c.JSON(http.StatusOK, gin.H{"success": true, "data": summaries})
+revenue_handler.go:182: status := http.StatusInternalServerError
+revenue_handler.go:185: status = http.StatusBadRequest
+revenue_handler.go:187: status = http.StatusUnprocessableEntity
+revenue_handler.go:189: status = http.StatusConflict
+revenue_handler.go:191: status = http.StatusNotFound
+audit_log_handler.go:26: func (h *AuditLogHandler) List(c *gin.Context) {
+audit_log_handler.go:30: c.JSON(http.StatusBadRequest, gin.H{
+audit_log_handler.go:54: c.JSON(http.StatusInternalServerError, gin.H{
+audit_log_handler.go:61: c.JSON(http.StatusOK, gin.H{
+audit_log_handler.go:74: func (h *AuditLogHandler) GetByID(c *gin.Context) {
+audit_log_handler.go:82: c.JSON(http.StatusBadRequest, gin.H{
+audit_log_handler.go:88: c.JSON(http.StatusNotFound, gin.H{
+audit_log_handler.go:94: c.JSON(http.StatusInternalServerError, gin.H{
+audit_log_handler.go:103: c.JSON(http.StatusOK, gin.H{
+audit_log_handler.go:110: func (h *AuditLogHandler) Delete(c *gin.Context) {
+audit_log_handler.go:118: c.JSON(http.StatusBadRequest, gin.H{
+audit_log_handler.go:124: c.JSON(http.StatusNotFound, gin.H{
+audit_log_handler.go:130: c.JSON(http.StatusInternalServerError, gin.H{
+audit_log_handler.go:139: c.JSON(http.StatusOK, gin.H{
+care_provided_handler.go:32: func (h *CareProvidedHandler) Create(c *gin.Context) {
+care_provided_handler.go:35: if err := c.ShouldBindJSON(&request); err != nil {
+care_provided_handler.go:36: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:45: c.JSON(http.StatusUnauthorized, gin.H{
+care_provided_handler.go:54: c.JSON(http.StatusInternalServerError, gin.H{
+care_provided_handler.go:90: c.JSON(http.StatusInternalServerError, gin.H{
+care_provided_handler.go:97: c.JSON(http.StatusUnprocessableEntity, gin.H{
+care_provided_handler.go:104: c.JSON(http.StatusCreated, gin.H{
+care_provided_handler.go:111: func (h *CareProvidedHandler) List(c *gin.Context) {
+care_provided_handler.go:122: c.JSON(http.StatusInternalServerError, gin.H{
+care_provided_handler.go:129: c.JSON(http.StatusOK, gin.H{
+care_provided_handler.go:142: func (h *CareProvidedHandler) GetByID(c *gin.Context) {
+care_provided_handler.go:150: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:156: c.JSON(http.StatusNotFound, gin.H{
+care_provided_handler.go:162: c.JSON(http.StatusInternalServerError, gin.H{
+care_provided_handler.go:171: c.JSON(http.StatusOK, gin.H{
+care_provided_handler.go:178: func (h *CareProvidedHandler) Update(c *gin.Context) {
+care_provided_handler.go:181: if err := c.ShouldBindJSON(&request); err != nil {
+care_provided_handler.go:182: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:197: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:203: c.JSON(http.StatusNotFound, gin.H{
+care_provided_handler.go:209: c.JSON(http.StatusConflict, gin.H{
+care_provided_handler.go:215: c.JSON(http.StatusUnprocessableEntity, gin.H{
+care_provided_handler.go:236: c.JSON(http.StatusOK, gin.H{
+care_provided_handler.go:243: func (h *CareProvidedHandler) UpdateStatus(c *gin.Context) {
+care_provided_handler.go:246: if err := c.ShouldBindJSON(&request); err != nil {
+care_provided_handler.go:247: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:262: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:268: c.JSON(http.StatusUnprocessableEntity, gin.H{
+care_provided_handler.go:274: c.JSON(http.StatusNotFound, gin.H{
+care_provided_handler.go:280: c.JSON(http.StatusConflict, gin.H{
+care_provided_handler.go:286: c.JSON(http.StatusInternalServerError, gin.H{
+care_provided_handler.go:307: c.JSON(http.StatusOK, gin.H{
+care_provided_handler.go:313: func (h *CareProvidedHandler) Delete(c *gin.Context) {
+care_provided_handler.go:321: c.JSON(http.StatusBadRequest, gin.H{
+care_provided_handler.go:327: c.JSON(http.StatusNotFound, gin.H{
+care_provided_handler.go:333: c.JSON(http.StatusConflict, gin.H{
+care_provided_handler.go:339: c.JSON(http.StatusInternalServerError, gin.H{
+care_provided_handler.go:360: c.JSON(http.StatusOK, gin.H{

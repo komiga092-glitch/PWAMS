@@ -3,11 +3,11 @@
 <section class="person-page">
   <div class="form-page-header">
     <div>
-      <h1>{{t .Lang "persons.person_id_title"}}</h1>
-      <p>{{t .Lang "persons.form_subtitle"}}</p>
+      <h1>{{t $.Lang "persons.person_id_title"}}</h1>
+      <p>{{t $.Lang "persons.form_subtitle"}}</p>
     </div>
 
-    <a href="/" class="back-link">← {{t .Lang "nav.dashboard"}}</a>
+    <a href="/" class="back-link">← {{t $.Lang "nav.dashboard"}}</a>
   </div>
 
   <div class="person-form-card">
@@ -15,27 +15,27 @@
       <!-- Person Type -->
 
       <div class="form-section">
-        <h2>{{t .Lang "persons.person_info_section"}}</h2>
+        <h2>{{t $.Lang "persons.person_info_section"}}</h2>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="person_type"> {{t .Lang "persons.person_type"}} </label>
+            <label for="person_type"> {{t $.Lang "persons.person_type"}} </label>
 
             <select id="person_type" name="person_type" class="input">
-              <option value="Individual">{{t .Lang "persons.individual"}}</option>
-              <option value="Organization">{{t .Lang "persons.organization"}}</option>
+              <option value="Individual">{{t $.Lang "persons.individual"}}</option>
+              <option value="Organization">{{t $.Lang "persons.organization"}}</option>
             </select>
           </div>
 
           <div class="form-field">
-            <label for="full_name"> {{t .Lang "persons.full_name"}} <span>*</span> </label>
+            <label for="full_name"> {{t $.Lang "persons.full_name"}} <span>*</span> </label>
 
             <input
               id="full_name"
               name="full_name"
               type="text"
               class="input"
-              placeholder="{{t .Lang "persons.enter_full_name"}}"
+              placeholder="{{t $.Lang "persons.enter_full_name"}}"
               required
             />
           </div>
@@ -43,20 +43,20 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="nic_passport"> {{t .Lang "persons.nic_passport"}} <span>*</span> </label>
+            <label for="nic_passport"> {{t $.Lang "persons.nic_passport"}} <span>*</span> </label>
 
             <input
               id="nic_passport"
               name="nic_passport"
               type="text"
               class="input"
-              placeholder="{{t .Lang "persons.enter_nic"}}"
+              placeholder="{{t $.Lang "persons.enter_nic"}}"
               required
             />
           </div>
 
           <div class="form-field">
-            <label for="date_of_birth"> {{t .Lang "persons.date_of_birth"}} </label>
+            <label for="date_of_birth"> {{t $.Lang "persons.date_of_birth"}} </label>
 
             <input
               id="date_of_birth"
@@ -69,54 +69,54 @@
 
         <div class="form-row">
           <div class="form-field">
-            <label for="gender"> {{t .Lang "persons.gender"}} </label>
+            <label for="gender"> {{t $.Lang "persons.gender"}} </label>
 
             <select id="gender" name="gender" class="input">
-              <option value="">{{t .Lang "persons.select_gender"}}</option>
+              <option value="">{{t $.Lang "persons.select_gender"}}</option>
 
-              <option value="Male">{{t .Lang "persons.male"}}</option>
+              <option value="Male">{{t $.Lang "persons.male"}}</option>
 
-              <option value="Female">{{t .Lang "persons.female"}}</option>
+              <option value="Female">{{t $.Lang "persons.female"}}</option>
 
-              <option value="Other">{{t .Lang "persons.other"}}</option>
+              <option value="Other">{{t $.Lang "persons.other"}}</option>
             </select>
           </div>
 
           <div class="form-field">
-            <label for="phone"> {{t .Lang "persons.contact_number"}} </label>
+            <label for="phone"> {{t $.Lang "persons.contact_number"}} </label>
 
             <input
               id="phone"
               name="phone"
               type="tel"
               class="input"
-              placeholder="{{t .Lang "persons.enter_contact"}}"
+              placeholder="{{t $.Lang "persons.enter_contact"}}"
             />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="email"> {{t .Lang "persons.email"}} </label>
+            <label for="email"> {{t $.Lang "persons.email"}} </label>
 
             <input
               id="email"
               name="email"
               type="email"
               class="input"
-              placeholder="{{t .Lang "persons.enter_email"}}"
+              placeholder="{{t $.Lang "persons.enter_email"}}"
             />
           </div>
 
           <div class="form-field">
-            <label for="occupation"> {{t .Lang "persons.occupation"}} </label>
+            <label for="occupation"> {{t $.Lang "persons.occupation"}} </label>
 
             <input
               id="occupation"
               name="occupation"
               type="text"
               class="input"
-              placeholder="{{t .Lang "persons.enter_occupation"}}"
+              placeholder="{{t $.Lang "persons.enter_occupation"}}"
             />
           </div>
         </div>
@@ -125,61 +125,61 @@
       <!-- Address -->
 
       <div class="form-section">
-        <h2>{{t .Lang "persons.address_info_section"}}</h2>
+        <h2>{{t $.Lang "persons.address_info_section"}}</h2>
 
         <div class="form-field full-field">
-          <label for="address"> {{t .Lang "persons.address"}} </label>
+          <label for="address"> {{t $.Lang "persons.address"}} </label>
 
           <textarea
             id="address"
             name="address"
             class="input textarea"
             rows="4"
-            placeholder="{{t .Lang "persons.enter_address"}}"
+            placeholder="{{t $.Lang "persons.enter_address"}}"
           ></textarea>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="district"> {{t .Lang "persons.district"}} </label>
+            <label for="district"> {{t $.Lang "persons.district"}} </label>
 
             <input
               id="district"
               name="district"
               type="text"
               class="input"
-              placeholder="{{t .Lang "persons.enter_district"}}"
+              placeholder="{{t $.Lang "persons.enter_district"}}"
             />
           </div>
 
           <div class="form-field">
-            <label for="ds_division"> {{t .Lang "persons.ds_division"}} </label>
+            <label for="ds_division"> {{t $.Lang "persons.ds_division"}} </label>
 
             <input
               id="ds_division"
               name="ds_division"
               type="text"
               class="input"
-              placeholder="{{t .Lang "persons.enter_ds_division"}}"
+              placeholder="{{t $.Lang "persons.enter_ds_division"}}"
             />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-field">
-            <label for="gn_division"> {{t .Lang "persons.gn_division"}} </label>
+            <label for="gn_division"> {{t $.Lang "persons.gn_division"}} </label>
 
             <input
               id="gn_division"
               name="gn_division"
               type="text"
               class="input"
-              placeholder="{{t .Lang "persons.enter_gn_division"}}"
+              placeholder="{{t $.Lang "persons.enter_gn_division"}}"
             />
           </div>
 
           <div class="form-field">
-            <label for="monthly_income"> {{t .Lang "persons.monthly_income"}} </label>
+            <label for="monthly_income"> {{t $.Lang "persons.monthly_income"}} </label>
 
             <input
               id="monthly_income"
@@ -197,17 +197,17 @@
       <!-- Status -->
 
       <div class="form-section">
-        <h2>{{t .Lang "persons.registration_section"}}</h2>
+        <h2>{{t $.Lang "persons.registration_section"}}</h2>
 
         <div class="form-field">
-          <label for="status"> {{t .Lang "common.status"}} </label>
+          <label for="status"> {{t $.Lang "common.status"}} </label>
 
           <select id="status" name="status" class="input">
-            <option value="Active">{{t .Lang "common.active"}}</option>
+            <option value="Active">{{t $.Lang "common.active"}}</option>
 
-            <option value="Inactive">{{t .Lang "persons.inactive"}}</option>
+            <option value="Inactive">{{t $.Lang "persons.inactive"}}</option>
 
-            <option value="Pending">{{t .Lang "persons.pending"}}</option>
+            <option value="Pending">{{t $.Lang "persons.pending"}}</option>
           </select>
         </div>
       </div>
@@ -215,9 +215,9 @@
       <!-- Buttons -->
 
       <div class="form-actions">
-        <a href="/" class="btn-secondary"> {{t .Lang "common.cancel"}} </a>
+        <a href="/" class="btn-secondary"> {{t $.Lang "common.cancel"}} </a>
 
-        <button type="submit" class="btn-primary">{{t .Lang "persons.proceed"}}</button>
+        <button type="submit" class="btn-primary">{{t $.Lang "persons.proceed"}}</button>
       </div>
     </form>
   </div>

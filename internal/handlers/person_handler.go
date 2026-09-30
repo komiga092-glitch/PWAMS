@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -19,13 +20,8 @@ type PersonHandler struct {
 
 func NewPersonHandler(
 	personService *services.PersonService,
-	auditLogServices ...*services.AuditLogService,
+	auditLogService *services.AuditLogService,
 ) *PersonHandler {
-	var auditLogService *services.AuditLogService
-	if len(auditLogServices) > 0 {
-		auditLogService = auditLogServices[0]
-	}
-
 	return &PersonHandler{
 		personService:   personService,
 		auditLogService: auditLogService,
@@ -62,10 +58,33 @@ func (h *PersonHandler) Create(c *gin.Context) {
 		return
 	}
 
-	person, err := h.personService.CreatePerson(
-		request,
-		currentUser.ID,
-	)
+	var person *models.Person
+
+	// The person row and its mandatory audit entry form one unit of work:
+	// they are committed together or not at all. If audit logging is
+	// unavailable the transaction fails closed before the business write is
+	// attempted, so a missing dependency can never leave a committed record
+	// without its audit event (or panic).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.personService.WithTx(tx).CreatePerson(
+			request,
+			currentUser.ID,
+		)
+		if createErr != nil {
+			return createErr
+		}
+
+		person = created
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CREATE",
+			"persons",
+			created.ID.String(),
+			"Person created successfully",
+		)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrPersonAlreadyExists):
@@ -86,6 +105,12 @@ func (h *PersonHandler) Create(c *gin.Context) {
 				"message": err.Error(),
 			})
 
+		case errors.Is(err, services.ErrInvalidMonthlyIncome):
+			c.JSON(http.StatusUnprocessableEntity, gin.H{
+				"success": false,
+				"message": err.Error(),
+			})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -94,16 +119,6 @@ func (h *PersonHandler) Create(c *gin.Context) {
 		}
 
 		return
-	}
-
-	if err := h.auditLogService.Create(
-		currentUser.ID.String(),
-		"CREATE",
-		"persons",
-		person.ID.String(),
-		"Person created successfully",
-	); err != nil {
-		// Audit logging failure must not fail the person creation.
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -318,8 +333,19 @@ func (h *PersonHandler) Update(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidDateOfBirth, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidPhone, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidPersonStatus, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidMonthlyIncome, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return
+	}
+
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"UPDATE",
+		"persons",
+		person.ID.String(),
+		"Person updated successfully",
+	); auditErr != nil {
+		// Audit logging failure must not fail the person update.
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -409,6 +435,16 @@ func (h *PersonHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"STATUS_CHANGE",
+		"persons",
+		personID,
+		"Person status changed to "+request.Status,
+	); auditErr != nil {
+		// Audit logging failure must not fail the person status update.
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": constants.ErrPersonStatusUpdatedSuccessfully,
@@ -456,6 +492,16 @@ func (h *PersonHandler) Delete(c *gin.Context) {
 		}
 
 		return
+	}
+
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"DELETE",
+		"persons",
+		personID,
+		"Person deleted successfully",
+	); auditErr != nil {
+		// Audit logging failure must not fail the person deletion.
 	}
 
 	c.JSON(http.StatusOK, gin.H{

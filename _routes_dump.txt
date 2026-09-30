@@ -1,0 +1,136 @@
+account_activation_routes.go POST   /request-account-activation        -> handler.RequestActivation,
+account_activation_routes.go POST   /verify-account-activation-otp     -> handler.VerifyOTP,
+account_activation_routes.go POST   /reactivate-account                -> handler.Reactivate,
+aid_request_routes.go        GET    /page                              -> aidRequestHandler.Page
+aid_request_routes.go        GET                                       -> aidRequestHandler.List
+aid_request_routes.go        GET    /:id                               -> aidRequestHandler.GetByID
+aid_request_routes.go        POST                                      -> aidRequestHandler.Create
+aid_request_routes.go        PUT    /:id                               -> aidRequestHandler.Update
+aid_request_routes.go        PATCH  /:id/review                        -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+aid_request_routes.go        PATCH  /:id/cancel                        -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+aid_request_routes.go        DELETE /:id                               -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+audit_log_routes.go          GET    /audit-logs/page                   -> func(c *gin.Context
+audit_log_routes.go          GET    /audit-logs                        -> handler.List,
+audit_log_routes.go          GET    /audit-logs/:id                    -> handler.GetByID,
+auth_routes.go               GET    /login                             -> func(c *gin.Context
+auth_routes.go               GET    /forgot-password                   -> func(c *gin.Context
+auth_routes.go               GET    /verify-reset-otp                  -> func(c *gin.Context
+auth_routes.go               GET    /reset-password                    -> func(c *gin.Context
+auth_routes.go               POST   /login                             -> middleware.RateLimitLogin(
+auth_routes.go               POST   /forgot-password                   -> middleware.RateLimitPasswordReset(
+auth_routes.go               POST   /verify-reset-otp                  -> middleware.RateLimitOTP(
+auth_routes.go               POST   /reset-password                    -> middleware.RateLimitPasswordReset(
+auth_routes.go               GET    /dashboard                         -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+auth_routes.go               POST   /logout                            -> authHandler.Logout,
+auth_routes.go               GET    /auth/me                           -> func(c *gin.Context
+auth_routes.go               GET    /admin-test                        -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+care_provided_routes.go      GET    /care-provided/page                -> func(c *gin.Context
+care_provided_routes.go      GET    /care-provided                     -> handler.List,
+care_provided_routes.go      POST   /care-provided                     -> handler.Create,
+care_provided_routes.go      GET    /care-provided/:id                 -> handler.GetByID,
+care_provided_routes.go      PUT    /care-provided/:id                 -> handler.Update,
+care_provided_routes.go      PATCH  /care-provided/:id/status          -> handler.UpdateStatus,
+care_provided_routes.go      DELETE /care-provided/:id                 -> middleware.RequireAnyRole(models.RoleSuperAdmin, m
+dashboard_routes.go          GET    /stats                             -> dashboardHandler.GetStats
+donation_routes.go           GET    /page                              -> donationHandler.Page
+donation_routes.go           GET                                       -> donationHandler.List
+donation_routes.go           GET    /:id                               -> donationHandler.GetByID
+donation_routes.go           POST                                      -> donationHandler.Create
+donation_routes.go           PUT    /:id                               -> donationHandler.Update
+donation_routes.go           PATCH  /:id/status                        -> donationHandler.UpdateStatus
+donation_routes.go           DELETE /:id                               -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+donor_routes.go              GET    /page                              -> donorHandler.Page,
+donor_routes.go              GET    /:id/view                          -> donorHandler.ViewPage,
+donor_routes.go              GET    /:id/edit                          -> donorHandler.EditPage,
+donor_routes.go              GET                                       -> donorHandler.List,
+donor_routes.go              GET    /:id                               -> donorHandler.GetByID,
+donor_routes.go              POST                                      -> donorHandler.Create,
+donor_routes.go              PUT    /:id                               -> donorHandler.Update,
+donor_routes.go              PATCH  /:id/status                        -> donorHandler.UpdateStatus,
+donor_routes.go              DELETE /:id                               -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+file_upload_routes.go        GET    /page                              -> fileUploadHandler.Page
+file_upload_routes.go        GET                                       -> fileUploadHandler.List
+file_upload_routes.go        GET    /reconciliation                    -> middleware.RequireAnyRole(models.RoleSuperAdmin, m
+file_upload_routes.go        POST   /upload                            -> limitUploadRequest(
+file_upload_routes.go        GET    /:id                               -> fileUploadHandler.Download
+file_upload_routes.go        DELETE /:id                               -> fileUploadHandler.Delete
+loan_repayment_routes.go     GET    /page                              -> loanRepaymentHandler.Page
+loan_repayment_routes.go     POST                                      -> loanRepaymentHandler.Create
+loan_repayment_routes.go     GET                                       -> loanRepaymentHandler.List
+loan_repayment_routes.go     GET    /:id                               -> loanRepaymentHandler.GetByID
+loan_repayment_routes.go     PATCH  /:id/pay                           -> loanRepaymentHandler.Pay
+loan_repayment_routes.go     PATCH  /:id/cancel                        -> loanRepaymentHandler.Cancel
+loan_routes.go               GET    /page                              -> loanHandler.Page
+loan_routes.go               POST                                      -> loanHandler.Create
+loan_routes.go               GET                                       -> loanHandler.List
+loan_routes.go               GET    /:id                               -> loanHandler.GetByID
+loan_routes.go               PATCH  /:id/review                        -> middleware.RequireAnyRole(
+		models.RoleSuperAdmin
+message_routes.go            GET    /page                              -> func(c *gin.Context
+message_routes.go            GET    /recipients                        -> recipientHandler.List
+message_routes.go            GET                                       -> messageHandler.List
+message_routes.go            GET    /inbox                             -> messageHandler.Inbox
+message_routes.go            GET    /sent                              -> messageHandler.Sent
+message_routes.go            GET    /unread                            -> messageHandler.Unread
+message_routes.go            GET    /unread/count                      -> messageHandler.UnreadCount
+message_routes.go            GET    /:id                               -> messageHandler.GetByID
+message_routes.go            POST                                      -> messageHandler.Create
+message_routes.go            PATCH  /:id/read                          -> messageHandler.MarkAsRead
+message_routes.go            DELETE /:id                               -> messageHandler.Delete
+notification_routes.go       GET    /page                              -> notificationHandler.Page
+notification_routes.go       GET                                       -> notificationHandler.List
+notification_routes.go       GET    /:id                               -> notificationHandler.GetByID
+notification_routes.go       POST                                      -> middleware.RequireAnyRole(
+		models.RoleSuperAdmin
+notification_routes.go       PATCH  /:id/read                          -> notificationHandler.MarkAsRead
+notification_routes.go       DELETE /:id                               -> notificationHandler.Delete
+person_routes.go             GET    /page                              -> personHandler.Page,
+person_routes.go             GET    /:id/view                          -> personHandler.ViewPage,
+person_routes.go             GET    /:id/edit                          -> personHandler.EditPage,
+person_routes.go             GET                                       -> personHandler.List,
+person_routes.go             GET    /:id                               -> personHandler.GetByID,
+person_routes.go             POST                                      -> personHandler.Create,
+person_routes.go             PUT    /:id                               -> personHandler.Update,
+person_routes.go             PATCH  /:id/status                        -> personHandler.UpdateStatus,
+person_routes.go             DELETE /:id                               -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+report_routes.go             GET    /reports/page                      -> handler.LandingPage
+revenue_routes.go            GET    /page                              -> handler.Page
+revenue_routes.go            GET                                       -> handler.List
+revenue_routes.go            GET    /summaries                         -> handler.Summaries
+revenue_routes.go            GET    /:id                               -> handler.GetByID
+revenue_routes.go            POST                                      -> handler.Create
+revenue_routes.go            PUT    /:id                               -> handler.Update
+revenue_routes.go            DELETE /:id                               -> handler.Delete
+routes.go                    GET    /                                  -> func(c *gin.Context
+routes.go                    GET    /health                            -> func(c *gin.Context
+student_routes.go            GET    /page                              -> studentHandler.Page,
+student_routes.go            GET    /:id/view                          -> studentHandler.ViewPage,
+student_routes.go            GET    /:id/edit                          -> studentHandler.EditPage,
+student_routes.go            GET                                       -> studentHandler.List,
+student_routes.go            GET    /:id                               -> studentHandler.GetByID,
+student_routes.go            POST                                      -> studentHandler.Create,
+student_routes.go            PUT    /:id                               -> studentHandler.Update,
+student_routes.go            PATCH  /:id/status                        -> studentHandler.UpdateStatus,
+student_routes.go            DELETE /:id                               -> middleware.RequireAnyRole(
+			models.RoleSuperAdmi
+sync_routes.go               POST   /push                              -> handler.Push
+sync_routes.go               GET    /pull                              -> handler.Pull
+user_routes.go               GET                                       -> userHandler.ProfilePage
+user_routes.go               POST                                      -> userHandler.UpdateOwnProfile
+user_routes.go               POST   /password                          -> userHandler.ChangeOwnPassword
+user_routes.go               GET    /page                              -> userHandler.Page
+user_routes.go               GET                                       -> userHandler.List
+user_routes.go               GET    /:id                               -> userHandler.GetByID
+user_routes.go               POST                                      -> userHandler.Create
+user_routes.go               PUT    /:id                               -> userHandler.Update
+user_routes.go               PATCH  /:id/status                        -> userHandler.UpdateStatus
+user_routes.go               PATCH  /:id/password                      -> userHandler.ResetPassword
+user_routes.go               DELETE /:id                               -> middleware.RequireRole(models.RoleSuperAdmin

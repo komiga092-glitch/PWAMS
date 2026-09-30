@@ -123,7 +123,7 @@
           <td><span class="badge badge-${record.status?.toLowerCase() || "pending"}">${escapeHtml(record.status || "pending")}</span></td>
           <td class="actions">
             <button class="btn btn-small" data-csp-action="care:view" data-csp-id="${record.id}">View</button>
-            <button class="btn btn-small" data-roles="Super Admin,Admin,Staff" data-csp-action="care:edit" data-csp-id="${record.id}">Edit</button>
+            <button class="btn btn-small" data-roles="Super Admin,Admin,Manager,Staff" data-csp-action="care:edit" data-csp-id="${record.id}">Edit</button>
             <button class="btn btn-small btn-danger" data-roles="Super Admin,Admin" data-csp-action="care:delete" data-csp-id="${record.id}">Delete</button>
           </td>
         </tr>
@@ -408,4 +408,22 @@
         currency: "USD",
       }).format(value);
     }
+
+    /*
+     * CSP delegation contract (web/static/js/csp-delegator.js).
+     *
+     * The delegator dispatches data-csp-action values to these page
+     * controller functions, so they must exist on `window` at runtime.
+     * Only the functions the delegator calls are exposed here; internal
+     * helpers stay page-local.
+     */
+    window.openCareModal = openCareModal;
+    window.closeCareModal = closeCareModal;
+    window.previousPage = previousPage;
+    window.nextPage = nextPage;
+    window.viewCareRecord = viewCareRecord;
+    window.editCareRecord = editCareRecord;
+    window.deleteCareRecord = deleteCareRecord;
+    window.loadCareRecords = loadCareRecords;
+    window.handleCareFormSubmit = handleCareFormSubmit;
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{t .Lang "otp.title"}}</title>
+    <title>{{t $.Lang "otp.title"}}</title>
     <link rel="stylesheet" href="/static/css/app.css" />
   </head>
   <body>
@@ -11,22 +11,22 @@
       <section class="login-brand">
         <div class="brand-mark">PWA</div>
 
-        <h1 style="margin-top: 24px">{{t .Lang "otp.heading"}}</h1>
+        <h1 style="margin-top: 24px">{{t $.Lang "otp.heading"}}</h1>
 
-        <p>{{t .Lang "otp.intro"}}</p>
+        <p>{{t $.Lang "otp.intro"}}</p>
       </section>
 
       <section class="login-form-side">
         <div class="login-card">
-          <h2>{{t .Lang "otp.card_title"}}</h2>
+          <h2>{{t $.Lang "otp.card_title"}}</h2>
 
-          <p class="subtitle">{{t .Lang "otp.card_subtitle"}}</p>
+          <p class="subtitle">{{t $.Lang "otp.card_subtitle"}}</p>
 
           <div id="message" class="alert" style="display: none"></div>
 
           <form id="verifyOtpForm">
             <div class="form-group" style="margin-bottom: 16px">
-              <label class="form-label" for="email"> {{t .Lang "otp.email_label"}} </label>
+              <label class="form-label" for="email"> {{t $.Lang "otp.email_label"}} </label>
 
               <input
                 class="form-control"
@@ -39,7 +39,7 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 18px">
-              <label class="form-label" for="otp"> {{t .Lang "otp.otp_label"}} </label>
+              <label class="form-label" for="otp"> {{t $.Lang "otp.otp_label"}} </label>
 
               <input
                 class="form-control"
@@ -49,13 +49,13 @@
                 inputmode="numeric"
                 maxlength="6"
                 pattern="[0-9]{6}"
-                placeholder="{{t .Lang "otp.otp_placeholder"}}"
+                placeholder="{{t $.Lang "otp.otp_placeholder"}}"
                 required
               />
             </div>
 
             <button class="btn btn-primary" style="width: 100%" type="submit">
-              {{t .Lang "otp.verify"}}
+              {{t $.Lang "otp.verify"}}
             </button>
           </form>
 
@@ -64,7 +64,7 @@
               href="/forgot-password"
               style="color: var(--primary); font-size: 13px; font-weight: 700"
             >
-              {{t .Lang "otp.send_again"}}
+              {{t $.Lang "otp.send_again"}}
             </a>
           </div>
         </div>
@@ -73,58 +73,8 @@
 
     <script src="/static/js/app.js"></script>
 
-    <script>
-      const params = new URLSearchParams(window.location.search);
-      const email = params.get("email");
+`
+<script src="/static/js/pages/verify_reset_otp.js" defer></script>
 
-      const emailInput = document.getElementById("email");
-      const form = document.getElementById("verifyOtpForm");
-      const message = document.getElementById("message");
-
-      if (!email) {
-        message.style.display = "block";
-        message.textContent = "Email address is missing.";
-        form.style.display = "none";
-      } else {
-        emailInput.value = email;
-      }
-
-      form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-
-        const otp = document.getElementById("otp").value.trim();
-
-        message.style.display = "none";
-
-        try {
-          const response = await fetch("/verify-reset-otp", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              email: email,
-              otp: otp,
-            }),
-          });
-
-          const data = await response.json();
-
-          message.style.display = "block";
-          message.textContent = data.message || "Request completed.";
-
-          if (response.ok && data.success) {
-            window.location.href =
-              "/reset-password?email=" +
-              encodeURIComponent(email) +
-              "&otp=" +
-              encodeURIComponent(otp);
-          }
-        } catch (error) {
-          message.style.display = "block";
-          message.textContent = "Unable to verify OTP. Please try again.";
-        }
-      });
-    </script>
   </body>
 </html>

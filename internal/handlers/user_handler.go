@@ -93,6 +93,16 @@ func (h *UserHandler) ChangeOwnPassword(c *gin.Context) {
 		c.HTML(status, "base", PageData(c, gin.H{"title": "My Profile", "page_template": "profile_content", "profile_user": currentUser, "password_error": message}))
 		return
 	}
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"PASSWORD_CHANGE",
+		"users",
+		currentUser.ID.String(),
+		"User changed own password",
+	); auditErr != nil {
+		// Audit logging failure must not fail the password change.
+	}
+
 	c.Redirect(http.StatusSeeOther, "/profile?password_updated=1")
 }
 
@@ -142,7 +152,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.CreateUser(request)
+	user, err := h.userService.CreateUser(request, currentUser.Role.Name)
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrUserAlreadyExists):
@@ -159,6 +169,9 @@ func (h *UserHandler) Create(c *gin.Context) {
 
 		case errors.Is(err, services.ErrActiveManagerExists):
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrCannotModifySuperAdmin):
+			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": err.Error()})
 
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -404,6 +417,12 @@ func (h *UserHandler) Update(c *gin.Context) {
 		case errors.Is(err, services.ErrActiveManagerExists):
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
 
+		case errors.Is(err, services.ErrLastActiveSuperAdmin):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrLastActiveAdmin):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
 		default:
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"success": false,
@@ -503,6 +522,7 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 	err = h.userService.UpdateUserStatus(
 		userID,
 		request.Status,
+		currentUser.Role.Name,
 	)
 	if err != nil {
 		switch {
@@ -525,6 +545,15 @@ func (h *UserHandler) UpdateStatus(c *gin.Context) {
 			})
 
 		case errors.Is(err, services.ErrActiveManagerExists):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrCannotModifySuperAdmin):
+			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrLastActiveSuperAdmin):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrLastActiveAdmin):
 			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
 
 		default:
@@ -625,6 +654,16 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"PASSWORD_RESET",
+		"users",
+		userID,
+		"User password reset by administrator",
+	); auditErr != nil {
+		// Audit logging failure must not fail the password reset.
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "User password reset successfully",
@@ -655,6 +694,7 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	err := h.userService.DeleteUser(
 		targetUserID,
 		currentUser.ID.String(),
+		currentUser.Role.Name,
 	)
 
 	if err != nil {
@@ -670,6 +710,18 @@ func (h *UserHandler) Delete(c *gin.Context) {
 				"success": false,
 				"message": constants.ErrCannotDeleteSelf,
 			})
+
+		case errors.Is(err, services.ErrCannotModifySuperAdmin):
+			c.JSON(http.StatusForbidden, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrAdminDeletionRequiresApproval):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrLastActiveSuperAdmin):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
+
+		case errors.Is(err, services.ErrLastActiveAdmin):
+			c.JSON(http.StatusConflict, gin.H{"success": false, "message": err.Error()})
 
 		case errors.Is(err, repository.ErrUserNotFound):
 			c.JSON(http.StatusNotFound, gin.H{

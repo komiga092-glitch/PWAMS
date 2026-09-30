@@ -122,6 +122,8 @@ func (s *CareProvidedService) GetCareProvidedByID(
 }
 
 func (s *CareProvidedService) ListCareProvided(
+	search string,
+	status string,
 	page int,
 	pageSize int,
 ) ([]models.CareProvided, int64, int, int, error) {
@@ -140,6 +142,8 @@ func (s *CareProvidedService) ListCareProvided(
 	offset := (page - 1) * pageSize
 
 	records, total, err := s.careProvidedRepo.List(
+		strings.TrimSpace(search),
+		strings.TrimSpace(status),
 		offset,
 		pageSize,
 	)

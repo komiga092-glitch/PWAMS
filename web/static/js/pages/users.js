@@ -44,6 +44,8 @@
     document.getElementById("password-group").style.display = "flex";
 
     document.getElementById("status-group").style.display = "none";
+
+    restrictRoleOptions();
   }
 
   function closeUserModal() {
@@ -94,13 +96,24 @@
     return role === "Partner" ? "Manager" : role;
   }
 
+  function restrictRoleOptions() {
+    // Only the platform-level actor may assign the Super Admin role; every
+    // other actor has the option removed client-side (fails closed when the
+    // current role cannot be determined).
+    const superAdminOption = document.querySelector(
+      '#user-role option[value="Super Admin"]'
+    );
+
+    if (!superAdminOption) return;
+
+    if (currentUserRole !== "Super Admin") {
+      superAdminOption.remove();
+    }
+  }
+
   function statusBadge(status) {
     if (status === "Active") {
       return `<span class="badge badge-success">${escapeHTML(status)}</span>`;
-    }
-
-    if (status === "Pending") {
-      return `<span class="badge badge-warning">${escapeHTML(status)}</span>`;
     }
 
     if (status === "Disabled" || status === "Locked") {
@@ -432,7 +445,7 @@
     });
 
   async function changeUserStatus(id, currentStatus) {
-    const statuses = ["Active", "Disabled", "Locked", "Pending"];
+    const statuses = ["Active", "Disabled", "Locked"];
 
     const selected = prompt(
       `Enter new status:\n\n${statuses.join("\n")}`,
@@ -545,6 +558,26 @@
     });
 
   document.addEventListener("DOMContentLoaded", () => {
-    loadCurrentUserRole().then(() => loadUsers(1));
+    loadCurrentUserRole().then(() => {
+      restrictRoleOptions();
+      loadUsers(1);
+    });
   });
+
+  /*
+   * CSP delegation contract (web/static/js/csp-delegator.js).
+   *
+   * The delegator dispatches data-csp-action values to these page
+   * controller functions, so they must exist on `window` at runtime.
+   * Only the functions the delegator calls are exposed here; internal
+   * helpers stay page-local.
+   */
+  window.openUserModal = openUserModal;
+  window.closeUserModal = closeUserModal;
+  window.closePasswordModal = closePasswordModal;
+  window.editUser = editUser;
+  window.changeUserPassword = changeUserPassword;
+  window.changeUserStatus = changeUserStatus;
+  window.deleteUser = deleteUser;
+  window.loadUsers = loadUsers;
 

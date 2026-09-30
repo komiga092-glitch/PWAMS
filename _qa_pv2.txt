@@ -1,0 +1,20 @@
+﻿		"title":         "Care Seeker Details - PWAMS",
+		"person":        person,
+	}))
+}
+func (h *PersonHandler) EditPage(c *gin.Context) {
+	personID := c.Param("id")
+
+	currentUser, _ := getCurrentUser(c)
+	actor, _ := services.ActorFromUser(currentUser)
+
+	person, err := h.personService.GetPersonByID(personID, actor)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, services.ErrInvalidPersonID):
+			c.HTML(http.StatusBadRequest, "base", PageData(c, gin.H{
+				"page_template": "person_edit_content",
+				"title":         "Invalid Person - PWAMS",
+				"error":         constants.ErrInvalidPersonID,
+			}))

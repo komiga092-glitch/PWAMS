@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -19,13 +20,8 @@ type DonorHandler struct {
 
 func NewDonorHandler(
 	donorService *services.DonorService,
-	auditLogServices ...*services.AuditLogService,
+	auditLogService *services.AuditLogService,
 ) *DonorHandler {
-	var auditLogService *services.AuditLogService
-	if len(auditLogServices) > 0 {
-		auditLogService = auditLogServices[0]
-	}
-
 	return &DonorHandler{
 		donorService:    donorService,
 		auditLogService: auditLogService,
@@ -48,10 +44,31 @@ func (h *DonorHandler) Create(c *gin.Context) {
 		return
 	}
 
-	donor, err := h.donorService.CreateDonor(
-		request,
-		currentUser.ID,
-	)
+	var donor *models.Donor
+
+	// The donor row and its mandatory audit entry are committed together or
+	// not at all. An unavailable audit dependency fails closed before the
+	// business write is attempted (no panic, no orphaned record).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.donorService.WithTx(tx).CreateDonor(
+			request,
+			currentUser.ID,
+		)
+		if createErr != nil {
+			return createErr
+		}
+
+		donor = created
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CREATE",
+			"donors",
+			created.ID.String(),
+			"Donor registered successfully",
+		)
+	})
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to create donor",
@@ -62,18 +79,6 @@ func (h *DonorHandler) Create(c *gin.Context) {
 			errorResponseMapping{err: services.ErrDonorAlreadyExists, status: http.StatusConflict, message: err.Error()},
 		)
 		return
-	}
-
-	if currentUser, ok := getCurrentUser(c); ok {
-		if err := h.auditLogService.Create(
-			currentUser.ID.String(),
-			"CREATE",
-			"donors",
-			donor.ID.String(),
-			"Donor registered successfully",
-		); err != nil {
-			// Audit logging failure must not fail the donor creation.
-		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -297,6 +302,18 @@ func (h *DonorHandler) Update(c *gin.Context) {
 		return
 	}
 
+	if currentUser, ok := getCurrentUser(c); ok {
+		if auditErr := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"UPDATE",
+			"donors",
+			donor.ID.String(),
+			"Donor updated successfully",
+		); auditErr != nil {
+			// Audit logging failure must not fail the donor update.
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "Donor updated successfully",
@@ -366,6 +383,18 @@ func (h *DonorHandler) UpdateStatus(c *gin.Context) {
 		}
 
 		return
+	}
+
+	if currentUser, ok := getCurrentUser(c); ok {
+		if auditErr := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"STATUS_CHANGE",
+			"donors",
+			donorID,
+			"Donor status changed to "+request.Status,
+		); auditErr != nil {
+			// Audit logging failure must not fail the donor status update.
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -476,6 +505,18 @@ func (h *DonorHandler) Delete(c *gin.Context) {
 		}
 
 		return
+	}
+
+	if currentUser, ok := getCurrentUser(c); ok {
+		if auditErr := h.auditLogService.Create(
+			currentUser.ID.String(),
+			"DELETE",
+			"donors",
+			donorID,
+			"Donor deleted successfully",
+		); auditErr != nil {
+			// Audit logging failure must not fail the donor deletion.
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{

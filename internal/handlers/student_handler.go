@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -19,13 +20,8 @@ type StudentHandler struct {
 
 func NewStudentHandler(
 	studentService *services.StudentService,
-	auditLogServices ...*services.AuditLogService,
+	auditLogService *services.AuditLogService,
 ) *StudentHandler {
-	var auditLogService *services.AuditLogService
-	if len(auditLogServices) > 0 {
-		auditLogService = auditLogServices[0]
-	}
-
 	return &StudentHandler{
 		studentService:  studentService,
 		auditLogService: auditLogService,
@@ -48,10 +44,31 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		return
 	}
 
-	student, err := h.studentService.CreateStudent(
-		request,
-		currentUser.ID,
-	)
+	var student *models.Student
+
+	// The student row and its mandatory audit entry are committed together
+	// or not at all. An unavailable audit dependency fails closed before the
+	// business write is attempted (no panic, no orphaned record).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.studentService.WithTx(tx).CreateStudent(
+			request,
+			currentUser.ID,
+		)
+		if createErr != nil {
+			return createErr
+		}
+
+		student = created
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CREATE",
+			"students",
+			created.ID.String(),
+			"Student created successfully",
+		)
+	})
 
 	if err != nil {
 		switch {
@@ -93,18 +110,6 @@ func (h *StudentHandler) Create(c *gin.Context) {
 		}
 
 		return
-	}
-
-	if currentUser, ok := getCurrentUser(c); ok {
-		if err := h.auditLogService.Create(
-			currentUser.ID.String(),
-			"CREATE",
-			"students",
-			student.ID.String(),
-			"Student created successfully",
-		); err != nil {
-			// Audit logging failure must not fail the student creation.
-		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -386,6 +391,16 @@ func (h *StudentHandler) Update(c *gin.Context) {
 		return
 	}
 
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"UPDATE",
+		"students",
+		student.ID.String(),
+		"Student updated successfully",
+	); auditErr != nil {
+		// Audit logging failure must not fail the student update.
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": constants.ErrStudentUpdatedSuccessfully,
@@ -460,6 +475,16 @@ func (h *StudentHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"STATUS_CHANGE",
+		"students",
+		studentID,
+		"Student status changed to "+request.Status,
+	); auditErr != nil {
+		// Audit logging failure must not fail the student status update.
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": constants.ErrStudentStatusUpdatedSuccessfully,
@@ -495,6 +520,16 @@ func (h *StudentHandler) Delete(c *gin.Context) {
 		}
 
 		return
+	}
+
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"DELETE",
+		"students",
+		studentID,
+		"Student deleted successfully",
+	); auditErr != nil {
+		// Audit logging failure must not fail the student deletion.
 	}
 
 	c.JSON(http.StatusOK, gin.H{

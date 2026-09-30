@@ -1,0 +1,28 @@
+﻿?   	github.com/komiga092-glitch/pwams/cmd/haskeys	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/i18nrepl	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/jsoncheck	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/keydump	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/keyparity	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/locchk	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/logogen	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/migrate	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/pdfsmoke	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/pdfverify	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/qaseed	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/server	[no test files]
+?   	github.com/komiga092-glitch/pwams/cmd/tplcheck	[no test files]
+?   	github.com/komiga092-glitch/pwams/docs	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/config	[no test files]
+?   	github.com/komiga092-glitch/pwams/internal/constants	[no test files]
+ok  	github.com/komiga092-glitch/pwams/internal/database	0.408s
+ok  	github.com/komiga092-glitch/pwams/internal/handlers	0.451s
+?   	github.com/komiga092-glitch/pwams/internal/i18n	[no test files]
+ok  	github.com/komiga092-glitch/pwams/internal/middleware	3.017s
+ok  	github.com/komiga092-glitch/pwams/internal/models	1.342s
+ok  	github.com/komiga092-glitch/pwams/internal/repository	1.347s
+ok  	github.com/komiga092-glitch/pwams/internal/routes	7.319s
+ok  	github.com/komiga092-glitch/pwams/internal/services	0.572s
+?   	github.com/komiga092-glitch/pwams/internal/services/email	[no test files]
+ok  	github.com/komiga092-glitch/pwams/internal/utils	0.609s
+?   	github.com/komiga092-glitch/pwams/migrations	[no test files]
+?   	github.com/komiga092-glitch/pwams/web/templates/components	[no test files]

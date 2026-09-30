@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -57,22 +58,53 @@ func (r *CareProvidedRepository) FindByID(
 }
 
 func (r *CareProvidedRepository) List(
+	search string,
+	status string,
 	offset int,
 	limit int,
 ) ([]models.CareProvided, int64, error) {
 	var records []models.CareProvided
 	var total int64
 
-	if err := r.db.
-		Model(&models.CareProvided{}).
-		Count(&total).Error; err != nil {
+	// Search/status are applied to the SAME predicate set as the find query
+	// (identical predicate before Count and before Find) so the filtered page
+	// and its total always describe the same row set (QA CARE-003).
+	query := r.db.Model(&models.CareProvided{})
+
+	if strings.TrimSpace(search) != "" {
+		searchValue := "%" + strings.ToLower(strings.TrimSpace(search)) + "%"
+
+		query = query.Where(
+			`LOWER(CAST(id AS TEXT)) LIKE ?
+			OR LOWER(CAST(aid_request_id AS TEXT)) LIKE ?
+			OR LOWER(CAST(person_id AS TEXT)) LIKE ?
+			OR LOWER(description) LIKE ?
+			OR LOWER(provided_by) LIKE ?
+			OR LOWER(care_type) LIKE ?`,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+			searchValue,
+		)
+	}
+
+	if strings.TrimSpace(status) != "" {
+		query = query.Where(
+			"LOWER(status) = LOWER(?)",
+			strings.TrimSpace(status),
+		)
+	}
+
+	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, fmt.Errorf(
 			"failed to count care provided records: %w",
 			err,
 		)
 	}
 
-	err := r.db.
+	err := query.
 		Preload("AidRequest").
 		Preload("Person").
 		Preload("CreatedBy").

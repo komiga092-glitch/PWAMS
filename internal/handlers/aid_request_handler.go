@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -40,7 +41,7 @@ func (h *AidRequestHandler) Page(c *gin.Context) {
 	}
 	items := make([]gin.H, 0, len(requests))
 	for _, request := range requests {
-		items = append(items, gin.H{"ID": request.ID, "PersonID": request.PersonID, "RequestType": request.AidType, "Amount": request.RequestedAmount, "RequestedAt": request.RequestDate, "Status": request.Status})
+		items = append(items, gin.H{"ID": request.ID, "PersonID": request.PersonID, "PersonName": request.Person.FullName, "RequestType": request.AidType, "Amount": request.RequestedAmount, "RequestedAt": request.RequestDate, "Status": request.Status})
 	}
 	c.HTML(http.StatusOK, "base", PageData(c, gin.H{"page_template": "aid_requests_content", "title": "Aid Requests", "data": items, "search": query.Search, "status": query.Status}))
 }
@@ -74,10 +75,31 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 		return
 	}
 
-	aidRequest, err := h.aidRequestService.CreateAidRequest(
-		request,
-		currentUser.ID,
-	)
+	var aidRequest *models.AidRequest
+
+	// The aid request and its mandatory audit entry are committed together
+	// or not at all (SRS FR-16 / NFR-09): a request can never exist without
+	// its audit trail, and an audit failure rolls the create back.
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.aidRequestService.WithTx(tx).CreateAidRequest(
+			request,
+			currentUser.ID,
+		)
+		if createErr != nil {
+			return createErr
+		}
+
+		aidRequest = created
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CREATE",
+			"aid_requests",
+			created.ID.String(),
+			"Aid request created successfully",
+		)
+	})
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to create aid request",
@@ -87,6 +109,7 @@ func (h *AidRequestHandler) Create(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidAidPriority, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidAidRequestDate, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidNeededByDate, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidRequestAmount, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return
 	}
@@ -275,11 +298,48 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 		return
 	}
 
-	aidRequest, err :=
-		h.aidRequestService.UpdateAidRequest(
+	value, exists := c.Get("current_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": constants.ErrAuthenticationRequired,
+		})
+		return
+	}
+
+	currentUser, ok := value.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": constants.ErrInvalidAuthContext,
+		})
+		return
+	}
+
+	var aidRequest *models.AidRequest
+
+	// The update and its mandatory audit entry are committed together or
+	// not at all (SRS FR-16 / NFR-09).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		updated, updateErr := h.aidRequestService.WithTx(tx).UpdateAidRequest(
 			aidRequestID,
 			request,
 		)
+		if updateErr != nil {
+			return updateErr
+		}
+
+		aidRequest = updated
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"UPDATE",
+			"aid_requests",
+			updated.ID.String(),
+			"Aid request updated successfully",
+		)
+	})
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToUpdateAidRequest,
@@ -292,6 +352,7 @@ func (h *AidRequestHandler) Update(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidAidRequestDate, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrInvalidNeededByDate, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrAidRequestCannotBeEdited, status: http.StatusConflict, message: err.Error()},
+			errorResponseMapping{err: services.ErrInvalidAidRequestAmount, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return
 	}
@@ -346,12 +407,32 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 		return
 	}
 
-	aidRequest, err :=
-		h.aidRequestService.ReviewAidRequest(
-			aidRequestID,
-			request,
-			currentUser.ID,
+	var aidRequest *models.AidRequest
+
+	// The review decision and its mandatory audit entry are committed
+	// together or not at all (SRS FR-16 / NFR-09).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		reviewed, reviewErr :=
+			h.aidRequestService.WithTx(tx).ReviewAidRequest(
+				aidRequestID,
+				request,
+				currentUser.ID,
+			)
+		if reviewErr != nil {
+			return reviewErr
+		}
+
+		aidRequest = reviewed
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"REVIEW",
+			"aid_requests",
+			reviewed.ID.String(),
+			fmt.Sprintf("status=%s approved_amount=%s", reviewed.Status, reviewed.ApprovedAmount.String()),
 		)
+	})
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to review aid request",
@@ -361,20 +442,9 @@ func (h *AidRequestHandler) Review(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidAidStatusTransition, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrApprovedAmountRequired, status: http.StatusUnprocessableEntity, message: err.Error()},
 			errorResponseMapping{err: services.ErrApprovedAmountTooHigh, status: http.StatusUnprocessableEntity, message: err.Error()},
+			errorResponseMapping{err: services.ErrCannotReviewOwnSubmission, status: http.StatusForbidden, message: err.Error()},
 		)
 		return
-	}
-
-	// Approval/rejection decisions are mandatory audit events
-	// (SRS FR-16 / NFR-09).
-	if h.auditLogService != nil {
-		_ = h.auditLogService.Create(
-			currentUser.ID.String(),
-			"REVIEW",
-			"aid_requests",
-			aidRequest.ID.String(),
-			fmt.Sprintf("status=%s approved_amount=%s", aidRequest.Status, aidRequest.ApprovedAmount.String()),
-		)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -422,11 +492,31 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 		return
 	}
 
-	aidRequest, err := h.aidRequestService.CancelAidRequest(
-		aidRequestID,
-		request.Reason,
-		currentUser.ID,
-	)
+	var aidRequest *models.AidRequest
+
+	// The cancellation and its mandatory audit entry are committed together
+	// or not at all (SRS FR-16 / NFR-09).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		cancelled, cancelErr := h.aidRequestService.WithTx(tx).CancelAidRequest(
+			aidRequestID,
+			request.Reason,
+			currentUser.ID,
+		)
+		if cancelErr != nil {
+			return cancelErr
+		}
+
+		aidRequest = cancelled
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CANCEL",
+			"aid_requests",
+			cancelled.ID.String(),
+			"Aid request cancelled successfully",
+		)
+	})
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToCancelAidRequest,
@@ -452,7 +542,40 @@ func (h *AidRequestHandler) Cancel(c *gin.Context) {
 func (h *AidRequestHandler) Delete(c *gin.Context) {
 	aidRequestID := c.Param("id")
 
-	err := h.aidRequestService.DeleteAidRequest(aidRequestID)
+	value, exists := c.Get("current_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"message": constants.ErrAuthenticationRequired,
+		})
+		return
+	}
+
+	currentUser, ok := value.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": constants.ErrInvalidAuthContext,
+		})
+		return
+	}
+
+	// The deletion and its mandatory audit entry are committed together or
+	// not at all (SRS FR-16 / NFR-09).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		if deleteErr := h.aidRequestService.WithTx(tx).DeleteAidRequest(aidRequestID); deleteErr != nil {
+			return deleteErr
+		}
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"DELETE",
+			"aid_requests",
+			aidRequestID,
+			"Aid request deleted successfully",
+		)
+	})
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, constants.ErrUnableToDeleteAidRequest,
 			errorResponseMapping{err: services.ErrInvalidAidRequestID, status: http.StatusBadRequest, message: constants.ErrInvalidAidRequestID},

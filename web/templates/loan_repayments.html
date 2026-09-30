@@ -3,25 +3,25 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>{{t .Lang "repayments.title"}}</h1>
-      <p>{{t .Lang "repayments.subtitle"}}</p>
+      <h1>{{t $.Lang "repayments.title"}}</h1>
+      <p>{{t $.Lang "repayments.subtitle"}}</p>
     </div>
 
     <button
       class="btn btn-primary"
       type="button"
-      onclick="openRepaymentModal()"
-      data-roles="Super Admin,Admin,Staff"
+      data-csp-action="repay:open"
+      data-roles="Super Admin,Admin,Manager,Staff"
     >
-      {{t .Lang "repayments.new"}}
+      {{t $.Lang "repayments.new"}}
     </button>
   </div>
 
   <div class="panel">
     <div class="panel-header">
       <div>
-        <h2>{{t .Lang "repayments.records"}}</h2>
-        <p>{{t .Lang "repayments.records_sub"}}</p>
+        <h2>{{t $.Lang "repayments.records"}}</h2>
+        <p>{{t $.Lang "repayments.records_sub"}}</p>
       </div>
     </div>
 
@@ -29,11 +29,11 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>{{t .Lang "repayments.loan_id"}}</th>
-            <th>{{t .Lang "repayments.amount"}}</th>
-            <th>{{t .Lang "repayments.payment_date"}}</th>
-            <th>{{t .Lang "common.status"}}</th>
-            <th>{{t .Lang "common.actions"}}</th>
+            <th>{{t $.Lang "repayments.loan_id"}}</th>
+            <th>{{t $.Lang "repayments.amount"}}</th>
+            <th>{{t $.Lang "repayments.payment_date"}}</th>
+            <th>{{t $.Lang "common.status"}}</th>
+            <th>{{t $.Lang "common.actions"}}</th>
           </tr>
         </thead>
 
@@ -50,11 +50,11 @@
             <td>
               {{ if .PaidAt }}
 
-              <span class="status-badge status-active"> {{t .Lang "repayments.paid"}} </span>
+              <span class="status-badge status-active"> {{t $.Lang "repayments.paid"}} </span>
 
               {{ else }}
 
-              <span class="status-badge"> {{t .Lang "repayments.pending"}} </span>
+              <span class="status-badge"> {{t $.Lang "repayments.pending"}} </span>
 
               {{ end }}
             </td>
@@ -65,27 +65,27 @@
               <form
                 method="POST"
                 action="/loan-repayments/{{ .ID }}/pay"
-                onsubmit="submitRepaymentAction(event, this, 'pay')"
+                data-csp-action="repay:pay"
                 style="display: inline"
               >
                 <input type="hidden" name="paid_amount" value="{{ .Amount }}" />
                 <button class="btn btn-small btn-primary" type="submit">
-                  {{t .Lang "repayments.mark_paid"}}
+                  {{t $.Lang "repayments.mark_paid"}}
                 </button>
               </form>
 
               <form
                 method="POST"
                 action="/loan-repayments/{{ .ID }}/cancel"
-                onsubmit="submitRepaymentAction(event, this, 'cancel')"
+                data-csp-action="repay:cancel"
                 style="display: inline"
               >
-                <button class="btn btn-small" type="submit">{{t .Lang "common.cancel"}}</button>
+                <button class="btn btn-small" type="submit">{{t $.Lang "common.cancel"}}</button>
               </form>
 
               {{ else }}
 
-              <span class="muted"> {{t .Lang "repayments.completed"}} </span>
+              <span class="muted"> {{t $.Lang "repayments.completed"}} </span>
 
               {{ end }}
             </td>
@@ -94,7 +94,7 @@
           {{ else }}
 
           <tr>
-            <td colspan="5" class="empty">{{t .Lang "repayments.empty"}}</td>
+            <td colspan="5" class="empty">{{t $.Lang "repayments.empty"}}</td>
           </tr>
 
           {{ end }}
@@ -107,16 +107,16 @@
 <!-- New Repayment Modal -->
 
 <div id="repaymentModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeRepaymentModal()"></div>
+  <div class="modal-backdrop" data-csp-action="repay:close"></div>
 
   <div class="modal-card">
     <div class="modal-header">
       <div>
-        <h2>{{t .Lang "repayments.modal_title"}}</h2>
-        <p>{{t .Lang "repayments.modal_sub"}}</p>
+        <h2>{{t $.Lang "repayments.modal_title"}}</h2>
+        <p>{{t $.Lang "repayments.modal_sub"}}</p>
       </div>
 
-      <button type="button" class="modal-close" onclick="closeRepaymentModal()">
+      <button type="button" class="modal-close" data-csp-action="repay:close">
         ×
       </button>
     </div>
@@ -126,11 +126,11 @@
       method="POST"
       action="/loan-repayments"
       class="form"
-      onsubmit="submitRepayment(event)"
+      data-csp-action="repay:submit"
     >
       <div class="form-grid">
         <div class="form-group">
-          <label for="installmentNumber"> {{t .Lang "repayments.installment"}} * </label>
+          <label for="installmentNumber"> {{t $.Lang "repayments.installment"}} * </label>
 
           <input
             id="installmentNumber"
@@ -142,15 +142,15 @@
           />
         </div>
         <div class="form-group">
-          <label for="repaymentLoanID"> {{t .Lang "repayments.loan_id"}} * </label>
+          <label for="repaymentLoanID"> {{t $.Lang "repayments.loan_id"}} * </label>
 
           <select id="repaymentLoanID" type="text" name="loan_id" required>
-            <option value="">{{t .Lang "repayments.select_loan"}}</option>
+            <option value="">{{t $.Lang "repayments.select_loan"}}</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="repaymentAmount"> {{t .Lang "repayments.amount"}} * </label>
+          <label for="repaymentAmount"> {{t $.Lang "repayments.amount"}} * </label>
 
           <input
             id="repaymentAmount"
@@ -164,7 +164,7 @@
         </div>
 
         <div class="form-group">
-          <label for="paymentDate"> {{t .Lang "repayments.date"}} * </label>
+          <label for="paymentDate"> {{t $.Lang "repayments.date"}} * </label>
 
           <input id="paymentDate" type="date" name="due_date" required />
         </div>
@@ -174,44 +174,20 @@
         <button
           type="button"
           class="btn btn-secondary"
-          onclick="closeRepaymentModal()"
+          data-csp-action="repay:close"
         >
-          {{t .Lang "common.cancel"}}
+          {{t $.Lang "common.cancel"}}
         </button>
 
-        <button type="submit" class="btn btn-primary">{{t .Lang "repayments.save"}}</button>
+        <button type="submit" class="btn btn-primary">{{t $.Lang "repayments.save"}}</button>
       </div>
     </form>
   </div>
 </div>
 
 <script src="/static/js/loan-repayments.js"></script>
-<script>
-  async function submitRepaymentAction(event, form, action) {
-    event.preventDefault();
-    const data = Object.fromEntries(new FormData(form));
-    if (action === "pay") data.paid_amount = Number(data.paid_amount);
-    try {
-      const response = await fetch(form.action, {
-        method: "PATCH",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: action === "pay" ? JSON.stringify(data) : "{}",
-      });
-      const result = await response.json();
-      if (!response.ok)
-        throw new Error(result.message || "Unable to update repayment.");
-      alert(result.message || "Repayment updated successfully.");
-      window.location.reload();
-    } catch (error) {
-      alert(
-        error instanceof Error ? error.message : "Unable to update repayment.",
-      );
-    }
-  }
-</script>
+
+<script src="/static/js/pages/loan_repayments.js" defer></script>
+
 
 {{ end }}

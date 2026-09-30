@@ -25,6 +25,16 @@
     "users:delete": function (el) { deleteUser(el.dataset.cspId, el.dataset.cspName); },
     "users:page": function (el) { loadUsers(Number(el.dataset.cspPage)); },
 
+    // Donors page (web/static/js/donors.js)
+    "donors:open": function () { openDonorModal(); },
+    "donors:close": function () { closeDonorModal(); },
+
+    // Generic modal close (e.g. person modal component)
+    "modal:close": function (el) {
+      var modal = el.closest(".modal");
+      if (modal) modal.classList.add("hidden");
+    },
+
     // Care provided page (web/static/js/pages/care_provided.js)
     "care:open": function () { openCareModal(); },
     "care:close": function () { closeCareModal(); },

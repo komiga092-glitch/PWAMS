@@ -1,0 +1,2 @@
+﻿donor_view.html:127: <label>{{t $.Lang "donors.preferred_donation_type"}}</label>
+donor_view.html:130: value="{{ .donor.PreferredDonationType }}"

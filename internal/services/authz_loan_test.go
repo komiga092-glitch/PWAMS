@@ -363,7 +363,7 @@ func TestLoanSingleRecordAuthorization(t *testing.T) {
 	donorIntruder := makeUser(t, db, fx, roles.DonorID, models.RoleDonor, "s_intruder")
 	admin := makeUser(t, db, fx, roles.AdminID, models.RoleAdmin, "s_admin")
 	staff := makeUser(t, db, fx, roles.StaffID, models.RoleStaff, "s_staff")
-	partnerID := existingPartnerID(db)
+	managerID := existingManagerID(db)
 
 	ownerPerson := makePerson(t, db, fx, owner.ID, "S1")
 	loan := makeLoan(t, db, fx, owner.ID, ownerPerson.ID, "s")
@@ -381,11 +381,11 @@ func TestLoanSingleRecordAuthorization(t *testing.T) {
 	privileged := []services.Actor{adminActor, staffActor}
 	// The business rules permit only one Partner (Manager) user
 	// (uq_users_one_manager); reuse the existing one when present.
-	if partnerID != uuid.Nil {
-		privileged = append(privileged, services.Actor{ID: partnerID, Role: models.RoleManager})
+	if managerID != uuid.Nil {
+		privileged = append(privileged, services.Actor{ID: managerID, Role: models.RoleManager})
 	} else {
-		partner := makeUser(t, db, fx, roles.PartnerID, models.RoleManager, "s_partner")
-		privileged = append(privileged, services.Actor{ID: partner.ID, Role: models.RoleManager})
+		manager := makeUser(t, db, fx, roles.ManagerID, models.RoleManager, "s_manager")
+		privileged = append(privileged, services.Actor{ID: manager.ID, Role: models.RoleManager})
 	}
 	// Super Admin policy (synthetic actor; role governs the decision).
 	privileged = append(privileged,

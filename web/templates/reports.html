@@ -2,72 +2,39 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>{{t .Lang "reports.title"}}</h1>
-      <p>
-        {{t .Lang "reports.subtitle"}}
-      </p>
+      <h1>{{t $.Lang "reports.title"}}</h1>
+      <p>{{t $.Lang "reports.subtitle"}}</p>
     </div>
   </div>
 
-  <a class="btn btn-primary" href="/reports/dashboard/pdf">
-    {{t .Lang "reports.download_pdf"}}
-  </a>
-
+  {{ if .categories }}
+  {{ range .categories }}
   <div class="panel">
+    <div class="panel-header"><h2>{{t $.Lang .NameKey}}</h2></div>
     <div class="panel-body">
       <div class="quick-grid">
-        <a class="quick-card" href="/reports/dashboard/page#dashboard-report">
-          <div class="quick-icon">▥</div>
-          <div class="quick-title">{{t .Lang "reports.dashboard_stats"}}</div>
-          <div class="quick-text">{{t .Lang "reports.view_system_summary"}}</div>
+        {{ range .Cards }}
+        <a
+          class="quick-card"
+          href="/reports/{{ .Slug }}/page"
+          {{ if .PlatformOnly }}data-roles="Super Admin,Admin"{{ end }}
+        >
+          <div class="quick-title">{{t $.Lang .TitleKey}}</div>
+          <div class="quick-text">{{t $.Lang .DescriptionKey}}</div>
+          {{ if .Count }}
+          <div class="quick-text">
+            <strong>{{ .Count }}</strong>
+            {{t $.Lang .CountLabelKey}}
+          </div>
+          {{ end }}
         </a>
-        <a class="quick-card" href="/reports/dashboard/page#donation-report">
-          <div class="quick-icon">◈</div>
-          <div class="quick-title">{{t .Lang "reports.donations_report"}}</div>
-          <div class="quick-text">{{t .Lang "reports.review_donor_contributions"}}</div>
-        </a>
-        <a class="quick-card" href="/reports/dashboard/page#aid-request-report">
-          <div class="quick-icon">▣</div>
-          <div class="quick-title">{{t .Lang "reports.aid_request_report"}}</div>
-          <div class="quick-text">{{t .Lang "reports.track_assistance_demand"}}</div>
-        </a>
+        {{ end }}
       </div>
     </div>
   </div>
-  {{ if .error }}
-  <div class="alert alert-danger">{{ .error }}</div>
-  {{ else if .dashboard }}
-  <div id="dashboard-report" class="panel">
-    <div class="panel-header"><h2>{{t .Lang "reports.dashboard_report"}}</h2></div>
-    <div class="panel-body">
-      <p>{{t .Lang "reports.total_users"}}: {{ .dashboard.TotalUsers }}</p>
-      <p>{{t .Lang "reports.total_persons"}}: {{ .dashboard.TotalPersons }}</p>
-      <p>{{t .Lang "reports.total_students"}}: {{ .dashboard.TotalStudents }}</p>
-      <p>{{t .Lang "reports.total_donors"}}: {{ .dashboard.TotalDonors }}</p>
-      <p>{{t .Lang "reports.total_donations"}}: {{ .dashboard.TotalDonations }}</p>
-      <p>{{t .Lang "reports.total_aid_requests"}}: {{ .dashboard.TotalAidRequests }}</p>
-      <p>{{t .Lang "reports.total_care_provided"}}: {{ .dashboard.TotalCareProvided }}</p>
-    </div>
-  </div>
-  <div id="donation-report" class="panel">
-    <div class="panel-header"><h2>{{t .Lang "reports.donations_report"}}</h2></div>
-    <div class="panel-body">
-      <p>{{t .Lang "reports.total_donations"}}: {{ .donations.TotalDonations }}</p>
-      <p>{{t .Lang "reports.total_donation_amount"}}: {{ printf "%.2f" .donations.TotalAmount }}</p>
-    </div>
-  </div>
-  <div id="aid-request-report" class="panel">
-    <div class="panel-header"><h2>{{t .Lang "reports.aid_request_report"}}</h2></div>
-    <div class="panel-body">
-      <p>{{t .Lang "reports.total_requests"}}: {{ .aid_requests.TotalRequests }}</p>
-      <p>{{t .Lang "reports.pending_requests"}}: {{ .aid_requests.PendingRequests }}</p>
-      <p>{{t .Lang "reports.approved_requests"}}: {{ .aid_requests.ApprovedRequests }}</p>
-      <p>{{t .Lang "reports.rejected_requests"}}: {{ .aid_requests.RejectedRequests }}</p>
-      <p>{{t .Lang "reports.cancelled_requests"}}: {{ .aid_requests.CancelledRequests }}</p>
-    </div>
-  </div>
+  {{ end }}
   {{ else }}
-  <div class="empty">{{t .Lang "reports.no_data"}}</div>
+  <div class="empty">{{t $.Lang "reports.no_data"}}</div>
   {{ end }}
 </section>
 {{ end }}

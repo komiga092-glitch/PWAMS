@@ -36,12 +36,8 @@ type FileUploadHandler struct {
 
 func NewFileUploadHandler(
 	fileUploadService *services.FileUploadService,
-	auditLogServices ...*services.AuditLogService,
+	auditLogService *services.AuditLogService,
 ) *FileUploadHandler {
-	var auditLogService *services.AuditLogService
-	if len(auditLogServices) > 0 {
-		auditLogService = auditLogServices[0]
-	}
 	return &FileUploadHandler{
 		fileUploadService: fileUploadService,
 		auditLogService:   auditLogService,

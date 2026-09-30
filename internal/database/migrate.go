@@ -7,21 +7,22 @@ import (
 	"gorm.io/gorm"
 )
 
+// Migrate is the DEVELOPMENT schema-synchronisation path (GORM AutoMigrate).
+//
+// PHASE 4D decision: AutoMigrate remains available for development (and for
+// the integration tests that call this function) but is never used in
+// production startup. cmd/server/main.go calls database.VerifyUpToDate
+// (tracked migrations, zero schema writes) when APP_ENV=production instead.
+//
+// PHASE 4E: the previous "deduplicate loan_repayments on every startup"
+// DELETE was removed from this path. Destructive data repair is available
+// only through the explicit `go run ./cmd/migrate repair-loan-repayments`
+// command (see repair.go / migration 000004). Startup fails closed instead
+// when duplicate repayments would prevent the composite unique index.
 func Migrate(db *gorm.DB) error {
-	// One-time data repair so the composite unique index on
-	// (loan_id, installment_number) can be created by AutoMigrate even
-	// when historical duplicates exist. Kept-before logic removes every
-	// later duplicate deterministically (created_at, then id).
-	if db.Migrator().HasTable("loan_repayments") {
-		dedup := `DELETE FROM loan_repayments a
-			USING loan_repayments b
-			WHERE a.loan_id = b.loan_id
-			  AND a.installment_number = b.installment_number
-			  AND (a.created_at > b.created_at
-			       OR (a.created_at = b.created_at AND a.id > b.id))`
-		if err := db.Exec(dedup).Error; err != nil {
-			return fmt.Errorf("loan repayment deduplication failed: %w", err)
-		}
+	// Read-only pre-check: counts duplicates, never modifies data.
+	if err := EnsureLoanRepaymentsRepairable(db); err != nil {
+		return err
 	}
 
 	if err := db.AutoMigrate(

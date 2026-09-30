@@ -5,14 +5,14 @@
     <div class="page-heading">
 
         <div>
-            <h1>{{t .Lang "donors.edit_title"}}</h1>
-            <p>{{t .Lang "donors.edit_subtitle"}}</p>
+            <h1>{{t $.Lang "donors.edit_title"}}</h1>
+            <p>{{t $.Lang "donors.edit_subtitle"}}</p>
         </div>
 
         <a
             href="/donors/{{ .donor.ID }}/view"
             class="btn btn-secondary">
-            {{t .Lang "donors.back"}}
+            {{t $.Lang "donors.back"}}
         </a>
 
     </div>
@@ -28,7 +28,7 @@
 
                 <div class="form-group">
                     <label for="donorName">
-                        {{t .Lang "donors.name"}} *
+                        {{t $.Lang "donors.name"}} *
                     </label>
 
                     <input
@@ -40,7 +40,7 @@
                 </div>
 <div class="form-group">
     <label for="donorType">
-        {{t .Lang "donors.donor_type"}} *
+        {{t $.Lang "donors.donor_type"}} *
     </label>
 
     <select
@@ -49,27 +49,27 @@
         required
     >
         <option value="">
-            {{t .Lang "donors.select_donor_type"}}
+            {{t $.Lang "donors.select_donor_type"}}
         </option>
 
         <option
             value="individual"
             {{ if eq .donor.DonorType "Individual" }}selected{{ end }}
         >
-            {{t .Lang "donors.individual"}}
+            {{t $.Lang "donors.individual"}}
         </option>
 
         <option
             value="organization"
             {{ if eq .donor.DonorType "Organization" }}selected{{ end }}
         >
-            {{t .Lang "donors.organization"}}
+            {{t $.Lang "donors.organization"}}
         </option>
     </select>
 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.nic_passport"}}</label>
+                    <label>{{t $.Lang "donors.nic_passport"}}</label>
 
                     <input
                         type="text"
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.organization_name"}}</label>
+                    <label>{{t $.Lang "donors.organization_name"}}</label>
 
                     <input
                         type="text"
@@ -87,7 +87,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.registration_number"}}</label>
+                    <label>{{t $.Lang "donors.registration_number"}}</label>
 
                     <input
                         type="text"
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.phone"}}</label>
+                    <label>{{t $.Lang "donors.phone"}}</label>
 
                     <input
                         type="text"
@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.email"}}</label>
+                    <label>{{t $.Lang "donors.email"}}</label>
 
                     <input
                         type="email"
@@ -114,7 +114,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.contact_person_name"}}</label>
+                    <label>{{t $.Lang "donors.contact_person_name"}}</label>
 
                     <input
                         type="text"
@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.contact_person_phone"}}</label>
+                    <label>{{t $.Lang "donors.contact_person_phone"}}</label>
 
                     <input
                         type="text"
@@ -132,7 +132,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "donors.preferred_donation_type"}}</label>
+                    <label>{{t $.Lang "donors.preferred_donation_type"}}</label>
 
                     <select
                         name="preferred_donation_type">
@@ -154,7 +154,7 @@
                             {{ if eq .donor.PreferredDonationType "bank_transfer" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "donors.bank_transfer"}}
+                            {{t $.Lang "donors.bank_transfer"}}
                         </option>
 
                         <option
@@ -162,7 +162,7 @@
                             {{ if eq .donor.PreferredDonationType "goods" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "donors.goods"}}
+                            {{t $.Lang "donors.goods"}}
                         </option>
 
                         <option
@@ -170,7 +170,7 @@
                             {{ if eq .donor.PreferredDonationType "services" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "donors.services"}}
+                            {{t $.Lang "donors.services"}}
                         </option>
 
                         <option
@@ -178,14 +178,14 @@
                             {{ if eq .donor.PreferredDonationType "other" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "donors.other"}}
+                            {{t $.Lang "donors.other"}}
                         </option>
 
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>{{t .Lang "common.status"}}</label>
+                    <label>{{t $.Lang "common.status"}}</label>
 
                     <select name="status">
 
@@ -194,7 +194,7 @@
                             {{ if eq .donor.Status "Active" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "common.active"}}
+                            {{t $.Lang "common.active"}}
                         </option>
 
                         <option
@@ -202,7 +202,7 @@
                             {{ if eq .donor.Status "Inactive" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "donors.inactive"}}
+                            {{t $.Lang "donors.inactive"}}
                         </option>
 
                         <option
@@ -210,14 +210,14 @@
                             {{ if eq .donor.Status "Pending" }}
                             selected
                             {{ end }}>
-                            {{t .Lang "donors.pending"}}
+                            {{t $.Lang "donors.pending"}}
                         </option>
 
                     </select>
                 </div>
 
                 <div class="form-group form-full">
-                    <label>{{t .Lang "donors.address"}}</label>
+                    <label>{{t $.Lang "donors.address"}}</label>
 
                     <textarea
                         name="address"
@@ -225,7 +225,7 @@
                 </div>
 
                 <div class="form-group form-full">
-                    <label>{{t .Lang "donors.notes"}}</label>
+                    <label>{{t $.Lang "donors.notes"}}</label>
 
                     <textarea
                         name="notes"
@@ -239,14 +239,14 @@
                 <a
                     href="/donors/{{ .donor.ID }}/view"
                     class="btn btn-secondary">
-                    {{t .Lang "common.cancel"}}
+                    {{t $.Lang "common.cancel"}}
                 </a>
 
                 <button
                     id="donor-update-btn"
                     type="submit"
                     class="btn btn-primary">
-                    {{t .Lang "donors.update"}}
+                    {{t $.Lang "donors.update"}}
                 </button>
 
             </div>

@@ -32,13 +32,16 @@ func (c SyncCursor) IsZero() bool {
 }
 
 // EncodeSyncCursor renders the composite wire format
-// "<RFC3339Nano>~<uuid>". Zero cursors encode as an empty string.
+// "<RFC3339Nano>~<uuid>". The timestamp is rendered in UTC so the cursor ends
+// in "Z" instead of a "+05:30" style offset: a raw query-string round trip
+// (cursor={cursor}) decodes a literal "+" as a space, which would make the
+// echoed cursor unparsable. Zero cursors encode as an empty string.
 func EncodeSyncCursor(cursor SyncCursor) string {
 	if cursor.IsZero() {
 		return ""
 	}
 
-	return cursor.Time.Format(time.RFC3339Nano) +
+	return cursor.Time.UTC().Format(time.RFC3339Nano) +
 		syncCursorSeparator +
 		cursor.ID.String()
 }

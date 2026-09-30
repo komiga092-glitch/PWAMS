@@ -390,6 +390,41 @@ func (r *UserRepository) CountActiveByRoleName(
 
 	return count, nil
 }
+// CountActiveByRoleNames returns how many Active users currently hold any
+// of the given roles, optionally excluding one user by id. The last-active
+// platform guards use it with the protected Admin set (Admin + Super Admin)
+// to ensure a status change or deletion can never remove the final active
+// protected admin account.
+func (r *UserRepository) CountActiveByRoleNames(
+	roleNames []string,
+	excludeUserID string,
+) (int64, error) {
+	var count int64
+
+	lowerNames := make([]string, 0, len(roleNames))
+	for _, roleName := range roleNames {
+		lowerNames = append(lowerNames, strings.ToLower(strings.TrimSpace(roleName)))
+	}
+
+	query := r.db.
+		Model(&models.User{}).
+		Joins("JOIN roles ON roles.id = users.role_id").
+		Where("LOWER(roles.name) IN ?", lowerNames).
+		Where("users.status = ?", models.UserStatusActive)
+
+	if excludeUserID != "" {
+		query = query.Where("users.id <> ?", excludeUserID)
+	}
+
+	err := query.Count(&count).Error
+	if err != nil {
+		return 0, fmt.Errorf("failed to count active users by roles: %w", err)
+	}
+
+	return count, nil
+}
+
+// CountActiveAdminsExcept counts active, non-deleted users holding the
 
 // CountActiveAdminsExcept counts active, non-deleted users holding the
 // Admin role, excluding the given user IDs. The last-active-Admin guard

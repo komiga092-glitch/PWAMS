@@ -7,7 +7,7 @@ templ PersonModalForm(data PersonFormData) {
 				<h2>Add Care Seeker</h2>
 				<p>Enter the person's basic information.</p>
 			</div>
-			<button type="button" class="modal-close" onclick="this.closest('.modal').classList.add('hidden')">&times;</button>
+			<button type="button" class="modal-close" data-csp-action="modal:close">&times;</button>
 		</div>
 		<div class="modal-body">
 			<form
@@ -15,7 +15,6 @@ templ PersonModalForm(data PersonFormData) {
 				hx-post="/persons"
 				hx-target="#persons-list"
 				hx-swap="innerHTML"
-				hx-on::after-request="this.closest('.modal').classList.add('hidden')"
 			>
 				<div class="form-grid">
 					<div class="form-group">
@@ -53,7 +52,7 @@ templ PersonModalForm(data PersonFormData) {
 					</div>
 				</div>
 				<div class="form-actions">
-					<button type="button" class="btn btn-secondary" onclick="this.closest('.modal').classList.add('hidden')">Cancel</button>
+					<button type="button" class="btn btn-secondary" data-csp-action="modal:close">Cancel</button>
 					<button type="submit" class="btn btn-primary">Save Care Seeker</button>
 				</div>
 			</form>

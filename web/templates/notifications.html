@@ -3,55 +3,179 @@
 <section class="page">
   <div class="page-heading">
     <div>
-      <h1>{{t .Lang "nav.notifications"}}</h1>
-      <p>{{t .Lang "notifications.subtitle"}}</p>
+      <h1>{{t $.Lang "nav.notifications"}}</h1>
+      <p>{{t $.Lang "notifications.subtitle"}}</p>
     </div>
-    <button id="create-notification-btn" class="btn btn-primary" type="button" data-roles="Super Admin,Admin,Staff">
-      {{t .Lang "notifications.create"}}
+
+    <button
+      id="create-notification-btn"
+      class="btn btn-primary"
+      type="button"
+      data-roles="Super Admin,Admin,Manager,Staff"
+    >
+      {{t $.Lang "notifications.create"}}
     </button>
   </div>
 
+  <div
+    id="notification-alert"
+    class="alert"
+    hidden
+    role="status"
+    aria-live="polite"
+  ></div>
+
   <div class="panel">
     <div class="panel-header">
-      <h2>{{t .Lang "nav.notifications"}}</h2>
+      <h2>{{t $.Lang "nav.notifications"}}</h2>
     </div>
 
     <div class="panel-body">
-      {{ if .notifications }}
-
-      <div class="notification-list">
-        {{ range .notifications }}
-
-        <div class="notification-item">
-          <div>
-            <strong>{{ .Title }}</strong>
-
-            <p>{{ .Message }}</p>
-
-            {{ if .CreatedAt }}
-            <small> {{ .CreatedAt }} </small>
-            {{ end }}
-          </div>
-
-          <div>
-            {{ if not .IsRead }}
-            <span class="badge badge-warning"> {{t .Lang "notifications.unread"}} </span>
-            {{ else }}
-            <span class="badge badge-success"> {{t .Lang "notifications.read"}} </span>
-            {{ end }}
-          </div>
-        </div>
-
-        {{ end }}
+      <div id="notifications-loading" class="empty" hidden>
+        {{t $.Lang "common.loading"}}
       </div>
 
-      {{ else }}
+      <div id="notifications-empty" class="empty" hidden>
+        {{t $.Lang "notifications.empty"}}
+      </div>
 
-      <div class="empty">{{t .Lang "notifications.empty"}}</div>
+      <div id="notifications-error" class="alert alert-danger" hidden></div>
 
-      {{ end }}
+      <div id="notification-list" class="notification-list" hidden></div>
     </div>
   </div>
 </section>
+
+<!-- Notification View Modal -->
+
+<div id="notification-view-modal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2 id="notification-view-title">{{t $.Lang "nav.notifications"}}</h2>
+        <p>
+          <span id="notification-view-date"></span>
+          ·
+          <span id="notification-view-type"></span>
+          ·
+          <span id="notification-view-status"></span>
+        </p>
+      </div>
+
+      <button id="notification-view-close" class="modal-close" type="button">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p id="notification-view-message"></p>
+    </div>
+
+    <div class="form-actions">
+      <button id="notification-view-cancel" class="btn btn-secondary" type="button">
+        {{t $.Lang "common.cancel"}}
+      </button>
+
+      <button id="notification-view-delete" class="btn btn-danger" type="button">
+        {{t $.Lang "common.delete"}}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Notification Modal -->
+
+<div id="create-notification-modal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h2>{{t $.Lang "notifications.create"}}</h2>
+      </div>
+
+      <button id="create-notification-close" class="modal-close" type="button">
+        ×
+      </button>
+    </div>
+
+    <form id="create-notification-form" class="form">
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label" for="notification-recipient">
+              {{t $.Lang "notifications.recipient"}} *
+            </label>
+
+            <select
+              id="notification-recipient"
+              class="form-control"
+              name="user_id"
+              required
+            >
+              <option value="">{{t $.Lang "notifications.loading"}}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="notification-title">
+              {{t $.Lang "notifications.title_label"}} *
+            </label>
+
+            <input
+              id="notification-title"
+              class="form-control"
+              name="title"
+              type="text"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="notification-type">
+              {{t $.Lang "notifications.type"}} *
+            </label>
+
+            <select id="notification-type" class="form-control" name="type" required>
+              <option value="info">Info</option>
+              <option value="warning">Warning</option>
+              <option value="alert">Alert</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label class="form-label" for="notification-message">
+              {{t $.Lang "notifications.message"}} *
+            </label>
+
+            <textarea
+              id="notification-message"
+              class="form-control"
+              name="message"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+        </div>
+
+        <div id="create-notification-feedback" class="form-message" hidden></div>
+      </div>
+
+      <div class="form-actions">
+        <button id="create-notification-cancel" class="btn btn-secondary" type="button">
+          {{t $.Lang "common.cancel"}}
+        </button>
+
+        <button id="create-notification-submit" class="btn btn-primary" type="submit">
+          {{t $.Lang "notifications.create"}}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script type="module" src="/static/js/notifications.js"></script>
 
 {{ end }}

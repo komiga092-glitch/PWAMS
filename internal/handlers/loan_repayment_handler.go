@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
@@ -62,7 +63,33 @@ func (h *LoanRepaymentHandler) Create(c *gin.Context) {
 	currentUser, _ := getCurrentUser(c)
 	actor, _ := services.ActorFromUser(currentUser)
 
-	repayment, err := h.repaymentService.Create(request, actor)
+	var repayment *models.LoanRepayment
+
+	// The repayment and its mandatory audit entry are committed together or
+	// not at all (FR-16 / NFR-09): a repayment can never exist without its
+	// audit trail, and an audit failure rolls the create back.
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.repaymentService.WithTx(tx).Create(request, actor)
+		if createErr != nil {
+			return createErr
+		}
+
+		repayment = created
+
+		userID := ""
+		if currentUser != nil {
+			userID = currentUser.ID.String()
+		}
+
+		return h.auditLogService.Audit(
+			tx,
+			userID,
+			"CREATE",
+			"loan_repayments",
+			created.ID.String(),
+			"Loan repayment created successfully",
+		)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanID),
@@ -217,7 +244,40 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 	currentUser, _ := getCurrentUser(c)
 	actor, _ := services.ActorFromUser(currentUser)
 
-	repayment, err := h.repaymentService.Pay(id, request, actor)
+	var repayment *models.LoanRepayment
+
+	// The payment and its mandatory audit entry are committed together or
+	// not at all (FR-16 / NFR-09). A payment must never be recorded without
+	// its audit trail, and the response is only sent after both succeed.
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		paid, payErr := h.repaymentService.WithTx(tx).Pay(id, request, actor)
+		if payErr != nil {
+			return payErr
+		}
+
+		repayment = paid
+
+		details := fmt.Sprintf(
+			"paid_amount=%s status=%s installment=%d",
+			paid.PaidAmount.String(),
+			paid.Status,
+			paid.InstallmentNumber,
+		)
+
+		userID := ""
+		if currentUser != nil {
+			userID = currentUser.ID.String()
+		}
+
+		return h.auditLogService.Audit(
+			tx,
+			userID,
+			"LOAN_PAYMENT",
+			"loan_repayments",
+			id,
+			details,
+		)
+	})
 	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanRepaymentID):
@@ -283,27 +343,6 @@ func (h *LoanRepaymentHandler) Pay(c *gin.Context) {
 		"message":   "Repayment payment processed successfully",
 		"repayment": repayment,
 	})
-
-	// FR-16 / NFR-09: loan payments are mandatory audit events.
-	if h.auditLogService != nil {
-		details := fmt.Sprintf(
-			"paid_amount=%s status=%s installment=%d",
-			repayment.PaidAmount.String(),
-			repayment.Status,
-			repayment.InstallmentNumber,
-		)
-		userID := ""
-		if user, ok := getCurrentUser(c); ok && user != nil {
-			userID = user.ID.String()
-		}
-		_ = h.auditLogService.Create(
-			userID,
-			"LOAN_PAYMENT",
-			"loan_repayments",
-			id,
-			details,
-		)
-	}
 }
 
 // Cancel cancels an unpaid repayment.
@@ -313,7 +352,28 @@ func (h *LoanRepaymentHandler) Cancel(c *gin.Context) {
 	currentUser, _ := getCurrentUser(c)
 	actor, _ := services.ActorFromUser(currentUser)
 
-	if err := h.repaymentService.Cancel(id, actor); err != nil {
+	// The cancellation and its mandatory audit entry are committed together
+	// or not at all (FR-16 / NFR-09).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		if cancelErr := h.repaymentService.WithTx(tx).Cancel(id, actor); cancelErr != nil {
+			return cancelErr
+		}
+
+		userID := ""
+		if currentUser != nil {
+			userID = currentUser.ID.String()
+		}
+
+		return h.auditLogService.Audit(
+			tx,
+			userID,
+			"CANCEL",
+			"loan_repayments",
+			id,
+			"Repayment cancelled successfully",
+		)
+	})
+	if err != nil {
 		switch {
 		case errors.Is(err, services.ErrInvalidLoanRepaymentID):
 			c.JSON(http.StatusBadRequest, gin.H{

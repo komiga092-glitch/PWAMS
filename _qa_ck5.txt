@@ -1,0 +1,40 @@
+﻿aid_request_repository.go:43: if queryParams.Search != "" {
+aid_request_repository.go:44: searchValue := "%" +
+aid_request_repository.go:45: strings.ToLower(strings.TrimSpace(queryParams.Search)) +
+aid_request_repository.go:49: `LOWER(title) LIKE ?
+aid_request_repository.go:50: OR LOWER(description) LIKE ?
+aid_request_repository.go:51: OR LOWER(review_notes) LIKE ?`,
+aid_request_repository.go:52: searchValue,
+aid_request_repository.go:53: searchValue,
+aid_request_repository.go:54: searchValue,
+donation_repository.go:78: if queryParams.Search != "" {
+donation_repository.go:79: searchValue := "%" +
+donation_repository.go:80: strings.ToLower(strings.TrimSpace(queryParams.Search)) +
+donation_repository.go:84: `LOWER(reference_no) LIKE ?
+donation_repository.go:85: OR LOWER(item_name) LIKE ?
+donation_repository.go:86: OR LOWER(description) LIKE ?`,
+donation_repository.go:87: searchValue,
+donation_repository.go:88: searchValue,
+donation_repository.go:89: searchValue,
+donor_repository.go:70: search string,
+donor_repository.go:81: if search != "" {
+donor_repository.go:82: searchValue := "%" +
+donor_repository.go:83: strings.ToLower(strings.TrimSpace(search)) +
+donor_repository.go:87: `LOWER(name) LIKE ?
+donor_repository.go:88: OR LOWER(nic_passport) LIKE ?
+donor_repository.go:89: OR LOWER(organization_name) LIKE ?
+donor_repository.go:90: OR LOWER(registration_number) LIKE ?
+donor_repository.go:91: OR LOWER(phone) LIKE ?
+donor_repository.go:92: OR LOWER(email) LIKE ?`,
+donor_repository.go:93: searchValue,
+donor_repository.go:94: searchValue,
+donor_repository.go:95: searchValue,
+donor_repository.go:96: searchValue,
+donor_repository.go:97: searchValue,
+donor_repository.go:98: searchValue,
+loan_repository.go:64: if query.Search != "" {
+loan_repository.go:65: searchValue := "%" + strings.ToLower(strings.TrimSpace(query.Search)) + "%"
+loan_repository.go:67: "LOWER(CAST(id AS TEXT)) LIKE ? OR LOWER(CAST(person_id AS TEXT)) LIKE ? OR LOWER(purpose) LIKE ?",
+loan_repository.go:68: searchValue,
+loan_repository.go:69: searchValue,
+loan_repository.go:70: searchValue,

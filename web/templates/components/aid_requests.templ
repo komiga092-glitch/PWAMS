@@ -21,7 +21,7 @@ templ AidRequestsPage(requests []AidRequest, search string, errorMsg string) {
 				<button
 					type="button"
 					class="btn btn-primary"
-					data-roles="Super Admin,Admin,Staff"
+					data-roles="Super Admin,Admin,Manager,Staff"
 					hx-get="/aid-requests/new"
 					hx-target="body"
 					hx-swap="innerHTML"

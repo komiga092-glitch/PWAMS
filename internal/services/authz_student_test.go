@@ -32,12 +32,12 @@ func TestStudentObjectLevelAuthorization(t *testing.T) {
 	// enforced by the uq_users_one_manager unique index. Reuse the
 	// existing Partner when one is present.
 	var manager models.User
-	if partnerID := existingPartnerID(db); partnerID != uuid.Nil {
-		if err := db.Preload("Role").First(&manager, "id = ?", partnerID).Error; err != nil {
-			t.Fatalf("failed to load existing Partner: %v", err)
+	if managerID := existingManagerID(db); managerID != uuid.Nil {
+		if err := db.Preload("Role").First(&manager, "id = ?", managerID).Error; err != nil {
+			t.Fatalf("failed to load existing Manager: %v", err)
 		}
 	} else {
-		manager = makeUser(t, db, fx, roles.PartnerID, models.RoleManager, "manager")
+		manager = makeUser(t, db, fx, roles.ManagerID, models.RoleManager, "manager")
 	}
 
 	donor := makeUser(t, db, fx, roles.DonorID, models.RoleDonor, "intruder")
@@ -99,7 +99,6 @@ func TestStudentObjectLevelAuthorization(t *testing.T) {
 		FullName:      "Hacked Name",
 		SchoolName:    student.SchoolName,
 		Grade:         student.Grade,
-		StudentCode:   student.StudentCode,
 		GuardianPhone: "+94771234567",
 		AcademicYear:  student.AcademicYear,
 		Status:        models.StudentStatusActive,
@@ -130,7 +129,6 @@ func TestStudentObjectLevelAuthorization(t *testing.T) {
 		FullName:      "Legit Update",
 		SchoolName:    student.SchoolName,
 		Grade:         student.Grade,
-		StudentCode:   student.StudentCode,
 		GuardianPhone: "+94771234567",
 		AcademicYear:  student.AcademicYear,
 		Status:        models.StudentStatusActive,

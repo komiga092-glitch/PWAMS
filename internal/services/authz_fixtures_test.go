@@ -65,17 +65,15 @@ type seedRoles struct {
 	AdminID       uuid.UUID
 	SuperAdminID  uuid.UUID
 	StaffID       uuid.UUID
-	PartnerID     uuid.UUID
+	ManagerID     uuid.UUID
 	DonorID       uuid.UUID
 	BeneficiaryID uuid.UUID
 	StudentID     uuid.UUID
 }
 
-// existingPartnerID returns the ID of the single Partner/Manager user
-// the business rules permit (enforced by uq_users_one_manager), or
-// uuid.Nil if none exists yet. Tests reuse it instead of trying to
-// create a second Partner, which would violate the unique index.
-func existingPartnerID(db *gorm.DB) uuid.UUID {
+// existingManagerID returns the ID of the single Manager user the business
+// rules permit (enforced by uq_users_one_manager), or uuid.Nil if none exists.
+func existingManagerID(db *gorm.DB) uuid.UUID {
 	var userID string
 	err := db.
 		Model(&models.User{}).
@@ -111,7 +109,7 @@ func loadSeedRoles(t *testing.T, db *gorm.DB) seedRoles {
 		case models.RoleStaff:
 			out.StaffID = r.ID
 		case models.RoleManager:
-			out.PartnerID = r.ID
+			out.ManagerID = r.ID
 		case models.RoleDonor:
 			out.DonorID = r.ID
 		case models.RoleBeneficiary:

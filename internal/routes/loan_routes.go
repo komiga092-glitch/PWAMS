@@ -19,6 +19,7 @@ func RegisterLoanRoutes(
 	loans.Use(middleware.RequireAnyRole(
 		models.RoleSuperAdmin,
 		models.RoleAdmin,
+		models.RoleManager,
 		models.RoleStaff,
 	))
 
@@ -27,6 +28,13 @@ func RegisterLoanRoutes(
 	loans.POST("", loanHandler.Create)
 	loans.GET("", loanHandler.List)
 	loans.GET("/:id", loanHandler.GetByID)
+
+	// Loan edit (models.UpdateLoanRequest): the object-level rule — the
+	// submitter or a privileged role, and only while the loan is still
+	// Pending — is enforced in LoanService.UpdateLoan, so the whole
+	// Staff-and-above group shares the route.
+	loans.PUT("/:id", loanHandler.Update)
+
 	loans.PATCH("/:id/review", middleware.RequireAnyRole(
 		models.RoleSuperAdmin,
 		models.RoleAdmin,

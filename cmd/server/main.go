@@ -1,7 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net"
+	"strconv"
+	"strings"
 	"text/template"
 	"time"
 
@@ -15,7 +19,6 @@ import (
 	"github.com/komiga092-glitch/pwams/internal/config"
 	"github.com/komiga092-glitch/pwams/internal/database"
 	"github.com/komiga092-glitch/pwams/internal/handlers"
-	"github.com/komiga092-glitch/pwams/internal/i18n"
 	"github.com/komiga092-glitch/pwams/internal/middleware"
 	"github.com/komiga092-glitch/pwams/internal/models"
 	"github.com/komiga092-glitch/pwams/internal/repository"
@@ -49,8 +52,18 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	// Database migration
-	if err := database.Migrate(db); err != nil {
+	// Database migration.
+	//
+	// PHASE 4D: production startup performs NO schema writes. It verifies
+	// the tracked migration state (schema_migrations) and fails fast when
+	// migrations are pending or drifted; operators apply them explicitly
+	// with `go run ./cmd/migrate up` (after a verified backup). Development
+	// keeps the AutoMigrate convenience path, which never deletes data.
+	if cfg.AppEnv == "production" {
+		if err := database.VerifyUpToDate(db); err != nil {
+			log.Fatalf("schema verification error: %v", err)
+		}
+	} else if err := database.Migrate(db); err != nil {
 		log.Fatalf("migration error: %v", err)
 	}
 
@@ -290,19 +303,23 @@ func main() {
 
 	personHandler := handlers.NewPersonHandler(
 		personService,
+		auditLogService,
 	)
 
 	studentHandler := handlers.NewStudentHandler(
 		studentService,
+		auditLogService,
 	)
 
 	donorHandler := handlers.NewDonorHandler(
 		donorService,
+		auditLogService,
 	)
 
 	donationHandler := handlers.NewDonationHandler(
 		donationService,
 		donorService,
+		auditLogService,
 	)
 
 	aidRequestHandler := handlers.NewAidRequestHandler(
@@ -329,6 +346,7 @@ func main() {
 
 	loanHandler := handlers.NewLoanHandler(
 		loanService,
+		auditLogService,
 	)
 
 	loanRepaymentHandler := handlers.NewLoanRepaymentHandler(
@@ -340,6 +358,7 @@ func main() {
 
 	careProvidedHandler := handlers.NewCareProvidedHandler(
 		careProvidedService,
+		auditLogService,
 	)
 
 	reportPDFService := services.NewReportPDFService()
@@ -367,6 +386,15 @@ func main() {
 
 	router := gin.Default()
 
+	// Trust only the configured reverse proxies (TRUSTED_PROXIES). With no
+	// proxy configured Gin trusts no X-Forwarded-For / X-Real-IP header, so
+	// c.ClientIP() always reflects the real TCP peer and IP based controls
+	// (login / OTP / password reset rate limiting) cannot be bypassed by a
+	// spoofed forwarding header.
+	if err := router.SetTrustedProxies(cfg.TrustedProxies); err != nil {
+		log.Fatalf("invalid TRUSTED_PROXIES configuration: %v", err)
+	}
+
 	// Global middleware
 	router.Use(middleware.SecurityHeaders())
 	router.Use(middleware.RateLimitGeneric())
@@ -381,64 +409,16 @@ func main() {
 	/*
 		Template loading.
 
-		Root templates:
-			web/templates/home.html
-			web/templates/login.html
-			etc.
-
-		Layout templates:
-			web/templates/layouts/*.html
+		The authoritative file list lives in internal/routes/template_registry.go
+		so the server, cmd/tplcheck, and the tests all load exactly the same set.
+		html/template resolves `{{ template "name" }}` references across the whole
+		set, so a partial list makes base.html's dispatch chain unresolvable and
+		every page silently renders an empty body.
 	*/
 
-	// Template helper functions used by the report templates loaded below
-	// (report_detail.html / report_page_content.html), e.g. pagination links.
-	router.SetFuncMap(template.FuncMap{
-		"add": func(a, b int) int { return a + b },
-		"sub": func(a, b int) int { return a - b },
-		"t":   i18n.T,
-	})
+	router.SetFuncMap(template.FuncMap(routes.TemplateFuncMap()))
 
-	router.LoadHTMLFiles(
-		"web/templates/layouts/base.html",
-		"web/templates/layouts/header.html",
-
-		"web/templates/home.html",
-		"web/templates/login.html",
-		"web/templates/forgot_password.html",
-		"web/templates/verify_reset_otp.html",
-		"web/templates/reset_password.html",
-		"web/templates/error.html",
-
-		"web/templates/dashboard.html",
-		"web/templates/users.html",
-		"web/templates/profile.html",
-
-		"web/templates/persons.html",
-		"web/templates/person_form.html",
-		"web/templates/person_view.html",
-		"web/templates/person_edit.html",
-
-		"web/templates/students.html",
-		"web/templates/student_view.html",
-		"web/templates/student_edit.html",
-
-		"web/templates/donors.html",
-		"web/templates/donor_view.html",
-		"web/templates/donor_edit.html",
-		"web/templates/donations.html",
-		"web/templates/aid_requests.html",
-		"web/templates/care_provided.html",
-		"web/templates/loans.html",
-		"web/templates/loan_repayments.html",
-		"web/templates/revenue.html",
-		"web/templates/notifications.html",
-		"web/templates/messages.html",
-		"web/templates/files.html",
-		"web/templates/reports.html",
-		"web/templates/report_detail.html",
-		"web/templates/report_page_content.html",
-		"web/templates/audit_logs.html",
-	)
+	router.LoadHTMLFiles(routes.TemplateFiles()...)
 	router.Use(func(c *gin.Context) {
 		if c.Request.URL.Path == "/static/js/offline/service-worker.js" {
 			c.Header("Service-Worker-Allowed", "/")
@@ -447,6 +427,9 @@ func main() {
 	})
 	router.Static("/static", "web/static")
 	router.StaticFile("/offline.html", "web/static/offline.html")
+	// Browsers request /favicon.ico automatically; serve the org logo so pages
+	// do not log a 404 console error on every visit.
+	router.StaticFile("/favicon.ico", "web/static/images/org-logo.png")
 	// =========================
 	// Background Jobs
 	// =========================
@@ -595,19 +578,49 @@ func main() {
 	// Start Server
 	// =========================
 
-	address := ":" + cfg.AppPort
+	listener, port, err := chooseAvailableAddress(cfg.AppPort)
+	if err != nil {
+		log.Fatalf("server failed to allocate a port: %v", err)
+	}
+	defer listener.Close()
 
 	log.Printf(
-		"PWAMS server running at http://localhost%s",
-		address,
+		"PWAMS server running at http://localhost:%s",
+		port,
 	)
 
-	if err := router.Run(address); err != nil {
+	if err := router.RunListener(listener); err != nil {
 		log.Fatalf(
 			"server failed: %v",
 			err,
 		)
 	}
+}
+
+func chooseAvailableAddress(requestedPort string) (net.Listener, string, error) {
+	trimmed := strings.TrimSpace(requestedPort)
+	if trimmed == "" {
+		trimmed = "8080"
+	}
+
+	candidates := []string{trimmed}
+	for start := 8081; start <= 8099; start++ {
+		candidates = append(candidates, strconv.Itoa(start))
+	}
+
+	var bindErrors []string
+	for _, port := range candidates {
+		listener, err := net.Listen("tcp", net.JoinHostPort("0.0.0.0", port))
+		if err == nil {
+			return listener, port, nil
+		}
+		bindErrors = append(bindErrors, fmt.Sprintf("%s: %v", port, err))
+	}
+
+	return nil, "", fmt.Errorf(
+		"no free port found for requested port %q (tried %s-8099): %s",
+		trimmed, trimmed, strings.Join(bindErrors, "; "),
+	)
 }
 
 func isSafeHTTPMethod(method string) bool {

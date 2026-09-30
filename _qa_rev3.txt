@@ -1,0 +1,26 @@
+﻿	}
+	if !start.IsZero() && !end.IsZero() && end.Before(start) {
+		return start, end, errors.New("invalid revenue date range")
+	}
+	return start, end, nil
+}
+
+func (s *RevenueService) Summaries(now time.Time) ([]models.RevenueSummary, error) {
+	now = now.UTC()
+	day := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
+	month := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.UTC)
+	year := time.Date(now.Year(), 1, 1, 0, 0, 0, 0, time.UTC)
+	periods := []struct {
+		name       string
+		start, end time.Time
+	}{{"daily", day, day.AddDate(0, 0, 1)}, {"monthly", month, month.AddDate(0, 1, 0)}, {"annual", year, year.AddDate(1, 0, 0)}}
+	result := make([]models.RevenueSummary, 0, len(periods))
+	for _, period := range periods {
+		summary, err := s.repo.Summary(period.name, period.start, period.end)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *summary)
+	}
+	return result, nil
+}

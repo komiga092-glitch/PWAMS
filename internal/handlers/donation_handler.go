@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 
 	"github.com/komiga092-glitch/pwams/internal/constants"
 	"github.com/komiga092-glitch/pwams/internal/models"
@@ -24,13 +25,8 @@ type DonationHandler struct {
 func NewDonationHandler(
 	donationService *services.DonationService,
 	donorService *services.DonorService,
-	auditLogServices ...*services.AuditLogService,
+	auditLogService *services.AuditLogService,
 ) *DonationHandler {
-	var auditLogService *services.AuditLogService
-	if len(auditLogServices) > 0 {
-		auditLogService = auditLogServices[0]
-	}
-
 	return &DonationHandler{
 		donationService: donationService,
 		donorService:    donorService,
@@ -102,10 +98,31 @@ func (h *DonationHandler) Create(c *gin.Context) {
 		return
 	}
 
-	donation, err := h.donationService.CreateDonation(
-		request,
-		currentUser.ID,
-	)
+	var donation *models.Donation
+
+	// The donation row and its mandatory audit entry are committed together
+	// or not at all. An unavailable audit dependency fails closed before the
+	// business write is attempted (no panic, no orphaned record).
+	err := h.auditLogService.Transaction(func(tx *gorm.DB) error {
+		created, createErr := h.donationService.WithTx(tx).CreateDonation(
+			request,
+			currentUser.ID,
+		)
+		if createErr != nil {
+			return createErr
+		}
+
+		donation = created
+
+		return h.auditLogService.Audit(
+			tx,
+			currentUser.ID.String(),
+			"CREATE",
+			"donations",
+			created.ID.String(),
+			"Donation registered successfully",
+		)
+	})
 
 	if err != nil {
 		writeErrorResponse(c, err, http.StatusInternalServerError, "Unable to create donation",
@@ -121,18 +138,6 @@ func (h *DonationHandler) Create(c *gin.Context) {
 			errorResponseMapping{err: services.ErrDonationReferenceExists, status: http.StatusConflict, message: err.Error()},
 		)
 		return
-	}
-
-	if currentUser, ok := getCurrentUser(c); ok {
-		if err := h.auditLogService.Create(
-			currentUser.ID.String(),
-			"CREATE",
-			"donations",
-			donation.ID.String(),
-			"Donation registered successfully",
-		); err != nil {
-			// Audit logging failure must not fail the donation creation.
-		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
@@ -315,7 +320,11 @@ func (h *DonationHandler) Update(c *gin.Context) {
 		return
 	}
 
-	currentUser, _ := getCurrentUser(c)
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
 	actor, _ := services.ActorFromUser(currentUser)
 
 	donation, err := h.donationService.UpdateDonation(
@@ -337,6 +346,16 @@ func (h *DonationHandler) Update(c *gin.Context) {
 			errorResponseMapping{err: services.ErrInvalidDonationDate, status: http.StatusUnprocessableEntity, message: err.Error()},
 		)
 		return
+	}
+
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"UPDATE",
+		"donations",
+		donation.ID.String(),
+		"Donation updated successfully",
+	); auditErr != nil {
+		// Audit logging failure must not fail the donation update.
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -373,7 +392,11 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
-	currentUser, _ := getCurrentUser(c)
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
 	actor, _ := services.ActorFromUser(currentUser)
 
 	err := h.donationService.UpdateDonationStatus(
@@ -391,6 +414,16 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"STATUS_CHANGE",
+		"donations",
+		donationID,
+		"Donation status changed to "+request.Status,
+	); auditErr != nil {
+		// Audit logging failure must not fail the donation status update.
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": constants.ErrDonationStatusUpdatedSuccessfully,
@@ -399,7 +432,11 @@ func (h *DonationHandler) UpdateStatus(c *gin.Context) {
 func (h *DonationHandler) Delete(c *gin.Context) {
 	donationID := c.Param("id")
 
-	currentUser, _ := getCurrentUser(c)
+	currentUser, ok := getCurrentUser(c)
+	if !ok {
+		return
+	}
+
 	actor, _ := services.ActorFromUser(currentUser)
 
 	err := h.donationService.DeleteDonation(donationID, actor)
@@ -412,6 +449,16 @@ func (h *DonationHandler) Delete(c *gin.Context) {
 			errorResponseMapping{err: services.ErrConfirmedDonationCannotDelete, status: http.StatusConflict, message: err.Error()},
 		)
 		return
+	}
+
+	if auditErr := h.auditLogService.Create(
+		currentUser.ID.String(),
+		"DELETE",
+		"donations",
+		donationID,
+		"Donation deleted successfully",
+	); auditErr != nil {
+		// Audit logging failure must not fail the donation deletion.
 	}
 
 	c.JSON(http.StatusOK, gin.H{

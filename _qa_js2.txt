@@ -1,0 +1,6 @@
+﻿82: preferred_donation_type: String(formData.get("preferred_donation_type") ?? ""),
+99: const response = await fetch("/donors", {
+persons.js:57: throw new Error(result?.message ?? "Failed to create care seeker");
+persons.js:95: alert(result.message ?? "Care seeker created successfully.");
+persons.js:103: alert(error instanceof Error ? error.message : "Failed to create care seeker.");
+persons.js:108: submitButton.textContent = "Save Care Seeker";

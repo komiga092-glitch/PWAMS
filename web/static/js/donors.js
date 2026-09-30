@@ -4,9 +4,6 @@
    ========================= */
 const donorModal = document.getElementById("donorModal");
 const donorForm = document.getElementById("donor-create-form");
-const addDonorButton = document.getElementById("add-donor-btn");
-const closeDonorButton = document.getElementById("donor-modal-close");
-const cancelDonorButton = document.getElementById("donor-cancel");
 const donorSaveButton = document.getElementById("donor-save-btn");
 /* =========================
    OPEN MODAL
@@ -30,12 +27,24 @@ function closeDonorModal() {
     document.body.style.overflow = "";
     donorForm?.reset();
 }
-/* =========================
-   BUTTON EVENTS
-   ========================= */
-addDonorButton?.addEventListener("click", openDonorModal);
-closeDonorButton?.addEventListener("click", closeDonorModal);
-cancelDonorButton?.addEventListener("click", closeDonorModal);
+/*
+ * BUTTON EVENTS
+ *
+ * All donor buttons are wired through the central CSP delegator
+ * (web/static/js/csp-delegator.js) via data-csp-action attributes in
+ * donors.html:
+ *
+ *   - add-donor-btn        -> donors:open  -> openDonorModal()
+ *   - donor-modal-close    -> donors:close -> closeDonorModal()
+ *   - donor-cancel         -> donors:close -> closeDonorModal()
+ *   - modal backdrop       -> donors:close -> closeDonorModal()
+ *
+ * The delegator dispatches to the global functions exposed below, so no
+ * page-specific click listeners may be attached here (that would create
+ * duplicate handlers).
+ */
+window.openDonorModal = openDonorModal;
+window.closeDonorModal = closeDonorModal;
 /* =========================
    CLICK OUTSIDE MODAL
    ========================= */
